@@ -1,0 +1,13 @@
+numpy
+pandas
+nltk
+textblob
+
+fire
+
+sklearn
+gensim
+tensorflow
+keras
+
+git+git://github.com/hyperopt/hyperopt.git
