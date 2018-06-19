@@ -43,6 +43,10 @@ def main(dataset_filepath='dataset.csv',
     df_adani = df_all.loc[df_all['company'] == 'adani']
     logger.info(f'\t\t{get_size(df_adani)} adani items loaded')
 
+    # Replace all semicolons to fix column displacement issues.
+    df_adani['text'] = df_adani['text'].str.replace(";", "")
+    df_adani['user_description'] = df_adani['user_description'].str.replace(";", "")
+
     # Annotate tweets with suspected stance values using rule patterns.
     df_adani['auto_for'] = df_adani['text'].str.lower().str.contains(PTN_for_hashtags)
     df_adani['auto_against'] = df_adani['text'].str.lower().str.contains(PTN_against_hashtags)
@@ -54,7 +58,7 @@ def main(dataset_filepath='dataset.csv',
     df_for['stance'] = 'for'
     df_for['confidence'] = 'auto'
     df_against = df_adani.loc[~df_adani['auto_for'] & df_adani['auto_against'] & ~df_adani['auto_neutral']
-                        & ~df_adani['retweeted']].sample(get_size(df_for)*5)
+                        & ~df_adani['retweeted']].sample(get_size(df_for)*10)
     df_against['stance'] = 'against'
     df_against['confidence'] = 'auto'
     df_neutral = df_adani.loc[~df_adani['auto_for'] & ~df_adani['auto_against'] & df_adani['auto_neutral']
@@ -68,7 +72,7 @@ def main(dataset_filepath='dataset.csv',
     df_adani.drop(columns=['auto_for', 'auto_against', 'auto_neutral'])
 
     # Save the auto-coded items in one file.
-    autocoded_dataset_filepath = f'{coding_path}/coding_{datetime.date.today()}_auto.csv'
+    autocoded_dataset_filepath = f'{coding_path}/auto_20100101-20180510.csv'
     logger.info(f'\tstoring auto-coded dataset file: {autocoded_dataset_filepath}')
     pd.concat([df_for, df_against, df_neutral]).to_csv(autocoded_dataset_filepath)
     print(f'\t\tfor: {get_size(df_for)}\n\t\tagainst: {get_size(df_against)} (sampled)\n\t\tneutral: {get_size(df_neutral)} (sampled)')

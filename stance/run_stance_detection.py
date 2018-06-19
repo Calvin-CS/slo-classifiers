@@ -9,6 +9,7 @@ import os
 from typing import Dict, List, Tuple
 
 import numpy as np
+import pandas as pd
 from fire import Fire
 
 from data_utility import load_data, load_semeval_data
@@ -19,11 +20,12 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
 
 logger = logging.getLogger(__name__)
-
+df_report = pd.DataFrame()
 
 def train_pred(model: Pipeline, modelname: str,
                x_train: np.ndarray, y_train: np.ndarray,
-               x_test: np.ndarray, y_test: np.ndarray
+               x_test: np.ndarray, y_test: np.ndarray,
+               target=None
                ) -> Tuple[float, float, np.ndarray]:
     """Let model train (fit) and predict the data."""
     if modelname != 'svm':
@@ -36,11 +38,18 @@ def train_pred(model: Pipeline, modelname: str,
     model.fit(x_train, y_train)
     y_pred = model.predict(x_test)
 
+    label_f = f1_score(y_test, y_pred, average=None)
+
     logger.debug(
-        f'f1 for each label = {f1_score(y_test, y_pred, average=None)}')
+        f'f1 for each label = {label_f}')
     logger.debug(f'confusion matrix\n{confusion_matrix(y_test, y_pred)}')
     macrof = f1_score(y_test, y_pred, labels=[0, 1, 2], average='macro')
     accuracy = accuracy_score(y_test, y_pred)
+
+    global df_report
+    df_report[f'{target}_against'], df_report[f'{target}_for'], df_report[f'{target}_neutral'] \
+        = [pd.Series(label_f[0]), pd.Series(label_f[1]), pd.Series(label_f[2])]
+    df_report[f'{target}_combined'] = pd.Series(macrof)
 
     return macrof, accuracy, y_pred
 
@@ -141,7 +150,8 @@ def run_train(modelname,
             macrof, accuracy, y_pred = train_pred(
                 model, modelname,
                 x_train_arys[train_target], y_train_arys[train_target],
-                x_test_arys[test_target], y_test_arys[test_target]
+                x_test_arys[test_target], y_test_arys[test_target],
+                target=test_target
             )
 
             report_result_ea(modelname, model, test_target, macrof)
@@ -296,7 +306,7 @@ class Interface:
             run_semeval(modelname, datafp, wvfp,
                         target=target, profile=profile)
 
-    def train(self, trainfp, testfp):
+    def train(self, trainfp, testfp, outfp=None):
         """Run a standard train/test cycle on the given data.
 
         Keyword Arguments
@@ -327,6 +337,13 @@ class Interface:
                     f'fmacro average: {average:.4}; '
                     f'fmacro std dev: {stdev:.4}'
                     )
+
+        global df_report
+        df_report['combined'] = pd.Series(average)
+        if outfp:
+            with open(outfp, "a") as f:
+                df_report.to_csv(f, header=False, index=False)
+
         return average, stdev
 
     def xval(self, datafp):
