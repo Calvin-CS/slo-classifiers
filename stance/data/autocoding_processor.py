@@ -18,6 +18,8 @@ def main(dataset_filepath='dataset.csv',
          encoding='utf-8',
          coding_path='.',
          logging_level: int = logging.INFO,
+         against_multiplier: int = 1,
+         neutral_multiplier: int = 1,
          ):
     """This function creates a auto-coded dataset using distance supervision,
     for Adani only, using simple hashtag rules. The three stance codings are
@@ -33,6 +35,10 @@ def main(dataset_filepath='dataset.csv',
         path in which to dump the output file (default: '.')
     logging_level
         the level of logging to use (default: logging.INFO)
+    against_multiplier
+        the ratio of against to for tweets to be sampled
+    neutral_multiplier
+        the ratio of neutral to for tweets to be sampled
     """
     logging.basicConfig(level=logging_level, format='%(message)s')
     logger.info(f'auto-coding tweets')
@@ -58,11 +64,11 @@ def main(dataset_filepath='dataset.csv',
     df_for['stance'] = 'for'
     df_for['confidence'] = 'auto'
     df_against = df_adani.loc[~df_adani['auto_for'] & df_adani['auto_against'] & ~df_adani['auto_neutral']
-                        & ~df_adani['retweeted']].sample(get_size(df_for)*10)
+                        & ~df_adani['retweeted']].sample(get_size(df_for)*against_multiplier)
     df_against['stance'] = 'against'
     df_against['confidence'] = 'auto'
     df_neutral = df_adani.loc[~df_adani['auto_for'] & ~df_adani['auto_against'] & df_adani['auto_neutral']
-                        & ~df_adani['retweeted']].sample(get_size(df_for))
+                        & ~df_adani['retweeted']].sample(get_size(df_for)*neutral_multiplier)
     df_neutral['stance'] = 'neutral'
     df_neutral['confidence'] = 'auto'
     # ambiguous_df = df.loc[(df['auto_for'] & df['auto_against']) |
