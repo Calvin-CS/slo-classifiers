@@ -14,7 +14,7 @@ def main(input_filepath, output_filepath, label):
 
     df_results_cp.insert(0, label, trial_series)
 
-    df_results_cp.to_csv(output_filepath, index=False)
+    df_results_cp.to_csv(output_filepath, mode="a", index=False)
 
     print(df_results_cp)
 

@@ -16,7 +16,7 @@ def get_size(df):
 
 def main(dataset_filepath='dataset.csv',
          encoding='utf-8',
-         coding_path='.',
+         coding_filepath='.',
          logging_level: int = logging.INFO,
          against_multiplier: int = 1,
          neutral_multiplier: int = 1,
@@ -78,7 +78,7 @@ def main(dataset_filepath='dataset.csv',
     df_adani.drop(columns=['auto_for', 'auto_against', 'auto_neutral'])
 
     # Save the auto-coded items in one file.
-    autocoded_dataset_filepath = f'{coding_path}/auto_20100101-20180510.csv'
+    autocoded_dataset_filepath = f'{coding_filepath}'
     logger.info(f'\tstoring auto-coded dataset file: {autocoded_dataset_filepath}')
     pd.concat([df_for, df_against, df_neutral]).to_csv(autocoded_dataset_filepath)
     print(f'\t\tfor: {get_size(df_for)}\n\t\tagainst: {get_size(df_against)} (sampled)\n\t\tneutral: {get_size(df_neutral)} (sampled)')
@@ -87,4 +87,4 @@ def main(dataset_filepath='dataset.csv',
 if __name__ == '__main__':
     fire.Fire(main)
     # Example invocation:
-    # python autocoding_processor.py --dataset_filepath=/media/hdd_2/slo/stance/datasets/dataset.csv --coding_path=/media/hdd_2/slo/stance/coding
+    # python autocoding_processor.py --dataset_filepath=/media/hdd_2/slo/stance/datasets/dataset.csv --coding_filepath=/media/hdd_2/slo/stance/coding --against_muliplier=1 --for_multiplier=1

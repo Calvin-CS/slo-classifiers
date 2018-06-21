@@ -10,9 +10,6 @@
 #   DATA_FP: Filepath to the data
 #   SLO_CLASSIFIER_FP: Filepath to the slo-classifier project
 #
-# Author: Roy Adams
-# Date: June 19, 2018
-#
 # Requirements: Must be running a python 3.6 virtual environment with the following modules:
 #   -numpy, sklearn, keras, gensim, pandas, scipy, tensorflow, fire
 #
@@ -37,9 +34,11 @@ function run_repeat {
     AGAINST_MULT="${4:-1}"
     NEUTRAL_MULT="${5:-1}"
     LABEL="${6}"
-    PROFILES="${7}"
+    PROFILE=${7:-true}
 
     echo ${LABEL}
+
+    touch ${DATA_FP}/svm-results/trial-results-temp.csv
 
     # Start the iterations
     for i in $(seq 1 $TIMES_TO_RUN);
@@ -47,14 +46,15 @@ function run_repeat {
         echo "==========================ITERATION $i=========================="
         python3.6 ${SLO_CLASSIFIER_FP}/stance/data/autocoding_processor.py \
             --dataset_filepath=${DATA_FP}/${DATASET} \
-            --coding_path=${DATA_FP}/stance/coding \
+            --coding_filepath=${DATA_FP}/${AUTOCODED_SET} \
             --against_multiplier=${AGAINST_MULT} \
             --neutral_multiplier=${NEUTRAL_MULT}
 
         python3.6 ${SLO_CLASSIFIER_FP}/stance/data/tweet_preprocessor.py \
             --fp=${DATA_FP}/${AUTOCODED_SET}
 
-        if ${PROFILES} ; then
+        if "$PROFILE" = true ; then
+            echo "++++++++++++PROFILE_TEXT+++++++++++++"
             python3.6 ${SLO_CLASSIFIER_FP}/stance/run_stance_detection.py \
                 train \
                 --model=${MODEL} \
@@ -65,6 +65,7 @@ function run_repeat {
                 --wvfp=${WVFP} \
                 --logging_level=${LOGGING}
         else
+            echo "++++++++++++NO_PROFILE_TEXT+++++++++++++"
             python3.6 ${SLO_CLASSIFIER_FP}/stance/run_stance_detection.py \
                 train \
                 --model=${MODEL} \
@@ -85,6 +86,10 @@ function run_repeat {
         --output_filepath=${DATA_FP}/svm-results/results.csv \
         --label=${LABEL}
 
+    rm ${DATA_FP}/svm-results/trial-results-temp.csv
+
+    echo "Finished ${LABEL}"
+
 }
 
 DATA="${1}"
@@ -99,17 +104,17 @@ cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/results.csv
 
 cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
 
-run_repeat 10 ${DATA} ${SLO} 1 1 "1-1-No_Profiles" false
+run_repeat 2 ${DATA} ${SLO} 1 1 "1-1-Profiles" true
 
 cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
 
-run_repeat 10 ${DATA} ${SLO} 1 1 "1-1-Profiles" true
+run_repeat 2 ${DATA} ${SLO} 1 1 "1-1-NoProfiles" false
 
 cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
 
-run_repeat 10 ${DATA} ${SLO} 5 1 "5-1-Profiles" true
+run_repeat 2 ${DATA} ${SLO} 5 1 "5-1-Profiles" true
 
 cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
 
-run_repeat 10 ${DATA} ${SLO} 10 1 "10-1-Profiles" true
+run_repeat 2 ${DATA} ${SLO} 10 1 "10-1-Profiles" true
 
