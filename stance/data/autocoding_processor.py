@@ -6,7 +6,7 @@ import pandas as pd
 import logging
 logger = logging.getLogger(__name__)
 
-from data.settings import PTN_against_hashtags, PTN_for_hashtags, PTN_neutral_screennames
+from data.settings import PTN_against_hashtags, PTN_for_hashtags, PTN_neutral_screennames, PTN_for_screennames
 
 
 def get_size(df):
@@ -20,6 +20,7 @@ def main(dataset_filepath='dataset.csv',
          logging_level: int = logging.INFO,
          against_multiplier: int = 1,
          neutral_multiplier: int = 1,
+         companytweets = False
          ):
     """This function creates a auto-coded dataset using distance supervision,
     for Adani only, using simple hashtag rules. The three stance codings are
@@ -54,7 +55,12 @@ def main(dataset_filepath='dataset.csv',
     df_adani['user_description'] = df_adani['user_description'].str.replace(";", "")
 
     # Annotate tweets with suspected stance values using rule patterns.
-    df_adani['auto_for'] = df_adani['text'].str.lower().str.contains(PTN_for_hashtags)
+    if companytweets:
+        df_adani['auto_for'] = (df_adani['text'].str.lower().str.contains(PTN_for_hashtags) |
+                                (~df_adani['text'].str.lower().str.contains(PTN_for_hashtags) &
+                                df_adani['user_screen_name'].str.lower().str.match(PTN_for_screennames)))
+    else:
+        df_adani['auto_for'] = df_adani['text'].str.lower().str.contains(PTN_for_hashtags)
     df_adani['auto_against'] = df_adani['text'].str.lower().str.contains(PTN_against_hashtags)
     df_adani['auto_neutral'] = df_adani['user_screen_name'].str.lower().str.match(PTN_neutral_screennames)
 
