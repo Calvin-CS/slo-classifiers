@@ -35,6 +35,7 @@ function run_repeat {
     NEUTRAL_MULT="${5:-1}"
     LABEL="${6}"
     PROFILE=${7:-true}
+    COMPANY=${8:-false}
 
     echo ${LABEL}
 
@@ -44,17 +45,27 @@ function run_repeat {
     for i in $(seq 1 $TIMES_TO_RUN);
     do
         echo "==========================ITERATION $i=========================="
-        python3.6 ${SLO_CLASSIFIER_FP}/stance/data/autocoding_processor.py \
-            --dataset_filepath=${DATA_FP}/${DATASET} \
-            --coding_filepath=${DATA_FP}/${AUTOCODED_SET} \
-            --against_multiplier=${AGAINST_MULT} \
-            --neutral_multiplier=${NEUTRAL_MULT}
+
+        if "$COMPANY" = true ; then
+            python3.6 ${SLO_CLASSIFIER_FP}/stance/data/autocoding_processor.py \
+                --dataset_filepath=${DATA_FP}/${DATASET} \
+                --coding_filepath=${DATA_FP}/${AUTOCODED_SET} \
+                --against_multiplier=${AGAINST_MULT} \
+                --neutral_multiplier=${NEUTRAL_MULT} \
+                --companytweets
+        else
+            python3.6 ${SLO_CLASSIFIER_FP}/stance/data/autocoding_processor.py \
+                --dataset_filepath=${DATA_FP}/${DATASET} \
+                --coding_filepath=${DATA_FP}/${AUTOCODED_SET} \
+                --against_multiplier=${AGAINST_MULT} \
+                --neutral_multiplier=${NEUTRAL_MULT} \
+                --nocompanytweets
+        fi
 
         python3.6 ${SLO_CLASSIFIER_FP}/stance/data/tweet_preprocessor.py \
             --fp=${DATA_FP}/${AUTOCODED_SET}
 
         if "$PROFILE" = true ; then
-            echo "++++++++++++PROFILE_TEXT+++++++++++++"
             python3.6 ${SLO_CLASSIFIER_FP}/stance/run_stance_detection.py \
                 train \
                 --model=${MODEL} \
@@ -65,7 +76,6 @@ function run_repeat {
                 --wvfp=${WVFP} \
                 --logging_level=${LOGGING}
         else
-            echo "++++++++++++NO_PROFILE_TEXT+++++++++++++"
             python3.6 ${SLO_CLASSIFIER_FP}/stance/run_stance_detection.py \
                 train \
                 --model=${MODEL} \
@@ -104,17 +114,25 @@ cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/results.csv
 
 cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
 
-run_repeat 2 ${DATA} ${SLO} 1 1 "1-1-Profiles" true
+run_repeat 2 ${DATA} ${SLO} 1 1 "1-1-Profiles-NoCompany" true false
 
 cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
 
-run_repeat 2 ${DATA} ${SLO} 1 1 "1-1-NoProfiles" false
+run_repeat 2 ${DATA} ${SLO} 1 1 "1-1-NoProfiles-NoCompany" false false
 
 cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
 
-run_repeat 2 ${DATA} ${SLO} 5 1 "5-1-Profiles" true
+run_repeat 2 ${DATA} ${SLO} 1 1 "1-1-Profiles-Company" false true
 
 cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
 
-run_repeat 2 ${DATA} ${SLO} 10 1 "10-1-Profiles" true
+run_repeat 2 ${DATA} ${SLO} 1 1 "1-1-NoProfiles-Company" false true
+
+cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
+
+run_repeat 2 ${DATA} ${SLO} 5 1 "5-1-Profiles-NoCompany" true false
+
+cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
+
+run_repeat 2 ${DATA} ${SLO} 10 1 "10-1-Profiles-NoCompany" true false
 
