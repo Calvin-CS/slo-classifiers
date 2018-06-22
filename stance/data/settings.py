@@ -5,10 +5,12 @@ import re
 for_hashtags = ['#goadani', '#stopstopadani']
 against_hashtags = ['#stopadani']
 neutral_usernames = ['commsec', 'aus_business', 'financialreview', 'qanda', '4corners', '7news', '9news', 'brisbanetimes', 'ausmedia', '3novices']
+for_usernames = ['adaniaustralia']
 
 PTN_for_hashtags = re.compile('|'.join(for_hashtags))
 PTN_against_hashtags = re.compile('|'.join(against_hashtags))
 PTN_neutral_screennames = re.compile('|'.join(neutral_usernames))
+PTN_for_screennames = re.compile('|'.join(for_usernames))
 
 # patterns that identify individual companies
 PTN_companies = [
