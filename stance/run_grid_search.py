@@ -133,7 +133,7 @@ class GridSearch():
                 'This script is currently incompatible with SVM. FYI, SVM is always tuned when they fit to data. (see models.svm_mohammad17)')
         self.model = model
         self.path = path
-        self.wvfp = os.path.join(self.path, wvfp)
+        self.wvfp = os.path.join(self.path, wvfp) if wvfp else None
         self.rand = rand
         self.repeat = repeat
         self.cv = cv
