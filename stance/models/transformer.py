@@ -343,17 +343,14 @@ def build_model(embedding_matrix=None,
             2 - [tweet,  target]
         parallel: the multi-column way to incorporate target and profile,
             if both of profile and target are True
-            input 0 is fed to XEnc as query, input 1 and input 2 are used as attention sources.
-            specify serial modes by the number [1--6]
+            input 0 is fed to XEnc as query, input 1 and input 2 are used as attention sources (input 1 and 2 are interchangeable).
+            specify serial modes by the number [1,2,3]
 
             i - [input0, input1, input2]
             -------------------------------------
             1 - [target, tweet, profile] (default)
-            2 - [target, profile, tweet]
-            3 - [tweet, target, profile]
-            4 - [tweet, profile, target]
-            5 - [profile, target, tweet]
-            6 - [profile, tweet, target]
+            2 - [tweet, target, profile]
+            3 - [profile, target, tweet]
         xtra_self_att: if True, XEnc is built with self attention sub-layer
         dim_pff: the dimensionality of Pointwise Feed Forward layers
         num_head: the number of heads in Multi Head Attention leyers
@@ -420,6 +417,7 @@ def build_model(embedding_matrix=None,
                                 self_att=xtra_self_att)
         if target:
             if target == 1:  # target as query
+                # target == True comes here too
                 logger.debug('target incorporation mode 1')
                 enc_output = encoder(src_seq_input, src_pos)
                 enc_output = xencoder(tgt_seq_input, tgt_pos,
@@ -434,6 +432,7 @@ def build_model(embedding_matrix=None,
                     "specify the target incorporation mode from 1 or 2")
         if profile:
             if m_profile == 1:  # profile as query
+                # profile == True comes here too
                 logger.debug('profile incorporation mode 1')
                 enc_output = encoder(src_seq_input, src_pos)
                 enc_output = xencoder(prf_seq_input, prf_pos,
@@ -460,11 +459,15 @@ def build_model(embedding_matrix=None,
                                  num_layers, dropout,
                                  word_emb=s_word_emb, pos_emb=pos_emb,
                                  self_att=xtra_self_att)
-        combs = list(permutations(
-            (tgt_seq_input, src_seq_input, prf_seq_input)))
-        poss = list(permutations((tgt_pos, src_pos, prf_pos)))
-        input0, input1, input2 = combs[parallel - 1]
-        pos0, pos1, pos2 = poss[parallel - 1]
+        if parallel == 1:
+            input0, input1, input2 = tgt_seq_input, src_seq_input, prf_seq_input
+            pos0, pos1, pos2 = tgt_pos, src_pos, prf_pos
+        elif parallel == 2:
+            input0, input1, input2 = src_seq_input, tgt_seq_input, prf_seq_input
+            pos0, pos1, pos2 = src_pos, tgt_pos, prf_pos
+        elif parallel == 3:
+            input0, input1, input2 = prf_seq_input, tgt_seq_input, src_seq_input
+            pos0, pos1, pos2 = prf_pos, tgt_pos, src_pos
         logger.debug(f'parallel model mode {parallel}')
         # first unit
         enc_output1 = encoder(input1, pos1)
