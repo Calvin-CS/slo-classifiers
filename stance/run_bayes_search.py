@@ -23,13 +23,16 @@ def get_param_dists(modelname):
     Recommend to make `git commit` before running the script in order to record what you did.
     """
     param_combs = dict(
-        max_vocabsize=hp.choice('max_vocabsize', [100_000, 200_000, 300_000]),
-        max_seqlen=hp.choice('max_seqlen', [20, 40]),
+        # max_vocabsize=hp.choice('max_vocabsize', [100_000, 200_000, 300_000]),
+        max_vocabsize=10000,
         # max_tgtlen=[1, 4],
         max_tgtlen=1,  # for SLO, we just need 1 token
-        profile=hp.choice('profile', [False, True]),
+        dim_wordvec=hp.choice('dim_wordvec', [64, 128, 256, 512]),
+        prf_cat=hp.choice('prf_cat', [False, True]),
+        # profile=hp.choice('profile', [False, True]),
+        profile=True,
         max_prflen=hp.choice('max_prflen', [20, 40]),
-        dropout=hp.uniform('dropout', 0.1, 0.9),  # an advice from Shaukat
+        dropout=hp.uniform('dropout', 0.1, 0.5),  # an advice from Shaukat
         lr=hp.loguniform('lr', -5, -1),
         validation_split=0.2,
         epochs=200,  # note that early_stopping is applied
@@ -37,15 +40,25 @@ def get_param_dists(modelname):
         patience=30  # early stopping
     )
     if modelname in ['crossnet', 'cn', 'CrossNet', 'crossNet']:
-        param_combs['dim_lstm'] = hp.choice('dim_lstm', [100, 200, 300])
-        param_combs['num_reason'] = hp.choice('num_reason', [1, 2, 3])
+        param_combs['dim_lstm'] = hp.choice(
+            'dim_lstm', [100, 200, 300, 400, 500])
+        # param_combs['num_reason'] = hp.choice('num_reason', [1, 2, 3])
+        param_combs['num_reason'] = 1
         param_combs['dim_dense'] = hp.choice('dim_dense', [100, 200, 300])
     elif modelname in ['memnet', 'MemNet', 'mn', 'memNet', 'AttNet', 'attnet']:
-        param_combs['dim_lstm'] = hp.choice('dim_lstm', [100, 200, 300])
+        param_combs['dim_lstm'] = hp.choice(
+            'dim_lstm', [100, 200, 300, 400, 500])
         param_combs['num_layers'] = hp.choice('num_layers', [1, 2, 3, 4])
+        param_combs['weight_tying'] = hp.choice('weight_tying', [False, True])
     elif modelname in ['tf', 'transformer', 'Transformer']:
-        param_combs['target'] = hp.choice('target', [False, True])
-        # param_combs['dim_pff'] = [64, 128, 256, 512]
+        param_combs['m_profile'] = hp.choice('m_profile', [1, 2])
+        # param_combs['target'] = hp.choice('target', [False, 1, 2])
+        param_combs['target'] = 1
+        # param_combs['parallel'] = hp.choice('parallel', [False, 1, 2, 3])
+        param_combs['parallel'] = 1
+        param_combs['xtra_self_att'] = hp.choice(
+            'xtra_self_att', [False, True])
+        # param_combs['dim_pff'] = hp.choice('dim_pff', [64, 128, 256, 512])  # dynamic
         param_combs['num_head'] = hp.choice('num_head', [2, 4, 8])
         param_combs['num_layers'] = hp.choice('num_layers', [1, 2, 3, 4])
     else:

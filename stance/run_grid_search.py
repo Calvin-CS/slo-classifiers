@@ -66,13 +66,15 @@ def randsample_params(modelname):
     Recommend to make `git commit` before running the script in order to record what you did.
     """
     param_combs = dict(
-        max_vocabsize=100_000 * randint(1, 4),
+        # max_vocabsize=100_000 * randint(1, 4),
+        max_vocabsize=10000,
         max_seqlen=choice([20, 40]),
         # max_tgtlen=[1, 4],
         max_tgtlen=1,  # for SLO, we just need 1 token
         profile=choice([False, True]),
+        prf_cat=choice([False, True]),
         max_prflen=choice([20, 40]),
-        dropout=uniform(0, 1),  # an advice from Shaukat
+        dropout=uniform(0.1, 0.5),  # an advice from Shaukat
         lr=10 ** uniform(-5, -1),
         validation_split=0.2,
         epochs=200,  # note that early_stopping is applied
@@ -80,15 +82,21 @@ def randsample_params(modelname):
         patience=30  # early stopping
     )
     if modelname in ['crossnet', 'cn', 'CrossNet', 'crossNet']:
-        param_combs['dim_lstm'] = 100 * randint(1, 4)
-        param_combs['num_reason'] = randint(1, 4)
-        param_combs['dim_dense'] = 100 * randint(1, 4)
+        param_combs['dim_lstm'] = 100 * randint(1, 6)
+        # param_combs['num_reason'] = randint(1, 4)
+        param_combs['num_reason'] = 1
+        param_combs['dim_dense'] = 100 * randint(1, 6)
     elif modelname in ['memnet', 'MemNet', 'mn', 'memNet', 'AttNet', 'attnet']:
-        param_combs['dim_lstm'] = 100 * randint(1, 4)
+        param_combs['dim_lstm'] = 100 * randint(1, 6)
         param_combs['num_layers'] = randint(1, 5)
+        param_combs['weight_tying'] = choice([False, True])
     elif modelname in ['tf', 'transformer', 'Transformer']:
-        param_combs['target'] = choice([False, True])
-        # param_combs['dim_pff'] = [64, 128, 256, 512]
+        # param_combs['m_profile'] = choice([1, 2])
+        # param_combs['target'] = choice([False, 1, 2])
+        param_combs['target'] = 1
+        # param_combs['parallel'] = choice([False, 1, 2, 3])
+        param_combs['parallel'] = 1
+        # param_combs['dim_pff'] = choice([64, 128, 256, 512])  # dynamic
         param_combs['num_head'] = 2 ** randint(1, 4)
         param_combs['num_layers'] = randint(1, 5)
     else:
