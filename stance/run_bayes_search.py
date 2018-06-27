@@ -11,7 +11,7 @@ from fire import Fire
 from hyperopt import STATUS_OK, Trials, fmin, hp, tpe
 
 from data_utility import load_data
-from run_stance_detection import run_train, run_xval
+from run_stance_detection import run_fixed_fast, run_train, run_xval
 
 logger = logging.getLogger(__name__)
 
@@ -194,17 +194,17 @@ class BayesianSearch():
             if self.repeat > 1:
                 logger.info(f'iteration: {i+1}')
             if profile:
-                fmacro = run_train(self.model,
-                                   self.x_train_arys_p, self.y_train_arys_p,
-                                   self.x_test_arys_p, self.y_test_arys_p,
-                                   self.wvfp, profile,
-                                   params=params)
+                fmacro = run_fixed_fast(self.model,
+                                        self.x_train_arys_p, self.y_train_arys_p,
+                                        self.x_test_arys_p, self.y_test_arys_p,
+                                        self.wvfp, profile,
+                                        params=params)
             else:
-                fmacro = run_train(self.model,
-                                   self.x_train_arys, self.y_train_arys,
-                                   self.x_test_arys, self.y_test_arys,
-                                   self.wvfp, profile,
-                                   params=params)
+                fmacro = run_fixed_fast(self.model,
+                                        self.x_train_arys, self.y_train_arys,
+                                        self.x_test_arys, self.y_test_arys,
+                                        self.wvfp, profile,
+                                        params=params)
             fmacro_list.append(fmacro)
         avgfmacro = np.mean(fmacro_list)
         varfmacro = np.var(fmacro_list)

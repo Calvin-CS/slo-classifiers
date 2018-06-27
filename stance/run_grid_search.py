@@ -10,7 +10,7 @@ from fire import Fire
 from numpy.random import choice, randint, uniform
 
 from data_utility import load_data
-from run_stance_detection import run_train, run_xval
+from run_stance_detection import run_fixed_fast, run_train, run_xval
 from sklearn.model_selection import ParameterGrid
 
 logger = logging.getLogger(__name__)
@@ -202,17 +202,17 @@ class GridSearch():
                 if self.repeat > 1:
                     logger.info(f'iteration: {i+1}')
                 if profile:
-                    fmacro = run_train(self.model,
-                                       x_train_arys_p, y_train_arys_p,
-                                       x_test_arys_p, y_test_arys_p,
-                                       self.wvfp, profile,
-                                       params=params)
+                    fmacro = run_fixed_fast(self.model,
+                                            x_train_arys_p, y_train_arys_p,
+                                            x_test_arys_p, y_test_arys_p,
+                                            self.wvfp, profile,
+                                            params=params)
                 else:
-                    fmacro = run_train(self.model,
-                                       x_train_arys, y_train_arys,
-                                       x_test_arys, y_test_arys,
-                                       self.wvfp, profile,
-                                       params=params)
+                    fmacro = run_fixed_fast(self.model,
+                                            x_train_arys, y_train_arys,
+                                            x_test_arys, y_test_arys,
+                                            self.wvfp, profile,
+                                            params=params)
                 fmacro_list.append(fmacro)
             self._result2csvrow(params, fmacro_list)
         self._csvf.close()

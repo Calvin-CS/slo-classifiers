@@ -110,6 +110,70 @@ def run_semeval(modelname: str, datafp: str, wvfp: str,
         f'Overall: {fmicro:.4} macroF (in the __micro__ mean of results over all targets)')
 
 
+def run_fixed_fast(modelname,
+                   x_train_arys, y_train_arys,
+                   x_test_arys, y_test_arys,
+                   wvfp, profile, params=None):
+    """This function runs a training epoch on the specified model on the given
+    data. It is meant for faster training in parameter search.
+    This method assumes that the training samples only contains one target in terms of reporting test results.
+    """
+
+    train_targets = x_train_arys.keys()
+    test_targets = y_test_arys.keys()
+    logger.info(f'train targets: {list(train_targets)}; '
+                f'test targets: {list(test_targets)}')
+    x_train = np.concatenate(list(x_train_arys.values()))
+    y_train = np.concatenate(list(y_train_arys.values()))
+    x_test = np.concatenate(list(x_test_arys.values()))
+    y_test = np.concatenate(list(y_test_arys.values()))
+
+    fmacros: List[float] = []
+    accuracies: List[float] = []
+
+    # Train a model on all train target and test it on all test targets once.
+    model = ModelFactory.get_model(
+        modelname, wvfp=wvfp,
+        profile=profile, params=params)
+
+    # Assume neural models only
+    x_train = [x_train, x_test]
+    y_train = to_categorical(y_train)
+    # TODO: label smoothing here too
+
+    model.fit(x_train, y_train)
+    y_pred = model.predict(x_test)
+    microf = f1_score(y_test, y_pred, labels=[0, 1, 2], average='macro')
+
+    # Assume python3.6+: dict order is fixed
+    test_lengths = [len(ary) for ary in y_test_arys.values()]
+    test_lengths = np.cumsum(test_lengths)
+    indices = zip([0] + test_lengths.tolist(), test_lengths)
+    for target, (start, end) in zip(test_targets, indices):
+        macrof = f1_score(y_test_arys[target], y_pred[start:end],
+                          labels=[0, 1, 2], average='macro')
+        logger.info(f'Target "{target}": {macrof:.4} macroF')
+        logger.debug(
+            f'f1 for each label = {f1_score(y_test_arys[target], y_pred[start:end], labels=[0, 1, 2], average=None)}')
+        logger.debug(
+            f'confusion matrix\n{confusion_matrix(y_test_arys[target], y_pred[start:end])}')
+        accuracy = accuracy_score(y_test_arys[target], y_pred[start:end])
+        fmacros.append(macrof)
+        accuracies.append(accuracy)
+
+    # Compute/print macro-f1 and micro-f1 summary statistics.
+    macrof = np.mean(fmacros)
+    accuracy = np.mean(accuracies)
+    logger.info(
+        f'Overall: {macrof:.4} macroF (the **macro** mean over macroFs of all targets)')
+    logger.info(
+        f'Overall: {microf:.4} microF (the **micro** f1-score over all targets)')
+    logger.info(
+        f'Overall: {accuracy:.4} accuracy (in the accuracy mean over accuracies of all targets)')
+
+    return macrof
+
+
 def run_train(modelname,
               x_train_arys, y_train_arys,
               x_test_arys, y_test_arys,
@@ -320,6 +384,39 @@ class Interface:
                                x_test_arys, y_test_arys,
                                self.wvfp, self.profile,
                                params=self.params)
+            fmacro_list.append(fmacro)
+        average = np.average(fmacro_list)
+        stdev = np.std(fmacro_list)
+        logger.info(f'total iterations: {self.repeat}; '
+                    f'fmacro average: {average:.4}; '
+                    f'fmacro std dev: {stdev:.4}'
+                    )
+        return average, stdev
+
+    def fixedf(self, trainfp, testfp):
+        """Run a standard train/test cycle on the given data.
+
+        Keyword Arguments
+        :param trainfp: the system filepath of the CSV training dataset
+        :param testfp: the system filepath of the CSV testing dataset
+        :return: macro-F score average and std-dev
+        """
+        logger.info(f'training {self.model} for {self.repeat} iterations')
+        trainfp = os.path.join(self.path, trainfp)
+        testfp = os.path.join(self.path, testfp)
+        fmacro_list = []
+        x_train_arys, y_train_arys = \
+            load_data(trainfp, target=self.target, profile=self.profile)
+        x_test_arys, y_test_arys = \
+            load_data(testfp, target=self.target, profile=self.profile)
+        for i in range(self.repeat):
+            if self.repeat > 1:
+                logger.info(f'iteration: {i+1}')
+            fmacro = run_fixed_fast(self.model,
+                                    x_train_arys, y_train_arys,
+                                    x_test_arys, y_test_arys,
+                                    self.wvfp, self.profile,
+                                    params=self.params)
             fmacro_list.append(fmacro)
         average = np.average(fmacro_list)
         stdev = np.std(fmacro_list)
