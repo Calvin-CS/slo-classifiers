@@ -4,7 +4,10 @@ import re
 # Features/patterns for auto-coding
 for_hashtags = ['#goadani', '#stopstopadani']
 against_hashtags = ['#stopadani']
-neutral_usernames = ['commsec', 'aus_business', 'financialreview', 'qanda', '4corners', '7news', '9news', 'brisbanetimes', 'ausmedia', '3novices']
+neutral_usernames = ['commsec', 'aus_business', 'financialreview', '4corners', '7news', '9news',
+                     'brisbanetimes','3novices', 'smh', 'sbs', 'theheraldsun', 'australian', 'couriermail',
+                     'abcnews', 'skynewsaust', 'smh', 'sbs', 'theheraldsun', 'australian', 'couriermail', 'abcnews',
+                     'skynewsaust', 'qanda']
 for_usernames = ['adaniaustralia']
 
 PTN_for_hashtags = re.compile('|'.join(for_hashtags))

@@ -18,10 +18,7 @@
 # Create Parameters
 DATASET="stance/datasets/dataset_20100101-20180510.csv"
 
-AUTOCODED_SET="stance/coding/auto_20100101-20180510.csv"
-
 MODEL="svm"
-TRAINFP="coding/auto_20100101-20180510_tok.csv"
 TESTFP="coding/gold_20180514_majority_fixed_tok.csv"
 WVFP="wordvec/20100101-20180510/all-100.vec"
 LOGGING=10
@@ -31,70 +28,96 @@ function run_repeat {
     TIMES_TO_RUN="${1:-1}"
     DATA_FP="${2}"
     SLO_CLASSIFIER_FP="${3}"
-    AGAINST_MULT="${4:-1}"
-    NEUTRAL_MULT="${5:-1}"
-    LABEL="${6}"
-    PROFILE=${7:-true}
+    FOR_SAMPLE="${4:-1}"
+    AGAINST_SAMPLE="${5:-1}"
+    NEUTRAL_SAMPLE="${6:-1}"
+    LABEL="${7}"
     COMPANY=${8:-false}
 
     echo ${LABEL}
 
-    touch ${DATA_FP}/svm-results/trial-results-temp.csv
+    # Reset the output file to the template
+    cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
 
     # Start the iterations
     for i in $(seq 1 $TIMES_TO_RUN);
     do
         echo "==========================ITERATION $i=========================="
 
+        AUTOCODED_SET="stance/coding/auto_20100101-20180510_${i}.csv"
+
+
+        # Build the auto-coded trainset, based on whether company tweets are to be used or not.
         if "$COMPANY" = true ; then
-            python3.6 ${SLO_CLASSIFIER_FP}/stance/data/autocoding_processor.py \
+            python ${SLO_CLASSIFIER_FP}/stance/data/autocoding_processor.py \
                 --dataset_filepath=${DATA_FP}/${DATASET} \
                 --coding_filepath=${DATA_FP}/${AUTOCODED_SET} \
-                --against_multiplier=${AGAINST_MULT} \
-                --neutral_multiplier=${NEUTRAL_MULT} \
+                --for_sample_size=${FOR_SAMPLE} \
+                --against_sample_size=${AGAINST_SAMPLE} \
+                --neutral_sample_size=${NEUTRAL_SAMPLE} \
                 --companytweets
         else
-            python3.6 ${SLO_CLASSIFIER_FP}/stance/data/autocoding_processor.py \
+            python ${SLO_CLASSIFIER_FP}/stance/data/autocoding_processor.py \
                 --dataset_filepath=${DATA_FP}/${DATASET} \
                 --coding_filepath=${DATA_FP}/${AUTOCODED_SET} \
-                --against_multiplier=${AGAINST_MULT} \
-                --neutral_multiplier=${NEUTRAL_MULT} \
+                --for_sample_size=${FOR_SAMPLE} \
+                --against_sample_size=${AGAINST_MULT} \
+                --neutral_sample_size=${NEUTRAL_MULT} \
                 --nocompanytweets
         fi
 
-        python3.6 ${SLO_CLASSIFIER_FP}/stance/data/tweet_preprocessor.py \
+        # Tokenize the newly created trainset.
+        python ${SLO_CLASSIFIER_FP}/stance/data/tweet_preprocessor.py \
             --fp=${DATA_FP}/${AUTOCODED_SET}
 
-        if "$PROFILE" = true ; then
-            python3.6 ${SLO_CLASSIFIER_FP}/stance/run_stance_detection.py \
-                train \
-                --model=${MODEL} \
-                --path=${DATA_FP}/stance \
-                --trainfp=${TRAINFP} \
-                --testfp=${TESTFP} \
-                --outfp=${DATA_FP}/svm-results/trial-results-temp.csv \
-                --wvfp=${WVFP} \
-                --logging_level=${LOGGING}
-        else
-            python3.6 ${SLO_CLASSIFIER_FP}/stance/run_stance_detection.py \
-                train \
-                --model=${MODEL} \
-                --path=${DATA_FP}/stance \
-                --trainfp=${TRAINFP} \
-                --testfp=${TESTFP} \
-                --outfp=${DATA_FP}/svm-results/trial-results-temp.csv \
-                --wvfp=${WVFP} \
-                --logging_level=${LOGGING} \
-                --noprofile
-        fi
-
-        echo "Finished iteration $i"
     done
 
-    python3.6 ${SLO_CLASSIFIER_FP}/stance/data/results_postprocessing.py \
+
+    # Run run_stance_detection.py on the new trainsets.
+    # This first loop runs it with no profile text
+    for i in $(seq 1 $TIMES_TO_RUN);
+    do
+        TRAINFP="coding/auto_20100101-20180510_${i}_tok.csv"
+        python ${SLO_CLASSIFIER_FP}/stance/run_stance_detection.py \
+            train \
+            --model=${MODEL} \
+            --path=${DATA_FP}/stance \
+            --trainfp=${TRAINFP} \
+            --testfp=${TESTFP} \
+            --outfp=${DATA_FP}/svm-results/trial-results-temp.csv \
+            --wvfp=${WVFP} \
+            --logging_level=${LOGGING} \
+            --noprofile
+    done
+
+    # Add the data to the output CSV.
+    python ${SLO_CLASSIFIER_FP}/stance/data/results_postprocessing.py \
         --input_filepath=${DATA_FP}/svm-results/trial-results-temp.csv \
-        --output_filepath=${DATA_FP}/svm-results/results.csv \
-        --label=${LABEL}
+        --output_filepath=${DATA_FP}/svm-results/test-results.csv \
+        --label="${LABEL}-NoProfile"
+
+    cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
+
+    # This second loop runs it with profile text added.
+    for i in $(seq 1 $TIMES_TO_RUN);
+    do
+        TRAINFP="coding/auto_20100101-20180510_${i}_tok.csv"
+        python ${SLO_CLASSIFIER_FP}/stance/run_stance_detection.py \
+            train \
+            --model=${MODEL} \
+            --path=${DATA_FP}/stance \
+            --trainfp=${TRAINFP} \
+            --testfp=${TESTFP} \
+            --outfp=${DATA_FP}/svm-results/trial-results-temp.csv \
+            --wvfp=${WVFP} \
+            --logging_level=${LOGGING}
+    done
+
+    # Add the data to the output CSV.
+    python ${SLO_CLASSIFIER_FP}/stance/data/results_postprocessing.py \
+        --input_filepath=${DATA_FP}/svm-results/trial-results-temp.csv \
+        --output_filepath=${DATA_FP}/svm-results/test-results.csv \
+        --label="${LABEL}-Profile"
 
     rm ${DATA_FP}/svm-results/trial-results-temp.csv
 
@@ -108,31 +131,16 @@ SLO="${2}"
 # Set this script to exit if a command returns an error
 set -e
 
-# Reset previous results files
-cp ${DATA}/svm-results/results.csv ${DATA}/svm-results/results-backup.csv
-cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/results.csv
+# Reset the output CSV file.
+if [ -f ${DATA}/svm-results/test-results.csv ]; then
+    rm ${DATA}/svm-results/test-results.csv
+fi
+touch ${DATA}/svm-results/test-results.csv
 
-cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
+run_repeat 25 ${DATA} ${SLO} 806 8060 1209 "806-8060-1209-Company" true
 
-run_repeat 2 ${DATA} ${SLO} 1 1 "1-1-Profiles-NoCompany" true false
+run_repeat 25 ${DATA} ${SLO} 607 6070 910 "607-6070-910-NoCompany" false
 
-cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
+run_repeat 25 ${DATA} ${SLO} 607 6070 910 "607-6070-910-Company" true
 
-run_repeat 2 ${DATA} ${SLO} 1 1 "1-1-NoProfiles-NoCompany" false false
-
-cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
-
-run_repeat 2 ${DATA} ${SLO} 1 1 "1-1-Profiles-Company" false true
-
-cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
-
-run_repeat 2 ${DATA} ${SLO} 1 1 "1-1-NoProfiles-Company" false true
-
-cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
-
-run_repeat 2 ${DATA} ${SLO} 5 1 "5-1-Profiles-NoCompany" true false
-
-cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
-
-run_repeat 2 ${DATA} ${SLO} 10 1 "10-1-Profiles-NoCompany" true false
 
