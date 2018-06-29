@@ -18,8 +18,9 @@ def main(dataset_filepath='dataset.csv',
          encoding='utf-8',
          coding_filepath='.',
          logging_level: int = logging.INFO,
-         against_multiplier: int = 1,
-         neutral_multiplier: int = 1,
+         for_sample_size: int = None,
+         against_sample_size: int = None,
+         neutral_sample_size: int = None,
          companytweets = False
          ):
     """This function creates a auto-coded dataset using distance supervision,
@@ -65,16 +66,24 @@ def main(dataset_filepath='dataset.csv',
     df_adani['auto_neutral'] = df_adani['user_screen_name'].str.lower().str.match(PTN_neutral_screennames)
 
     # Collect tweets that are to be coded for each stance value.
-    df_for = df_adani.loc[df_adani['auto_for'] & ~df_adani['auto_against'] & ~df_adani['auto_neutral']
-                    & ~df_adani['retweeted']][:]
+    if for_sample_size:
+        df_for = df_adani.loc[df_adani['auto_for'] & ~df_adani['auto_against'] & ~df_adani['auto_neutral']
+                        & ~df_adani['retweeted']].sample(for_sample_size)
+    else:
+        df_for = df_adani.loc[df_adani['auto_for'] & ~df_adani['auto_against'] & ~df_adani['auto_neutral']
+                        & ~df_adani['retweeted']].sample(frac=1.0)
     df_for['stance'] = 'for'
     df_for['confidence'] = 'auto'
+    if not against_sample_size:
+        against_sample_size = df_for.shape[0]
     df_against = df_adani.loc[~df_adani['auto_for'] & df_adani['auto_against'] & ~df_adani['auto_neutral']
-                        & ~df_adani['retweeted']].sample(get_size(df_for)*against_multiplier)
+                        & ~df_adani['retweeted']].sample(against_sample_size)
     df_against['stance'] = 'against'
     df_against['confidence'] = 'auto'
+    if not neutral_sample_size:
+        neutral_sample_size= df_for.shape[0]
     df_neutral = df_adani.loc[~df_adani['auto_for'] & ~df_adani['auto_against'] & df_adani['auto_neutral']
-                        & ~df_adani['retweeted']].sample(get_size(df_for)*neutral_multiplier)
+                        & ~df_adani['retweeted']].sample(neutral_sample_size)
     df_neutral['stance'] = 'neutral'
     df_neutral['confidence'] = 'auto'
     # ambiguous_df = df.loc[(df['auto_for'] & df['auto_against']) |
