@@ -1,5 +1,6 @@
 import datetime
 import fire
+import re
 
 import pandas as pd
 
@@ -15,13 +16,14 @@ def get_size(df):
 
 
 def main(dataset_filepath='dataset.csv',
+         testset_filepath=None,
          encoding='utf-8',
          coding_filepath='.',
          logging_level: int = logging.INFO,
          for_sample_size: int = None,
          against_sample_size: int = None,
          neutral_sample_size: int = None,
-         companytweets = False
+         companytweets=False
          ):
     """This function creates a auto-coded dataset using distance supervision,
     for Adani only, using simple hashtag rules. The three stance codings are
@@ -45,10 +47,18 @@ def main(dataset_filepath='dataset.csv',
     logging.basicConfig(level=logging_level, format='%(message)s')
     logger.info(f'auto-coding tweets')
 
+    if testset_filepath:
+        logger.info(f'\tloading testset file: {testset_filepath}')
+        df_testset = pd.read_csv(testset_filepath, encoding=encoding, engine='python')
+        test_ids = re.compile('|'.join(pd.Series(df_testset['id']).apply(str)))
+
     logger.info(f'\tloading dataset file: {dataset_filepath}')
     df_all = pd.read_csv(dataset_filepath, encoding=encoding, engine='python')
     logger.info(f'\t\t{get_size(df_all)} items loaded')
-    df_adani = df_all.loc[df_all['company'] == 'adani']
+    if testset_filepath:
+        df_adani = df_all.loc[(df_all['company'] == 'adani') & (~df_all['id'].astype(str).str.match(test_ids))]
+    else:
+        df_adani = df_all.loc[(df_all['company'] == 'adani')]
     logger.info(f'\t\t{get_size(df_adani)} adani items loaded')
 
     # Replace all semicolons to fix column displacement issues.

@@ -127,6 +127,7 @@ function run_repeat {
 
 DATA="${1}"
 SLO="${2}"
+ENV="${3}"
 
 # Set this script to exit if a command returns an error
 set -e
@@ -137,10 +138,12 @@ if [ -f ${DATA}/svm-results/test-results.csv ]; then
 fi
 touch ${DATA}/svm-results/test-results.csv
 
-run_repeat 25 ${DATA} ${SLO} 806 8060 1209 "806-8060-1209-Company" true
+source ${ENV}
 
-run_repeat 25 ${DATA} ${SLO} 607 6070 910 "607-6070-910-NoCompany" false
+run_repeat 2 ${DATA} ${SLO} 806 806 806 "806-806-806-Company" true
 
-run_repeat 25 ${DATA} ${SLO} 607 6070 910 "607-6070-910-Company" true
+run_repeat 2 ${DATA} ${SLO} 607 607 607 "607-607-607-NoCompany" false
 
+run_repeat 2 ${DATA} ${SLO} 607 607 607 "607-607-607-Company" true
 
+deactivate
