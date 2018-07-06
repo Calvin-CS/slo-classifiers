@@ -186,8 +186,11 @@ class ExtraEncoderLayer():
         if self.self_att:
             output, slf_attn = self.self_att_layer(
                 query, query, query, mask=self_mask)
-        output, xtra_attn = self.xtra_att_layer(
-            output, enc_output, enc_output, mask=enc_mask)
+            output, xtra_attn = self.xtra_att_layer(
+                output, enc_output, enc_output, mask=enc_mask)
+        else:
+            output, xtra_attn = self.xtra_att_layer(
+                query, enc_output, enc_output, mask=enc_mask)
         output = self.pos_ffn_layer(output)
         return (output, slf_attn, xtra_attn) if self.self_att else (output, xtra_attn)
 
