@@ -19,9 +19,9 @@
 DATASET="stance/datasets/dataset_20100101-20180510.csv"
 
 MODEL="svm"
-TESTFP="coding/gold_20180514_majority_fixed_tok.csv"
 WVFP="wordvec/20100101-20180510/all-100.vec"
 LOGGING=10
+CV=3
 
 function run_repeat {
     # Retrieve Parameters
@@ -46,13 +46,11 @@ function run_repeat {
 
         AUTOCODED_SET="stance/coding/auto_20100101-20180510_${i}.csv"
 
-
         # Build the auto-coded trainset, based on whether company tweets are to be used or not.
         if "$COMPANY" = true ; then
             python ${SLO_CLASSIFIER_FP}/stance/data/autocoding_processor.py \
                 --dataset_filepath=${DATA_FP}/${DATASET} \
                 --coding_filepath=${DATA_FP}/${AUTOCODED_SET} \
-                --testset_filepath=${DATA_FP}/stance/${TESTFP} \
                 --for_sample_size=${FOR_SAMPLE} \
                 --against_sample_size=${AGAINST_SAMPLE} \
                 --neutral_sample_size=${NEUTRAL_SAMPLE} \
@@ -61,7 +59,6 @@ function run_repeat {
             python ${SLO_CLASSIFIER_FP}/stance/data/autocoding_processor.py \
                 --dataset_filepath=${DATA_FP}/${DATASET} \
                 --coding_filepath=${DATA_FP}/${AUTOCODED_SET} \
-                --testset_filepath=${DATA_FP}/stance/${TESTFP} \
                 --for_sample_size=${FOR_SAMPLE} \
                 --against_sample_size=${AGAINST_MULT} \
                 --neutral_sample_size=${NEUTRAL_MULT} \
@@ -82,11 +79,10 @@ function run_repeat {
         echo "===========Running w/o Profile on Auto-Coded Set ${i}==========="
         TRAINFP="coding/auto_20100101-20180510_${i}_tok.csv"
         python ${SLO_CLASSIFIER_FP}/stance/run_stance_detection.py \
-            train \
+            xval \
             --model=${MODEL} \
             --path=${DATA_FP}/stance \
-            --trainfp=${TRAINFP} \
-            --testfp=${TESTFP} \
+            --datafp=${TRAINFP} \
             --outfp=${DATA_FP}/svm-results/trial-results-temp.csv \
             --wvfp=${WVFP} \
             --logging_level=${LOGGING} \
@@ -98,7 +94,7 @@ function run_repeat {
     # Add the data to the output CSV.
     python ${SLO_CLASSIFIER_FP}/stance/data/results_postprocessing.py \
         --input_filepath=${DATA_FP}/svm-results/trial-results-temp.csv \
-        --output_filepath=${DATA_FP}/svm-results/results.csv \
+        --output_filepath=${DATA_FP}/svm-results/results-xval.csv \
         --label="${LABEL}-NoProfile"
 
     cp ${DATA}/svm-results/results-template.csv ${DATA}/svm-results/trial-results-temp.csv
@@ -109,11 +105,10 @@ function run_repeat {
         echo "===========Running w/ Profile on Auto-Coded Set ${i}============"
         TRAINFP="coding/auto_20100101-20180510_${i}_tok.csv"
         python ${SLO_CLASSIFIER_FP}/stance/run_stance_detection.py \
-            train \
+            xval \
             --model=${MODEL} \
             --path=${DATA_FP}/stance \
-            --trainfp=${TRAINFP} \
-            --testfp=${TESTFP} \
+            --datafp=${TRAINFP} \
             --outfp=${DATA_FP}/svm-results/trial-results-temp.csv \
             --wvfp=${WVFP} \
             --logging_level=${LOGGING}
@@ -124,7 +119,7 @@ function run_repeat {
     # Add the data to the output CSV.
     python ${SLO_CLASSIFIER_FP}/stance/data/results_postprocessing.py \
         --input_filepath=${DATA_FP}/svm-results/trial-results-temp.csv \
-        --output_filepath=${DATA_FP}/svm-results/results.csv \
+        --output_filepath=${DATA_FP}/svm-results/results-xval.csv \
         --label="${LABEL}-Profile"
 
     rm ${DATA_FP}/svm-results/trial-results-temp.csv
@@ -141,27 +136,27 @@ ENV="${3}"
 set -e
 
 # Reset the output CSV file.
-if [ -f ${DATA}/svm-results/results.csv ]; then
-    rm ${DATA}/svm-results/results.csv
+if [ -f ${DATA}/svm-results/results-xval.csv ]; then
+    rm ${DATA}/svm-results/results-xval.csv
 fi
-touch ${DATA}/svm-results/results.csv
+touch ${DATA}/svm-results/results-xval.csv
 
 source ${ENV}
 
-run_repeat 2 ${DATA} ${SLO} 607 607 607 "607-607-607-Company" true
+run_repeat 25 ${DATA} ${SLO} 607 607 607 "607-607-607-Company" true
 
-run_repeat 2 ${DATA} ${SLO} 806 806 806 "806-806-806-Company" true
+run_repeat 25 ${DATA} ${SLO} 806 806 806 "806-806-806-Company" true
 
-#run_repeat 25 ${DATA} ${SLO} 607 3035 607 "607-3035-607-NoCompany" false
+run_repeat 25 ${DATA} ${SLO} 607 3035 607 "607-3035-607-NoCompany" false
 
-#run_repeat 25 ${DATA} ${SLO} 607 3035 607 "607-3035-607-Company" true
+run_repeat 25 ${DATA} ${SLO} 607 3035 607 "607-3035-607-Company" true
 
-#run_repeat 25 ${DATA} ${SLO} 806 4030 806 "806-4030-806-Company" true
+run_repeat 25 ${DATA} ${SLO} 806 4030 806 "806-4030-806-Company" true
 
-#run_repeat 25 ${DATA} ${SLO} 607 6070 607 "607-6070-607-NoCompany" false
+run_repeat 25 ${DATA} ${SLO} 607 6070 607 "607-6070-607-NoCompany" false
 
-#run_repeat 25 ${DATA} ${SLO} 607 6070 607 "607-6070-607-Company" true
+run_repeat 25 ${DATA} ${SLO} 607 6070 607 "607-6070-607-Company" true
 
-#run_repeat 25 ${DATA} ${SLO} 806 8060 806 "806-8060-806-Company" true
+run_repeat 25 ${DATA} ${SLO} 806 8060 806 "806-8060-806-Company" true
 
 deactivate
