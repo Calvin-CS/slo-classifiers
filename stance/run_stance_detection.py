@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 def train_pred(model: Pipeline, modelname: str,
                x_train: np.ndarray, y_train: np.ndarray,
                x_test: np.ndarray, y_test: np.ndarray,
-               target=None
+               train=None, target=None
                ) -> Tuple[float, float, np.ndarray, pd.DataFrame]:
     """Let model train (fit) and predict the data."""
     if modelname != 'svm':
@@ -46,9 +46,9 @@ def train_pred(model: Pipeline, modelname: str,
     accuracy = accuracy_score(y_test, y_pred)
 
     df_report = pd.DataFrame()
-    df_report[f'{target}_against'], df_report[f'{target}_for'], df_report[f'{target}_neutral'] \
+    df_report[f'{train}_{target}_against'], df_report[f'{train}_{target}_for'], df_report[f'{train}_{target}_neutral'] \
         = [pd.Series(label_f[0]), pd.Series(label_f[1]), pd.Series(label_f[2])]
-    df_report[f'{target}_combined'] = pd.Series(macrof)
+    df_report[f'{train}_{target}_combined'] = pd.Series(macrof)
 
     return macrof, accuracy, y_pred, df_report
 
@@ -121,7 +121,7 @@ def run_semeval(modelname: str, datafp: str, wvfp: str,
 def run_train(modelname,
               x_train_arys, y_train_arys,
               x_test_arys, y_test_arys,
-              wvfp, profile, params=None):
+              wvfp, profile, params=None, combined=False):
     """This function runs a training epoch on the specified model on the given
     data. It will run all combinations of training and testing targets.
     """
@@ -135,13 +135,29 @@ def run_train(modelname,
     accuracies: List[float] = []
     df_report = pd.DataFrame()
 
+    y_pred_arys: Dict[str, np.ndarray] = {}
+
+    model = ModelFactory.get_model(
+        modelname, wvfp=wvfp,
+        profile=profile, params=params)
+
+    if combined:
+        x_train_combined = []
+        y_train_combined = []
+
+        for train_target in train_targets:
+            for x_row in x_train_arys[train_target]:
+                x_train_combined.append(x_row)
+            for y_row in y_train_arys[train_target]:
+                y_train_combined.append(y_row)
+
+        x_train_arys['combined'] = np.array(x_train_combined)
+        y_train_arys['combined'] = np.array(y_train_combined)
+
     # Train a model on each train target and test it on all test targets.
     for train_target in train_targets:
 
-        model = ModelFactory.get_model(
-            modelname, wvfp=wvfp,
-            profile=profile, params=params)
-        y_pred_arys: Dict[str, np.ndarray] = {}
+        target_fmacros: List[float] = []
 
         for test_target in test_targets:
 
@@ -151,6 +167,7 @@ def run_train(modelname,
                 model, modelname,
                 x_train_arys[train_target], y_train_arys[train_target],
                 x_test_arys[test_target], y_test_arys[test_target],
+                train=train_target,
                 target=test_target
             )
 
@@ -159,8 +176,11 @@ def run_train(modelname,
 
             report_result_ea(modelname, model, test_target, macrof)
             fmacros.append(macrof)
+            target_fmacros.append(macrof)
             accuracies.append(accuracy)
             y_pred_arys[test_target] = y_pred
+
+        logger.info(f'Average macroF for {train_target}: {np.average(target_fmacros)}')
 
     # Compute/print macro-f1 and micro-f1 summary statistics.
     fmacro = np.mean(fmacros)
@@ -313,12 +333,14 @@ class Interface:
             run_semeval(modelname, datafp, wvfp,
                         target=target, profile=profile)
 
-    def train(self, trainfp, testfp, outfp=None):
+    def train(self, trainfp, testfp, outfp=None, combined=False):
         """Run a standard train/test cycle on the given data.
 
         Keyword Arguments
         :param trainfp: the system filepath of the CSV training dataset
         :param testfp: the system filepath of the CSV testing dataset
+        :param outfp: the system filepath to output in CSV format
+        :param combined: whether or not to combine different companies into same train set
         :return: macro-F score average and std-dev
         """
         logger.info(f'training {self.model} for {self.repeat} iterations')
@@ -336,7 +358,7 @@ class Interface:
                                x_train_arys, y_train_arys,
                                x_test_arys, y_test_arys,
                                self.wvfp, self.profile,
-                               params=self.params)
+                               params=self.params, combined=combined)
             fmacro_list.append(fmacro)
         average = np.average(fmacro_list)
         stdev = np.std(fmacro_list)
