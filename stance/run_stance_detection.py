@@ -141,6 +141,8 @@ def run_train(modelname,
         modelname, wvfp=wvfp,
         profile=profile, params=params)
 
+    # If the --combined flag is set, create another entry in the training array.
+    # Delete the other entries so only the combined trainset is used in tests.
     if combined:
         x_train_combined = []
         y_train_combined = []
@@ -151,6 +153,8 @@ def run_train(modelname,
             for y_row in y_train_arys[train_target]:
                 y_train_combined.append(y_row)
 
+        x_train_arys.clear()
+        y_train_arys.clear()
         x_train_arys['combined'] = np.array(x_train_combined)
         y_train_arys['combined'] = np.array(y_train_combined)
 
