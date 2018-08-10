@@ -1,20 +1,15 @@
 import re
 
-# Features/patterns for auto-coding
-for_hashtags = ['#goadani', '#stopstopadani'] #, 'inspir', 'potential', 'innovat', 'women', 'woman', 'gender', 'leadership', 'apprentice', 'productivity', 'health', 'efficien']
-against_hashtags = ['#stopadani'] #, 'protest', 'stopbhp', 'csg', 'nocoal', 'nonewcoal', 'climatechange', 'shenhua', 'caroona', 'risk']
+# Features/patterns for auto-coding neutral tweets
 neutral_usernames = ['commsec', 'aus_business', 'financialreview', '4corners', '7news', '9news',
                      'brisbanetimes', '3novices', 'smh', 'sbs', 'theheraldsun', 'australian', 'couriermail',
                      'abcnews', 'skynewsaust', 'qanda']
-for_usernames = ['adaniaustralia'] #, 'bhp']
 
-PTN_for_hashtags = re.compile('|'.join(for_hashtags))
-PTN_against_hashtags = re.compile('|'.join(against_hashtags))
 PTN_neutral_screennames = re.compile('|'.join(neutral_usernames))
-PTN_for_screennames = re.compile('|'.join(for_usernames))
 
 PTN_company_usernames = re.compile('|'.join(['adaniaustralia', 'bhp', 'santosltd', 'fortescuenews', 'riotinto']))
 
+# List of companies to put in the training set.
 company_list = [
     'adani',
     'bhp',
@@ -23,20 +18,24 @@ company_list = [
     'fortescue',
 ]
 
+# Regular expression pattern dictionary for each company of all stance-for search patterns
+# NOTE: #gobhp, #gosantos, #goriotinto, #gofortescue, have no results as of 7/28/18
 PTN_for = {
     'adani' : re.compile('|'.join(['#goadani', '#stopstopadani'])),
-    'bhp' : re.compile('|'.join(['inspir', 'potential', 'innovat', 'women', 'woman', 'gender', 'leadership', 'apprentice', 'productivity', 'health', 'efficien'])),
-    'santos' : re.compile('|'.join(['inspir', 'potential', 'innovat', 'women', 'woman', 'gender', 'leadership', 'apprentice', 'productivity', 'health', 'efficien'])),
-    'riotinto' : re.compile('|'.join(['inspir', 'potential', 'innovat', 'women', 'woman', 'gender', 'leadership', 'apprentice', 'productivity', 'health', 'efficien'])),
-    'fortescue' : re.compile('|'.join(['inspir', 'potential', 'innovat', 'women', 'woman', 'gender', 'leadership', 'apprentice', 'productivity', 'health', 'efficien']))
+    'bhp' : re.compile('|'.join(['#gobhp', 'inspir', 'potential', 'innovat', 'women', 'woman', 'gender', 'leadership', 'apprentice', 'productivity', 'health', 'efficien'])),
+    'santos' : re.compile('|'.join(['#gosantos', 'inspir', 'potential', 'innovat', 'women', 'woman', 'gender', 'leadership', 'apprentice', 'productivity', 'health', 'efficien'])),
+    'riotinto' : re.compile('|'.join(['#goriotinto', 'inspir', 'potential', 'innovat', 'women', 'woman', 'gender', 'leadership', 'apprentice', 'productivity', 'health', 'efficien'])),
+    'fortescue' : re.compile('|'.join(['#gofortescue', 'inspir', 'potential', 'innovat', 'women', 'woman', 'gender', 'leadership', 'apprentice', 'productivity', 'health', 'efficien']))
 }
 
+# Regular expression pattern dictionary for each company of all stance-against search patterns
+# NOTE: #stopriotinto, #stopfortescue, have no results as of 7/28/18
 PTN_against = {
     'adani' : re.compile('|'.join(['#stopadani'])),
-    'bhp' : re.compile('|'.join(['protest', 'stopbhp', 'csg', 'nocoal', 'nonewcoal', 'climatechange', 'shenhua', 'caroona', 'risk'])),
-    'santos' : re.compile('|'.join(['protest', 'csg', 'nocoal', 'nonewcoal', 'climatechange', 'risk'])),
-    'riotinto' : re.compile('|'.join(['protest', 'csg', 'nocoal', 'nonewcoal', 'climatechange', 'risk'])),
-    'fortescue' : re.compile('|'.join(['protest', 'csg', 'nocoal', 'nonewcoal', 'climatechange', 'risk']))
+    'bhp' : re.compile('|'.join(['#stopbhp', 'protest', 'stopbhp', 'csg', 'nocoal', 'nonewcoal', 'climatechange', 'shenhua', 'caroona', 'risk'])),
+    'santos' : re.compile('|'.join(['#stopsantos', 'protest', 'csg', 'nocoal', 'nonewcoal', 'climatechange', 'risk'])),
+    'riotinto' : re.compile('|'.join(['#stopriotinto', 'protest', 'csg', 'nocoal', 'nonewcoal', 'climatechange', 'risk'])),
+    'fortescue' : re.compile('|'.join(['#stopfortescue', 'protest', 'csg', 'nocoal', 'nonewcoal', 'climatechange', 'risk']))
 }
 
 

@@ -62,9 +62,9 @@ def main(dataset_filepath='dataset.csv',
 
     for company in company_list:
         if testset_filepath:
-            df_companies = df_all.loc[(df_all['company'].str.lower().str.match(company)) & (~df_all['id'].astype(str).str.match(test_ids))]
+            df_companies = df_all.loc[(df_all['company'].str.lower().str.contains(company)) & (~df_all['id'].astype(str).str.match(test_ids))]
         else:
-            df_companies = df_all.loc[(df_all['company'].str.lower().str.match(company))]
+            df_companies = df_all.loc[(df_all['company'].str.lower().str.contains(company))]
         logger.info(f'\t\t{get_size(df_companies)} {company} items loaded')
 
         # Replace all semicolons to fix column displacement issues.
@@ -74,8 +74,7 @@ def main(dataset_filepath='dataset.csv',
         # Annotate tweets with suspected stance values using rule patterns.
         if companytweets:
             df_companies['auto_for'] = (df_companies['text'].str.lower().str.contains(PTN_for[company]) |
-                                        (~df_companies['text'].str.lower().str.contains(PTN_for[company]) &
-                                         df_companies['user_screen_name'].str.lower().str.match(PTN_company_usernames)))
+                                        df_companies['user_screen_name'].str.lower().str.match(PTN_company_usernames))
         else:
             df_companies['auto_for'] = df_companies['text'].str.lower().str.contains(PTN_for[company])
         df_companies['auto_against'] = df_companies['text'].str.lower().str.contains(PTN_against[company])

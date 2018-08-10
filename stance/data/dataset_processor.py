@@ -50,9 +50,9 @@ def create_dataset(json_data_filepath, dataset_filepath, encoding, drop_irreleva
         # Remove irrelevant tweets (non-English or unknown-company).
         if drop_irrelevant_tweets:
             df_chunk = df_chunk[
-                (df_chunk['company'] != '') &
-                ((df_chunk['lang'].str.startswith('en')))  # |
-                 #(df_chunk['language_polyglot'].str.startswith('en')))
+                ((df_chunk['company'] != '') &
+                 (df_chunk['lang'].str.startswith('en') |
+                  df_chunk['language_polyglot'].str.startswith('en')))
             ]
 
         # Write each chuck to the combined dataset file.

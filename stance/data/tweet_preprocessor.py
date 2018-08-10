@@ -8,8 +8,8 @@ import pandas as pd
 import logging
 logger = logging.getLogger(__name__)
 
-import settings
-from vendor import CMUTweetTagger as Tagger
+import data.settings as settings
+from data.vendor import CMUTweetTagger as Tagger
 
 
 def preprocess_text(text: str) -> str:

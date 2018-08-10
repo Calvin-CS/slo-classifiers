@@ -34,6 +34,7 @@ def train_pred(model: Pipeline, modelname: str,
         # TODO: label smoothing
         # y_test = to_categorical(y_test)
 
+    # TODO: Consider moving model fitting outside of function to avoid unnecessary repeated training.
     model.fit(x_train, y_train)
     y_pred = model.predict(x_test)
 
