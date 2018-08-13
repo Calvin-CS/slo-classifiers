@@ -7,7 +7,7 @@ from typing import Dict, List, Tuple
 
 import numpy as np
 
-from data.settings import PTN_against_hashtags, PTN_for_hashtags
+from data.settings import PTN_against, PTN_for
 
 import logging
 logger = logging.getLogger(__name__)
@@ -33,8 +33,8 @@ def get_x(row: dict, rm_autotag: bool, profile: bool) -> str:
 
     # Remove auto-tagging hashtags, if requested, from the tweet and profile.
     if rm_autotag:
-        output = PTN_for_hashtags.sub('', output)
-        output = PTN_against_hashtags.sub('', output)
+        output = PTN_for[row['company']].sub('', output)
+        output = PTN_against[row['company']].sub('', output)
 
     return output
     # add target information for CrossNet

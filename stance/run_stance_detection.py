@@ -20,13 +20,12 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
 
 logger = logging.getLogger(__name__)
-df_report = pd.DataFrame()
 
 def train_pred(model: Pipeline, modelname: str,
                x_train: np.ndarray, y_train: np.ndarray,
                x_test: np.ndarray, y_test: np.ndarray,
-               target=None
-               ) -> Tuple[float, float, np.ndarray]:
+               train=None, target=None
+               ) -> Tuple[float, float, np.ndarray, pd.DataFrame]:
     """Let model train (fit) and predict the data."""
     if modelname != 'svm':
         x_train = [x_train, x_test]
@@ -35,6 +34,7 @@ def train_pred(model: Pipeline, modelname: str,
         # TODO: label smoothing
         # y_test = to_categorical(y_test)
 
+    # TODO: Consider moving model fitting outside of function to avoid unnecessary repeated training.
     model.fit(x_train, y_train)
     y_pred = model.predict(x_test)
 
@@ -46,12 +46,12 @@ def train_pred(model: Pipeline, modelname: str,
     macrof = f1_score(y_test, y_pred, labels=[0, 1, 2], average='macro')
     accuracy = accuracy_score(y_test, y_pred)
 
-    global df_report
-    df_report[f'{target}_against'], df_report[f'{target}_for'], df_report[f'{target}_neutral'] \
+    df_report = pd.DataFrame()
+    df_report[f'{train}_{target}_against'], df_report[f'{train}_{target}_for'], df_report[f'{train}_{target}_neutral'] \
         = [pd.Series(label_f[0]), pd.Series(label_f[1]), pd.Series(label_f[2])]
-    df_report[f'{target}_combined'] = pd.Series(macrof)
+    df_report[f'{train}_{target}_combined'] = pd.Series(macrof)
 
-    return macrof, accuracy, y_pred
+    return macrof, accuracy, y_pred, df_report
 
 
 def report_result_ea(modelname: str, model: Pipeline,
@@ -99,7 +99,7 @@ def run_semeval(modelname: str, datafp: str, wvfp: str,
         logger.info(f'Target: {t}')
         model = ModelFactory.get_model(
             modelname, wvfp, target=t, profile=profile)
-        macrof, accuracy, y_pred = train_pred(
+        macrof, accuracy, y_pred, _ = train_pred(
             model, modelname,
             x_train_arys[t], y_train_arys[t],
             x_test_arys[t], y_test_arys[t]
@@ -122,7 +122,7 @@ def run_semeval(modelname: str, datafp: str, wvfp: str,
 def run_train(modelname,
               x_train_arys, y_train_arys,
               x_test_arys, y_test_arys,
-              wvfp, profile, params=None):
+              wvfp, profile, params=None, combined=False):
     """This function runs a training epoch on the specified model on the given
     data. It will run all combinations of training and testing targets.
     """
@@ -134,30 +134,58 @@ def run_train(modelname,
 
     fmacros: List[float] = []
     accuracies: List[float] = []
+    df_report = pd.DataFrame()
+
+    y_pred_arys: Dict[str, np.ndarray] = {}
+
+    model = ModelFactory.get_model(
+        modelname, wvfp=wvfp,
+        profile=profile, params=params)
+
+    # If the --combined flag is set, create another entry in the training array.
+    # Delete the other entries so only the combined trainset is used in tests.
+    if combined:
+        x_train_combined = []
+        y_train_combined = []
+
+        for train_target in train_targets:
+            for x_row in x_train_arys[train_target]:
+                x_train_combined.append(x_row)
+            for y_row in y_train_arys[train_target]:
+                y_train_combined.append(y_row)
+
+        x_train_arys.clear()
+        y_train_arys.clear()
+        x_train_arys['combined'] = np.array(x_train_combined)
+        y_train_arys['combined'] = np.array(y_train_combined)
 
     # Train a model on each train target and test it on all test targets.
     for train_target in train_targets:
 
-        model = ModelFactory.get_model(
-            modelname, wvfp=wvfp,
-            profile=profile, params=params)
-        y_pred_arys: Dict[str, np.ndarray] = {}
+        target_fmacros: List[float] = []
 
         for test_target in test_targets:
 
             logger.info(f'train target: {train_target}; '
                         f'test target: {test_target}')
-            macrof, accuracy, y_pred = train_pred(
+            macrof, accuracy, y_pred, df_new_columns = train_pred(
                 model, modelname,
                 x_train_arys[train_target], y_train_arys[train_target],
                 x_test_arys[test_target], y_test_arys[test_target],
+                train=train_target,
                 target=test_target
             )
 
+            for new_column in df_new_columns:
+                df_report[new_column] = df_new_columns[new_column]
+
             report_result_ea(modelname, model, test_target, macrof)
             fmacros.append(macrof)
+            target_fmacros.append(macrof)
             accuracies.append(accuracy)
             y_pred_arys[test_target] = y_pred
+
+        logger.info(f'Average macroF for {train_target}: {np.average(target_fmacros)}')
 
     # Compute/print macro-f1 and micro-f1 summary statistics.
     fmacro = np.mean(fmacros)
@@ -174,7 +202,7 @@ def run_train(modelname,
     logger.info(
         f'Overall: {fmicro:.4} microF (in the __micro__ mean of results over all targets)')
 
-    return fmacro
+    return fmacro, df_report
 
 
 def run_xval(modelname, x_arys, y_arys, wvfp,
@@ -184,6 +212,8 @@ def run_xval(modelname, x_arys, y_arys, wvfp,
     # TODO: implement micro Fmacro
     # y_pred_arys: Dict[str, np.ndarray] = {}
     fmacros4tgt: List[float] = []
+    df_report = pd.DataFrame()
+
     for t in x_arys.keys():
         model = ModelFactory.get_model(
             modelname, wvfp,
@@ -199,11 +229,13 @@ def run_xval(modelname, x_arys, y_arys, wvfp,
             y_train = y_arys[t][train_idx]
             x_test = x_arys[t][test_idx]
             y_test_ea = y_arys[t][test_idx]
-            macrof_ea, accuracy_ea, y_pred_ea = train_pred(
+            macrof_ea, accuracy_ea, y_pred_ea, df_cv = train_pred(
                 model, modelname,
                 x_train, y_train,
                 x_test, y_test_ea
             )
+            df_report = df_report.append(df_cv)
+
             fmacros_.append(macrof_ea)
             # y_pred_.append(y_pred_ea)
             # y_test.append(y_test_ea)
@@ -230,7 +262,7 @@ def run_xval(modelname, x_arys, y_arys, wvfp,
     # fmicro = f1_score(y_test_all, y_pred_all, labels=[0, 1], average='macro')
     # logger.info(f'Overall: {fmicro:.4} macroF (in the __micro__ mean of results over all targets)')
 
-    return fmacros4tgt
+    return fmacros4tgt, df_report
 
 
 class Interface:
@@ -306,12 +338,14 @@ class Interface:
             run_semeval(modelname, datafp, wvfp,
                         target=target, profile=profile)
 
-    def train(self, trainfp, testfp, outfp=None):
+    def train(self, trainfp, testfp, outfp=None, combined=False):
         """Run a standard train/test cycle on the given data.
 
         Keyword Arguments
         :param trainfp: the system filepath of the CSV training dataset
         :param testfp: the system filepath of the CSV testing dataset
+        :param outfp: the system filepath to output in CSV format
+        :param combined: whether or not to combine different companies into same train set
         :return: macro-F score average and std-dev
         """
         logger.info(f'training {self.model} for {self.repeat} iterations')
@@ -325,11 +359,11 @@ class Interface:
         for i in range(self.repeat):
             if self.repeat > 1:
                 logger.info(f'iteration: {i+1}')
-            fmacro = run_train(self.model,
+            fmacro, df_report = run_train(self.model,
                                x_train_arys, y_train_arys,
                                x_test_arys, y_test_arys,
                                self.wvfp, self.profile,
-                               params=self.params)
+                               params=self.params, combined=combined)
             fmacro_list.append(fmacro)
         average = np.average(fmacro_list)
         stdev = np.std(fmacro_list)
@@ -338,7 +372,6 @@ class Interface:
                     f'fmacro std dev: {stdev:.4}'
                     )
 
-        global df_report
         df_report['combined'] = pd.Series(average)
         if outfp:
             with open(outfp, "a") as f:
@@ -346,7 +379,7 @@ class Interface:
 
         return average, stdev
 
-    def xval(self, datafp):
+    def xval(self, datafp, outfp):
         """Run a cross-validation test on the given data.
 
         Keyword Arguments
@@ -357,7 +390,7 @@ class Interface:
         datafp = os.path.join(self.path, datafp)
         x_arys, y_arys = load_data(
             datafp, target=self.target, profile=self.profile)
-        fmacro_list = run_xval(self.model, x_arys, y_arys,
+        fmacro_list, df_report = run_xval(self.model, x_arys, y_arys,
                                self.wvfp, self.profile,
                                cv=self.cv, params=self.params)
         average = np.average(fmacro_list)
@@ -365,6 +398,12 @@ class Interface:
         logger.info(f'total CV iterations: {self.cv}; '
                     f'target-wise average: {average:.4}; '
                     f'target-wise std dev: {stdev:.4}')
+
+        if outfp:
+            df_mean = pd.DataFrame(df_report.mean()).transpose()
+            with open(outfp, "a") as f:
+                df_mean.to_csv(f, header=False, index=False)
+
         return average, stdev
 
 

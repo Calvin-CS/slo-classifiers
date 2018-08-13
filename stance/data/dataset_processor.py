@@ -1,17 +1,18 @@
 import os
 import csv
 import json
+import re
 from fire import Fire
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
-from textblob import TextBlob
+from polyglot.text import Text, Word
 
 import logging
 logger = logging.getLogger(__name__)
 
 from settings import PTN_rt, PTN_companies
-
 
 # Count irrelevant tweets.
 unknown_company_count_global = 0
@@ -38,7 +39,7 @@ def create_dataset(json_data_filepath, dataset_filepath, encoding, drop_irreleva
         df_chunk['retweeted'] = df_chunk.apply(compute_retweet, axis=1)
         df_chunk['text'] = \
             df_chunk.apply(compute_full_text, axis=1)
-        df_chunk['language_textblob'] = \
+        df_chunk['language_polyglot'] = \
             df_chunk.apply(update_language, axis=1)
         df_chunk[['user_screen_name', 'user_description']] = \
             df_chunk.apply(compute_user_series, axis=1)
@@ -49,13 +50,13 @@ def create_dataset(json_data_filepath, dataset_filepath, encoding, drop_irreleva
         # Remove irrelevant tweets (non-English or unknown-company).
         if drop_irrelevant_tweets:
             df_chunk = df_chunk[
-                (df_chunk['company'] != '') &
-                ((df_chunk['lang'].str.startswith('en')) |
-                 (df_chunk['language_textblob'].str.startswith('en')))
+                ((df_chunk['company'] != '') &
+                 (df_chunk['lang'].str.startswith('en') |
+                  df_chunk['language_polyglot'].str.startswith('en')))
             ]
 
         # Write each chuck to the combined dataset file.
-        required_fields = ['id', 'lang', 'language_textblob',
+        required_fields = ['id', 'lang', 'language_polyglot',
                            'retweeted', 'hashtags', 'company', 'text',
                            'user_screen_name', 'user_description']
         df_chunk[required_fields].to_csv(dataset_filepath,
@@ -71,6 +72,9 @@ def create_dataset(json_data_filepath, dataset_filepath, encoding, drop_irreleva
         include_header = False
         logger.info(f'\t\tprocessed {count} records...')
 
+    df_full = pd.read_csv(dataset_filepath)
+    df_full.drop_duplicates(inplace=True)
+    df_full.to_csv(dataset_filepath, index=False, header=True, quoting=csv.QUOTE_NONNUMERIC)
     logger.info(f'\tsaved the dataset to {dataset_filepath}'
                  f'\n\t\tunknown company count: {unknown_company_count_global}'
                  f'\n\t\tnon-English count: {non_english_count_global}'
@@ -113,7 +117,7 @@ def update_language(row):
     else:
         # Compute alternate code for non-English tweets, many of which are
         # in English as well.
-        lang2 = TextBlob(row['full_text']).detect_language()
+        lang2 = Text(row['full_text']).language.code
         if not lang2.startswith('en'):
             non_english_count_global += 1
             logger.warning(f"\t\t\tnon-English tweet (will be dropped): "
@@ -149,11 +153,20 @@ def compute_company(row):
     """
     global unknown_company_count_global
 
+    associated_company = []
+
     # Identify the target company using known patterns in the tweet text.
     tweet = row['text'].lower()
+    author = row['user_screen_name'].lower()
     for company_pattern in PTN_companies:
+        if re.compile(author).fullmatch(company_pattern[2]):
+            associated_company.append(company_pattern[0])
+            break
         if company_pattern[1].search(tweet):
-            return company_pattern[0]
+            associated_company.append(company_pattern[0])
+
+    if len(associated_company) > 0:
+        return '|'.join(associated_company)
 
     # No company pattern applies, so it's unclear how this tweet was selected.
     unknown_company_count_global += 1

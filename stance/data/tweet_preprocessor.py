@@ -8,8 +8,8 @@ import pandas as pd
 import logging
 logger = logging.getLogger(__name__)
 
-import settings
-from vendor import CMUTweetTagger as Tagger
+import data.settings as settings
+from data.vendor import CMUTweetTagger as Tagger
 
 
 def preprocess_text(text: str) -> str:
@@ -59,6 +59,7 @@ def preprocess_text(text: str) -> str:
         text = settings.PTN_year.sub('slo_year', text)
         text = settings.PTN_time.sub('slo_time', text)
         text = settings.PTN_cash.sub('slo_cash', text)
+        text = settings.PTN_hash.sub('slo_hash', text)
 
         # put back Twitter specific tokens
         for url in urls:
