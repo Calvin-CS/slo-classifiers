@@ -37,7 +37,7 @@ def memory_layer(input_sequence, vocab_size,
     _, max_tgtlen, dim_wordvec = K.int_shape(question_encoded)
     max_seqlen = K.int_shape(input_sequence)[-1]
     if input_profile is not None:
-        max_prflen = K.int_shape(input_profile)
+        max_prflen = K.int_shape(input_profile)[-1]
 
     # encoders
     if input_encoded_m is None and input_encoded_c is None:
@@ -158,6 +158,7 @@ def build_model(embedding_matrix=None,
     question = Input((max_tgtlen,))
     if profile:
         input_profile = Input((max_prflen,))
+        input_encoded_p, input_encoded_d = None, None
     else:
         input_profile, input_encoded_p, input_encoded_d = None, None, None
 

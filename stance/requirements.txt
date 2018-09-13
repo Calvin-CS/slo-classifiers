@@ -7,7 +7,7 @@ fire
 
 sklearn
 gensim
-tensorflow
-keras
+tensorflow==1.7.1
+keras==2.1.6
 
 git+git://github.com/hyperopt/hyperopt.git

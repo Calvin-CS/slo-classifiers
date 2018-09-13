@@ -5,9 +5,10 @@
   "dim_wordvec": 64,
   "max_prflen": 20,
   "prf_cat": false,
+  "profile": true,
   "m_profile": 1,
-  "target": true,
-  "parallel": 3,
+  "target": false,
+  "parallel": 1,
   "xtra_self_att": true,
   "dropout": 0.1,
   "lr": 0.001,
@@ -19,7 +20,7 @@
   "num_head": 4,
   "num_layers": 2,
   "validation_split": 0.2,
-  "epochs": 10,
+  "epochs": 100,
   "batch_size": 128,
   "patience": 20
 }

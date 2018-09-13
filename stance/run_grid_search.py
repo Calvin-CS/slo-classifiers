@@ -10,7 +10,7 @@ from fire import Fire
 from numpy.random import choice, randint, uniform
 
 from data_utility import load_data
-from run_stance_detection import run_train, run_xval
+from run_stance_detection import run_fixed_fast, run_train, run_xval
 from sklearn.model_selection import ParameterGrid
 
 logger = logging.getLogger(__name__)
@@ -66,13 +66,15 @@ def randsample_params(modelname):
     Recommend to make `git commit` before running the script in order to record what you did.
     """
     param_combs = dict(
-        max_vocabsize=100_000 * randint(1, 4),
+        # max_vocabsize=100_000 * randint(1, 4),
+        max_vocabsize=10000,
         max_seqlen=choice([20, 40]),
         # max_tgtlen=[1, 4],
         max_tgtlen=1,  # for SLO, we just need 1 token
         profile=choice([False, True]),
+        prf_cat=choice([False, True]),
         max_prflen=choice([20, 40]),
-        dropout=uniform(0, 1),  # an advice from Shaukat
+        dropout=uniform(0.1, 0.5),  # an advice from Shaukat
         lr=10 ** uniform(-5, -1),
         validation_split=0.2,
         epochs=200,  # note that early_stopping is applied
@@ -80,15 +82,21 @@ def randsample_params(modelname):
         patience=30  # early stopping
     )
     if modelname in ['crossnet', 'cn', 'CrossNet', 'crossNet']:
-        param_combs['dim_lstm'] = 100 * randint(1, 4)
-        param_combs['num_reason'] = randint(1, 4)
-        param_combs['dim_dense'] = 100 * randint(1, 4)
+        param_combs['dim_lstm'] = 100 * randint(1, 6)
+        # param_combs['num_reason'] = randint(1, 4)
+        param_combs['num_reason'] = 1
+        param_combs['dim_dense'] = 100 * randint(1, 6)
     elif modelname in ['memnet', 'MemNet', 'mn', 'memNet', 'AttNet', 'attnet']:
-        param_combs['dim_lstm'] = 100 * randint(1, 4)
+        param_combs['dim_lstm'] = 100 * randint(1, 6)
         param_combs['num_layers'] = randint(1, 5)
+        param_combs['weight_tying'] = choice([False, True])
     elif modelname in ['tf', 'transformer', 'Transformer']:
-        param_combs['target'] = choice([False, True])
-        # param_combs['dim_pff'] = [64, 128, 256, 512]
+        # param_combs['m_profile'] = choice([1, 2])
+        # param_combs['target'] = choice([False, 1, 2])
+        param_combs['target'] = 1
+        # param_combs['parallel'] = choice([False, 1, 2, 3])
+        param_combs['parallel'] = 1
+        # param_combs['dim_pff'] = choice([64, 128, 256, 512])  # dynamic
         param_combs['num_head'] = 2 ** randint(1, 4)
         param_combs['num_layers'] = randint(1, 5)
     else:
@@ -133,7 +141,7 @@ class GridSearch():
                 'This script is currently incompatible with SVM. FYI, SVM is always tuned when they fit to data. (see models.svm_mohammad17)')
         self.model = model
         self.path = path
-        self.wvfp = os.path.join(self.path, wvfp)
+        self.wvfp = os.path.join(self.path, wvfp) if wvfp else None
         self.rand = rand
         self.repeat = repeat
         self.cv = cv
@@ -202,17 +210,17 @@ class GridSearch():
                 if self.repeat > 1:
                     logger.info(f'iteration: {i+1}')
                 if profile:
-                    fmacro = run_train(self.model,
-                                       x_train_arys_p, y_train_arys_p,
-                                       x_test_arys_p, y_test_arys_p,
-                                       self.wvfp, profile,
-                                       params=params)
+                    fmacro = run_fixed_fast(self.model,
+                                            x_train_arys_p, y_train_arys_p,
+                                            x_test_arys_p, y_test_arys_p,
+                                            self.wvfp, profile,
+                                            params=params)
                 else:
-                    fmacro = run_train(self.model,
-                                       x_train_arys, y_train_arys,
-                                       x_test_arys, y_test_arys,
-                                       self.wvfp, profile,
-                                       params=params)
+                    fmacro = run_fixed_fast(self.model,
+                                            x_train_arys, y_train_arys,
+                                            x_test_arys, y_test_arys,
+                                            self.wvfp, profile,
+                                            params=params)
                 fmacro_list.append(fmacro)
             self._result2csvrow(params, fmacro_list)
         self._csvf.close()

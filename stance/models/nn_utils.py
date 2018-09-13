@@ -120,12 +120,13 @@ class NeuralPipeline(BaseEstimator, ClassifierMixin):
                  batch_size=128, patience=20,
                  **kwargs):
         # preprocessing parameters
+        # TODO: prf_cat and profile should be managed
         self.max_vocabsize = max_vocabsize
         self.max_seqlen = max_seqlen
         self.max_tgtlen = max_tgtlen
         self.profile = profile
         self.max_prflen = max_prflen
-        self.prf_cat = prf_cat
+        self.prf_cat = prf_cat if profile else False
         self.vect = TextSeqTransformer(
             wordvec=wordvec,
             max_seqlen=self.max_seqlen,
