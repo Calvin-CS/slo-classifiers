@@ -24,6 +24,9 @@ output_fp="${4}"
 
 set -e
 
+export PYTHONPATH="${PYTHONPATH}:${slo_fp}/stance"
+
+
 run_id=$RANDOM
 declare -a company_list=("adani" "bhp" "santos" "riotinto" "fortescue")
 testset_fp="coding/gold_20180514_majority_fixed_tok.csv"
@@ -44,7 +47,7 @@ function build_trainsets {
         if [ ${include_company} = true ]; then
             args+=( '--companytweets' )
         fi
-        python ${slo_fp}/stance/data/autocoding_processor.py "${args[@]}"
+        python3.6 ${slo_fp}/stance/data/autocoding_processor.py "${args[@]}"
 
         tokenize_trainsets ${autocoding_filename}
     done
@@ -53,7 +56,7 @@ function build_trainsets {
 # This function is used by build_trainsets to tokenize all the trainsets it produces
 function tokenize_trainsets {
     local autocoded_complete="${1}"
-    python ${slo_fp}/stance/data/tweet_preprocessor.py \
+    python3.6 ${slo_fp}/stance/data/tweet_preprocessor.py \
         --fp=${data_fp}/stance/coding/${autocoded_complete}
 }
 
@@ -64,7 +67,7 @@ function run_classifiers {
 
     for i in $(seq 1 ${times_to_run}); do
     	local trainset_fp=$(echo "${autocoded_filename_tok}" | sed "s/tok/${i}_tok/")
-		python classifier_runner.py \
+		python3.6 ${slo_fp}/stance/more-classifiers/classifier_runner.py \
 			--trainset_fp=${data_fp}/stance/coding/${trainset_fp} \
 			--testset_fp=${data_fp}/stance/${testset_fp} \
 			--output_fp=${output_fp}
@@ -96,13 +99,13 @@ fi
 touch ${output_fp}
 
 # RUN
-classifier_runner 5
+classifier_runner 2
 
 #sorted_fp=$(echo $output_fp | sed "s/.csv/-sorted.csv/")
 #echo $(sort ${output_fp} > ${sorted_fp}) > ${output_fp}
 #rm ${sorted_fp}
 
-python classifier_postprocessor.py ${output_fp}
+#python classifier_postprocessor.py ${output_fp}
 
 # TODO: CREATE PLOTS
 
