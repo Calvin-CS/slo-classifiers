@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# USAGE: sbatch run_classifier_runner_repeated.script SLO/FILE/PATH CONTAINER/FILE/PATH
+
+# Number of Nodes
+#SBATCH -N 1
+
+# Number of Cores
+#SBATCH -c 16
+
+# Job name
+#SBATCH -J classifier_runner
+
+# Memory Size
+#SBATCH --mem=32G
+
+# Output log
+#SBATCH -o ./slurm-outputs/slurm.%j.out # STDOUT
+
+# Parameters
+slo_fp="${1}"
+container="${2}"
+
+srun singularity exec ${container} bash ${slo_fp}/stance/more-classifiers/classifier_runner_repeated.sh \
+	/storage/sloclassifiers/data/ \
+	${slo_fp} \
+	/storage/sloclassifiers/data/stance/datasets/dataset_20100101-20180706.csv \
+	/storage/sloclassifiers/data/svm-results/results2019.csv
+
