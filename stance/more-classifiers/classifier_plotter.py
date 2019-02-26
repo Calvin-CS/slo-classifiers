@@ -28,7 +28,7 @@ def main(results_csv):
         LogisticRegression(C=1e5),
         MLPClassifier(),
         MultinomialNB(),
-#	PassiveAggresiveClassifier(),
+	PassiveAggressiveClassifier(),
 	RandomForestClassifier(),
         SGDClassifier(max_iter=5, tol=None),
 	SVC()

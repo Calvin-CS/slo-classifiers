@@ -3,7 +3,8 @@
 # classifier_runner_repeated.sh
 # 
 # This script runs autocoding_processor.py, tweet_preprocesor.py,
-# classifier_runner.py for a certain number of iterations.
+# classifier_runner.py for a certain number of iterations. Then plots 
+# the data using MatPlotlib
 #
 # Usage: bash classifier_runner_repeated.sh
 #   data_fp: Filepath to the data
@@ -11,10 +12,7 @@
 #   dataset_fp: What dataset you wish to run on.
 #   output_fp: CSV filepath to output results to.
 #
-# Requirements: Must be running in a python 3.6 virtual environment with the following modules:
-#   numpy, sklearn, keras, gensim, pandas, scipy, tensorflow, fire
-#
-###################################################################################################
+####################################################################################################
 
 # Create Parameters
 data_fp="${1}"
@@ -99,13 +97,11 @@ fi
 touch ${output_fp}
 
 # RUN
-classifier_runner 2
+classifier_runner 25
 
-#sorted_fp=$(echo $output_fp | sed "s/.csv/-sorted.csv/")
-#echo $(sort ${output_fp} > ${sorted_fp}) > ${output_fp}
-#rm ${sorted_fp}
+# Run the postprocessor to group the data by classifier and get mean/std-dev
+python3.6 ${slo_fp}/stance/more-classifiers/classifier_postprocessor.py ${output_fp}
 
-#python classifier_postprocessor.py ${output_fp}
-
-# TODO: CREATE PLOTS
+# Plot the data using Matplotlib
+python3.6 ${slo_fp}/stance/more-classifiers/classifier_plotter.py ${output_fp}
 
