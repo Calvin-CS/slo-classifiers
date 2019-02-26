@@ -18,32 +18,27 @@ from sklearn.metrics import f1_score
 
 from fire import Fire
 
-# load the data, which will be split into train and test sets
-
-# make a vectorizers which 
-
 def main(trainset_fp,
          testset_fp,
          output_fp):
-#"/home/bjr33/workspace/cs/data/stance/coding/auto_trainset_tok.csv"
+    # load the data, which will be split into train and test sets
     full_training_dataset = pd.read_csv(trainset_fp)
 
     training_data = full_training_dataset['tweet_t']
     training_labels = full_training_dataset['stance']
 
-    print(training_data.size)
-    print(training_labels.size)
-#"/home/bjr33/workspace/cs/data/stance/coding/gold_20180514_majority_fixed_tok.csv"
     full_testing_dataset = pd.read_csv(testset_fp)
 
     testing_data = full_testing_dataset['tweet_t']
     testing_labels = full_testing_dataset['stance']
 
+    # Set the vectorizer to transform the data into inputs for classifiers
     vectorizer = TfidfVectorizer(ngram_range=(1,3), analyzer='char', use_idf=False)
 
     vectorized_trainset_data = vectorizer.fit_transform(training_data)
     vectorized_testset_data = vectorizer.transform(testing_data)
 
+    #Specify the classifiers to be used
     CLASSIFIERS = [
         DummyClassifier(strategy='most_frequent'),  # Stratified works better than most_frequent (used for SemEval).
         BernoulliNB(),
@@ -65,51 +60,22 @@ def main(trainset_fp,
     for i, classifier in enumerate(CLASSIFIERS):
         print(type(classifier).__name__)
 
+        # Do cross validation on the training set
         scores = cross_val_score(classifier, vectorized_trainset_data, training_labels, cv=5, scoring='f1_weighted')
         f1_means.append(scores.mean())
         f1_stds.append(scores.std())
         print('\tXval F1: {} (+/- {})'.format(scores.mean(), scores.std() * 2))
 
+        # Fit the data to the classifier
         classifier.fit(vectorized_trainset_data, training_labels)
+        # Test the fit of the classifier using the testing data
         score = f1_score(testing_labels, classifier.predict(vectorized_testset_data), average='weighted')
         print('\tTest F1: {}'.format(score))
-
         df_f1_scores.loc[i] = [type(classifier).__name__, score]
+
+    # Append score to output csv file
     with open(output_fp, 'a') as f:
         df_f1_scores.to_csv(f, index=False, header=False)
-
-################################################
-# Plot the results.
-
-# _, ax = plt.subplots(figsize=(8, max(len(f1_means), 1.5)))
-# y_pos = np.arange(len(f1_means))
-# bars = ax.barh(y_pos, f1_means, height=0.5, align='center', xerr=f1_stds)
-# ax.set_yticks(y_pos)
-# ax.set_yticklabels([type(x).__name__ for x in CLASSIFIERS])
-# plt.gca().invert_yaxis()
-# ax.set_xlim(0.0, 1.0)
-# ax.set_xlabel('Stance XVal F1-Weighted Score')
-# ax.set_title('Classifiers for the SemEval 2016 Task A Dataset')
-
-# def autolabel(rects):
-#     for rect in rects:
-#         width = rect.get_width()
-#         ax.text(rect.get_width() + 0.01, rect.get_y() + rect.get_height()/5.0,
-#                 '{:.3f}'.format(width),
-#                 ha='left', va='center')
-# autolabel(bars)
-
-# plt.tight_layout()
-# plt.show()
-
-#clf.fit(training_data, training_labels)
-
-#predictions = clf.predict(testing_data)
-
-#print(metrics.classification_report(testing_labels, predictions))
-
-#cm = metrics.confusion_matrix(testing_labels, predictions)
-#print(cm)
 
 if __name__ == '__main__':
     Fire(main)
