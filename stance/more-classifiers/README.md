@@ -11,3 +11,5 @@ singularity build INSERT_CONTAINER_NAME.simg shub://brentritzema/senior-project:
 ```
 sbatch run_classifier_runner_repeated.script root/location/of/slo-classifiers/repo path/to/container.simg
 ```
+To change the number of runs (currently set at 25 per classifier) go into classifier_runner_repeated.sh	and at the bottom change the number after classifier_runner to the desired number of runs.
+To change the number of nodes/cores/memory to use on Borg, look at https://borg.calvin.edu/resources-slurm.html under Job Submission. The parameters are currently set in run_classifier_runner_repeated.script
