@@ -6,8 +6,8 @@ from sklearn.model_selection import train_test_split
 iris = datasets.load_iris()
 
 model = Sequential()
-model.add(Dense(units=64, activation='relu', input_dim=2))
-model.add(Dense(units=1, activation='softmax'))
+model.add(Dense(units=8, activation='relu', input_dim=2))
+model.add(Dense(units=3, activation='softmax'))
 
 model.compile(loss='sparse_categorical_crossentropy',
               optimizer='sgd',
@@ -22,4 +22,5 @@ model.fit(x_train, y_train, epochs=5, batch_size=32)
 
 loss_and_metrics = model.evaluate(x_test, y_test, batch_size=128)
 
+print(model.metrics_names)
 print(loss_and_metrics)
