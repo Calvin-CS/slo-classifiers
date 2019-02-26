@@ -2,6 +2,8 @@ from fire import Fire
 
 import pandas as pd
 
+# This file takes a raw csv file from classifier_runner.py that has data in the format ['classifier', 'f1_score'] 
+# and aggregates the data based on classifier, outputting the mean and standard deviation for each classifier.
 def main(results_fp):
     df_results = pd.read_csv(results_fp, names=['classifier', 'f1_score'])
     df_means = df_results.groupby(['classifier']).mean()
