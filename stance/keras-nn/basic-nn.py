@@ -1,5 +1,5 @@
 import numpy
-import pandas
+import pandas as pd
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -10,32 +10,44 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.pipeline import Pipeline
 from sklearn import datasets
 
+from sklearn.feature_extraction.text import TfidfVectorizer
+
 # load dataset
-dataframe = pandas.read_csv("iris.csv")
-dataset = dataframe.values
-X = dataset[:,0:4].astype(float)
-Y = dataset[:,4]
+full_training_dataset = pd.read_csv("~/Documents/SeniorProject/data/stance/coding/auto_trainset_tok.csv")
 
-# encode class values as integers
-encoder = LabelEncoder()
-encoder.fit(Y)
-encoded_Y = encoder.transform(Y)
+full_training_dataset.stance = pd.Categorical(full_training_dataset.stance, categories=["for", "against", "neutral"], ordered=True)
+full_training_dataset['code'] = full_training_dataset.stance.cat.codes
 
-# convert integers to dummy variables (i.e. one hot encoded)
-dummy_y = np_utils.to_categorical(encoded_Y)
+training_data = full_training_dataset['tweet_t']
+training_labels = full_training_dataset['code']
 
-def baseline_model():
-	# create model
-	model = Sequential()
-	model.add(Dense(8, input_dim=4, activation='relu'))
-	model.add(Dense(3, activation='softmax'))
-	# Compile model
-	model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-	return model
+full_testing_dataset = pd.read_csv("~/Documents/SeniorProject/data/stance/coding/gold_20180514_majority_fixed_tok.csv")
 
-estimator = KerasClassifier(build_fn=baseline_model, epochs=200, batch_size=5, verbose=0)
+full_testing_dataset.stance = pd.Categorical(full_testing_dataset.stance, categories=["for", "against", "neutral"], ordered=True)
+full_testing_dataset['code'] = full_testing_dataset.stance.cat.codes
 
-kfold = KFold(n_splits=10, shuffle=True)
+testing_data = full_testing_dataset['tweet_t']
+testing_labels = full_testing_dataset['code']
 
-results = cross_val_score(estimator, X, dummy_y, cv=kfold)
-print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+testing_labels = pd.Categorical(testing_labels)
+
+# Set the vectorizer to transform the data into inputs for classifiers
+vectorizer = TfidfVectorizer(ngram_range=(1,3), analyzer='char', use_idf=False)
+x_train = vectorizer.fit_transform(training_data)
+x_test = vectorizer.transform(testing_data)
+
+# create model
+model = Sequential()
+model.add(Dense(10, input_dim=12698, activation='relu'))
+model.add(Dense(8, activation='tanh'))
+model.add(Dense(6, activation='tanh'))
+model.add(Dense(3, activation='softmax'))
+# Compile model
+model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+model.fit(x_train, training_labels, epochs=15, batch_size=128)
+
+loss_and_metrics = model.evaluate(x_test, testing_labels, batch_size=128)
+
+print(model.metrics_names)
+print(loss_and_metrics)
