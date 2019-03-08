@@ -11,5 +11,8 @@ singularity build INSERT_CONTAINER_NAME.simg shub://brentritzema/senior-project:
 ```
 sbatch run_classifier_runner_repeated.script root/location/of/slo-classifiers/repo path/to/container.simg
 ```
+6. The output file will be found at /storage/sloclassifiers/data/svm-results/results2019.csv and a results.png will be saved to the user's home directory.
+
+To change where the output file goes, modify run_classifier_runner_repeated.script the last parameter of the srun.
 To change the number of runs (currently set at 25 per classifier) go into classifier_runner_repeated.sh	and at the bottom change the number after classifier_runner to the desired number of runs.
 To change the number of nodes/cores/memory to use on Borg, look at https://borg.calvin.edu/resources-slurm.html under Job Submission. The parameters are currently set in run_classifier_runner_repeated.script
