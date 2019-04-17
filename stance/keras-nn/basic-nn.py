@@ -60,8 +60,8 @@ def main(trainset=None, testset=None, output=None):
 
     model = KerasClassifier(build_fn=create_model)
 
-    possibilites = [10, 20, 30, 40, 50, 75, 100, 200, 500, 1000]
-    num_rows = [1, 2, 3, 4, 5]
+    possibilites = [10, 25, 50, 100, 500, 1000]
+    num_rows = [1, 2, 3, 4]
 
     df_model = pd.DataFrame(columns=['network_structure', 'loss', 'acc', 'f1'])
 
