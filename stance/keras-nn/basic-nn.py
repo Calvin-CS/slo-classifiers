@@ -18,10 +18,10 @@ from fire import Fire
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-def create_model(optimizer='adam', network_structure=[10, 10]):
+def create_model(optimizer='adam', network_structure=[10, 10], input_dim=18829):
     model = Sequential()
 
-    model.add(Dense(network_structure[0], input_dim=18830, activation='relu'))
+    model.add(Dense(network_structure[0], input_dim=input_dim, activation='relu'))
     for i in range(1, len(network_structure)):
         model.add(Dense(network_structure[i], activation='relu'))
     model.add(Dense(3, activation='softmax'))
@@ -69,7 +69,7 @@ def main(trainset=None, testset=None, output=None):
 
     for n in range(0, len(num_rows)):
         for i in list(itertools.permutations(possibilites, num_rows[n])):
-            model = create_model(network_structure=i)
+            model = create_model(network_structure=i, input_dim=x_train.shape[1])
 
             model.fit(x_train, training_labels, epochs=5, batch_size=128)
 
