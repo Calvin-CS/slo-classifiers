@@ -1,20 +1,15 @@
-import numpy as np
-import pandas as pd
+# Usage: You can run this by passing in all the necessary parameters, however, it is recommended that you
+# explore the /storage/sloclassifiers/grid_search_25x_run.sh file and run it using something like that.
+# If you want to run this stand-alone, then you can run it as follows:
+# python3 basic-nn.py path/to/traindata.csv path/to/testdata.csv desired/path/to/result_file.csv
+
+from fire import Fire
+import itertools
 from keras.models import Sequential
 from keras.layers import Dense
-from keras import backend as K
-from sklearn.model_selection import GridSearchCV
-from keras.wrappers.scikit_learn import KerasClassifier
-from keras.utils import np_utils
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import KFold
-from sklearn.preprocessing import LabelEncoder
-from sklearn.pipeline import Pipeline
-from sklearn import datasets
+import numpy as np
+import pandas as pd
 from sklearn.metrics import f1_score
-import itertools
-from fire import Fire
-
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
@@ -32,13 +27,17 @@ def create_model(optimizer='adam', network_structure=[10, 10], input_dim=18829):
 
 
 def main(trainset=None, testset=None, output=None):
-    # load dataset
+    # load training dataset
     full_training_dataset = pd.read_csv(trainset)
 
+    # Create coding for target labels
     full_training_dataset.stance = pd.Categorical(full_training_dataset.stance, categories=["for", "against", "neutral"], ordered=True)
     full_training_dataset['code'] = full_training_dataset.stance.cat.codes
 
+    # Create a synthetic feature which combines tweet text and user description text
     full_training_dataset['combined_t'] = full_training_dataset['tweet_t'] + ' ' + full_training_dataset['user_description']
+
+    # Grab the relevant feature and target labels
     training_data = full_training_dataset['combined_t']
     training_labels = full_training_dataset['code']
 
@@ -58,9 +57,7 @@ def main(trainset=None, testset=None, output=None):
     x_train = vectorizer.fit_transform(training_data.values.astype('U'))
     x_test = vectorizer.transform(testing_data.values.astype('U'))
 
-    model = KerasClassifier(build_fn=create_model)
-
-    possibilites = [10, 25, 50, 100, 500, 1000]
+    possibilities = [10, 25, 50, 100, 500, 1000]
     num_rows = [1, 2, 3, 4]
 
     df_model = pd.DataFrame(columns=['network_structure', 'loss', 'acc', 'f1'])
@@ -68,7 +65,7 @@ def main(trainset=None, testset=None, output=None):
     index = 0
 
     for n in range(0, len(num_rows)):
-        for i in list(itertools.permutations(possibilites, num_rows[n])):
+        for i in list(itertools.permutations(possibilities, num_rows[n])):
             model = create_model(network_structure=i, input_dim=x_train.shape[1])
 
             model.fit(x_train, training_labels, epochs=5, batch_size=128)
