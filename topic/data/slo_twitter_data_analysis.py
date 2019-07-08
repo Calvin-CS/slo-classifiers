@@ -12,15 +12,10 @@ Notes:
 
 Perpetual work-in-progress.
 
-TODO - use Pandas to drop row 102 and save out as a new CSV file.
-TODO - create a new CSV dataset file after getting "polyglot" functional on Unix/Linux Lab Machines.
-
 Do not "save as" in Microsoft Excel as a utf-8 or any type of encoded CSV comma, delimited file.  Pandas will not be
 able to read it back in as a utf-8 encoded file and this may result in character decryption issues.  If needs to modify
 the dataset, use Pandas and Python code to do so, then export to a new CSV file.  Do NOT use Microsoft Excel to avoid
 potential contamination/corruption of the data.
-
-TODO - IMPORTANT NOTE: Ensure we delete any test file BEFORE creating the new dataset file!!!!!!!!!!!!!!!!!!!!!!!
 
 ###########################################################
 
@@ -83,22 +78,55 @@ def tweets_number_associated_companies(tweet_dataframe):
     """
     # Number of rows in entire dataframe.
     number_rows_total = tweet_dataframe.shape[0]
+    print(f"The # of Tweets in total is {number_rows_total}")
+
+    # Has a company assignment.
+    has_company = pd.DataFrame(tweet_dataframe.loc[tweet_dataframe['company_derived_designation'].notnull()])
+    print(f"The # of Tweets associated with at least one company is {has_company.shape[0]}")
 
     # Select only rows with one associated company. (don't graph company combos)
-    single_company_only_df = tweet_dataframe.loc[tweet_dataframe['multiple_companies_derived_count'] == 1]
-    # single_company_only_df_2 = tweet_dataframe.loc[tweet_dataframe['company_derived_designation'] != "multiple"]
+    single_company_only_df = has_company.loc[
+        (has_company['company_derived_designation'].str.contains("multiple") == False)]
 
     # Number of rows associated with only one company.
     number_rows_one_company = single_company_only_df.shape[0]
 
-    print(f"The # of Tweets associated with multiple companies is {number_rows_total - number_rows_one_company}")
+    print(f"The # of Tweets associated with multiple companies is {has_company.shape[0] - number_rows_one_company}")
     print(f"The # of Tweets associated with one company is {number_rows_one_company}")
+    print(f"The # of Tweets associated with no company is {number_rows_total - has_company.shape[0]}")
 
     percent_single = number_rows_one_company / number_rows_total * 100.0
     percent_multiple = (number_rows_total - number_rows_one_company) / number_rows_total * 100.0
 
     print(f"The percentage of the dataset associated with a single company is {percent_single}%")
     print(f"The percentage of the dataset associated with multiple companies is {percent_multiple}%")
+
+
+################################################################################################################
+
+def mult_company_tweet_statistics(multi_company_tweets_df):
+    """
+    More statistics on multi-company associated Tweets.
+
+    :param multi_company_tweets_df: Multi-company Tweets only.
+    :return:  None.
+    TODO - consider using regex to search for keywords that relate to stock Tweets.
+    """
+    multi_company_tweets_df['#hashtags'] = multi_company_tweets_df['tweet_entities_hashtags'].apply(
+        lambda x: len(x) if x is not None and not isinstance(x, float) else 0)
+    print(f"The # of multi-company associated Tweets is {multi_company_tweets_df.shape[0]}")
+
+    # Determine count of stock symbols.
+    multi_company_tweets_df['#symbols'] = multi_company_tweets_df.text_derived.str.findall(r"\$\w+").apply(len)
+
+    # Tweets with over 2 company assignments and possessing stock symbols are assumed to be stock Tweets.
+    assumed_stock_tweets = multi_company_tweets_df.loc[
+        (multi_company_tweets_df["multiple_companies_derived_count"] > 2) & (multi_company_tweets_df['#symbols'] > 0)]
+    print(f"The # of multi-company associated Tweets assumed to be stock Tweets is {assumed_stock_tweets.shape[0]}")
+    print(f"The percentage of multi-company associated Tweets assumed to be stock Tweets is "
+          f"{assumed_stock_tweets.shape[0] / multi_company_tweets_df.shape[0] * 100}%")
+    print(f"Note: This is based on the conditions that the # of associated companies is greater than 2 and "
+          f"there are stock symbols found in the Tweet.")
 
 
 ################################################################################################################
@@ -154,6 +182,37 @@ def tweet_count_by_timedate_time_series(tweet_dataframe):
 
 
 ################################################################################################################
+
+def time_series_statistics_2(tweet_dataframe):
+    """
+    Function computes time series statistics and visualizations on Tweet Creation Time-Date Stamp.
+
+    Resources Used:
+
+    https://stackoverflow.com/questions/29370057/select-dataframe-rows-between-two-dates
+
+    :param tweet_dataframe: the Twitter dataset in a Pandas dataframe.
+    :return: None.
+    """
+    # Isolate Adani associated Tweets.
+    adani_tweets = tweet_dataframe.loc[tweet_dataframe["company_derived_designation"] == "adani"]
+    print(f"The number of Adani Tweets is {adani_tweets.shape[0]}")
+
+    # Convert Tweet creation time to Pandas datetime type.
+    adani_tweets["datetime"] = pd.to_datetime(adani_tweets["tweet_created_at"])
+
+    # Define mask to isolate Adani Tweets created in specified time period.
+    date_mask = (adani_tweets["datetime"] >= '2017-1-1') & (adani_tweets["datetime"] <= '2018-12-31')
+    print(f"The # of Adani Tweets created between 2017-2018 is {adani_tweets.loc[date_mask].shape[0]}")
+    print(f"The percentage of Adani Tweets created between 2017-2018 is "
+          f"{adani_tweets.loc[date_mask].shape[0] / adani_tweets.shape[0] * 100}")
+
+    # Debug.  Confirm results.
+    # print(adani_tweets.loc[date_mask].sample(100))
+
+
+################################################################################################################
+
 
 def retweet_statistics(tweet_dataframe):
     """
@@ -393,35 +452,34 @@ def hashtag_statistics(tweet_dataframe):
     # Select only rows with one associated company. (don't graph company combos)
     # single_company_only_df = tweet_dataframe.loc[tweet_dataframe['multiple_companies_derived_count'] == 1]
 
-    print(f"The Number of Hashtags within each Tweet:")
-    tweet_dataframe['#hashtags'] = tweet_dataframe['tweet_entities_hashtags'].apply(
-        lambda x: len(x) if x is not None and not isinstance(x, float) else 0)
-    # companies = df['company']
-
-    print("Hashtag Count for Tweets by Percentage of All Tweets Associated with a Given Company:")
-    plt.figure()
-    grid = sns.FacetGrid(
-        tweet_dataframe[['#hashtags', 'company_derived_designation']], col='company_derived_designation', col_wrap=6,
-        ylim=(0, 1), xlim=(-1, 10))
-    grid.map_dataframe(tweet_util_v2.bar_plot, '#hashtags')
-    grid.set_titles('{col_name}')
-    grid.set_xlabels("# of Hashtags").set_ylabels("Percentage of All Tweets")
-    plt.show()
-
-    has_hashtag = tweet_dataframe['tweet_entities_hashtags'].count()
-    print(f"The number of Tweets with hashtags is {has_hashtag}")
-    print(f"The percentage of Tweets with hashtags is {has_hashtag / tweet_dataframe.shape[0] * 100.0}")
+    # print(f"The Number of Hashtags within each Tweet:")
+    # tweet_dataframe['#hashtags'] = tweet_dataframe['tweet_entities_hashtags'].apply(
+    #     lambda x: len(x) if x is not None and not isinstance(x, float) else 0)
+    # # companies = df['company']
+    #
+    # print("Hashtag Count for Tweets by Percentage of All Tweets Associated with a Given Company:")
+    # plt.figure()
+    # grid = sns.FacetGrid(
+    #     tweet_dataframe[['#hashtags', 'company_derived_designation']], col='company_derived_designation', col_wrap=6,
+    #     ylim=(0, 1), xlim=(-1, 10))
+    # grid.map_dataframe(tweet_util_v2.bar_plot, '#hashtags')
+    # grid.set_titles('{col_name}')
+    # grid.set_xlabels("# of Hashtags").set_ylabels("Percentage of All Tweets")
+    # plt.show()
+    #
+    # has_hashtag = tweet_dataframe['tweet_entities_hashtags'].count()
+    # print(f"The number of Tweets with hashtags is {has_hashtag}")
+    # print(f"The percentage of Tweets with hashtags is {has_hashtag / tweet_dataframe.shape[0] * 100.0}")
 
     ############################################################
-    print(f"Data type of tweet hashtags attribute is: {tweet_dataframe['tweet_entities_hashtags'].dtype}")
 
-    print("Appearance Count of Most Popular Hashtags:")
-    tweet_dataframe[['company_derived_designation', 'tweet_entities_hashtags']] \
-        .groupby('company_derived_designation') \
-        .apply(lambda x: pd.Series([hashtag
-                                    for hashtags in x['tweet_entities_hashtags'] if hashtags is not None
-                                    for hashtag in hashtags])
-               .value_counts(normalize=False).head())
+    # print("Appearance Count of Most Popular Hashtags:")
+    # tweet_dataframe[['company_derived_designation', 'tweet_entities_hashtags']] \
+    #     .groupby('company_derived_designation') \
+    #     .apply(lambda x: pd.Series([hashtag
+    #                                 for hashtags in x['tweet_entities_hashtags'] if hashtags is not None
+    #                                 for hashtag in hashtags.split(",")])
+    #            .value_counts(normalize=False).head())
 
     # print("Appearance Count of Most Popular Hashtags (all characters to lower-case):")
     # tweet_dataframe[['company_derived_designation', 'tweet_entities_hashtags']] \
@@ -438,6 +496,30 @@ def hashtag_statistics(tweet_dataframe):
     time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
     log.debug(f"The time taken to visualize the statistics is {time_elapsed_seconds} seconds, "
               f"{time_elapsed_minutes} minutes, {time_elapsed_hours} hours")
+
+
+def hashtag_statistics_2(tweet_dataframe):
+    """
+    More hashtag related statistics and visualizations.
+
+    :param tweet_dataframe: the Twitter dataset in a dataframe.
+    :return: None.
+    """
+    adani_tweets = tweet_dataframe.loc[tweet_dataframe["company_derived_designation"] == "adani"]
+    print(f"The number of Adani Tweets is {adani_tweets.shape[0]}")
+
+    adani_tweets["#hashtags_adani"] = adani_tweets['tweet_entities_hashtags'].apply(
+        lambda x: len(x) if x is not None and not isinstance(x, float) else 0)
+
+    adani_tweets_has_hashtags = adani_tweets.loc[adani_tweets["#hashtags_adani"] > 0]
+    print(f"The number of Adani Tweets with hashtags is {adani_tweets_has_hashtags.shape[0]}")
+    print(f"The number of Adani Tweets without hashtags is "
+          f"{adani_tweets.shape[0] - adani_tweets_has_hashtags.shape[0]}")
+
+    print(f"Percentage Adani Tweets with hashtags: "
+          f"{adani_tweets_has_hashtags.shape[0] / adani_tweets.shape[0] * 100}")
+    print(f"Percentage Adani Tweets without hashtags: "
+          f"{(1 - adani_tweets_has_hashtags.shape[0] / adani_tweets.shape[0]) * 100}")
 
 
 ################################################################################################################
@@ -500,14 +582,16 @@ def mentions_statistics(tweet_dataframe):
     #######################################################
 
     # FIXME - this last part is functioning incorrectly.  Adjust lambda function.
+
     print(f"Mention Counts for Top (Most) Mentioned Users by Company they are Associated With")
     print(f"Top (highest) Mentions Count for a Given Company by the ID of the User that has been Mentioned")
     print(
         tweet_dataframe[['company_derived_designation', 'tweet_entities_user_mentions_id']].groupby(
             'company_derived_designation').apply(
             lambda x: pd.Series([mention
-                                 for mentions in x['tweet_entities_user_mentions_id'] if mentions is not None
-                                 for mention in mentions]).value_counts(normalize=False).head()))
+                                 for mentions in x['tweet_entities_user_mentions_id'] if
+                                 mentions is not None
+                                 for mention in mentions]).value_counts(normalize=True).head()))
 
     end_time = time.time()
     time_elapsed_seconds = end_time - start_time
@@ -764,8 +848,8 @@ def tweet_language(tweet_dataframe):
     :param tweet_dataframe: the Twitter dataset in a dataframe.
     :return: None.
     """
-    english = tweet_dataframe.loc[tweet_dataframe["spaCy_language_detect"] == "en"]
-    non_english = tweet_dataframe.loc[tweet_dataframe["spaCy_language_detect"] != "en"]
+    english = tweet_dataframe.loc[tweet_dataframe["spaCy_language_detect_all_tweets"] == "en"]
+    non_english = tweet_dataframe.loc[tweet_dataframe["spaCy_language_detect_all_tweets"] != "en"]
 
     print(f"# of English Tweets as determined by spaCy: {english.shape[0]}")
     print(f"# of non-English Tweets as determined by spaCy: {non_english.shape[0]}")
@@ -832,7 +916,7 @@ if __name__ == '__main__':
     # Import CSV dataset and convert to dataframe.
     tweet_csv_dataframe = tweet_util_v2.import_dataset(
         "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-        "twitter-dataset-6-22-19-test.csv",
+        "twitter-dataset-6-27-19.csv",
         "csv", False)
 
     # # Drop the extra header.
@@ -902,7 +986,7 @@ if __name__ == '__main__':
     # tweet_character_counts(tweet_csv_dataframe)
     #
     # # Hashtag Statistics.
-    hashtag_statistics(tweet_csv_dataframe)
+    # hashtag_statistics(tweet_csv_dataframe)
     #
     # # Mentions Statistics.
     # mentions_statistics(tweet_csv_dataframe)
@@ -927,6 +1011,9 @@ if __name__ == '__main__':
 
     # Language statistics.
     # tweet_language(tweet_csv_dataframe)
+
+    # hashtag_statistics_2(tweet_csv_dataframe)
+    # time_series_statistics_2(tweet_csv_dataframe)
 
     ##############################################################################################
 
