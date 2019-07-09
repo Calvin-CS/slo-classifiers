@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="15a3f3a2-c024-4bc3-b6a4-9ef365c4db84" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/dataset_processor_adapted.py" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/dataset_processor_adapted.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-language-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-language-statistics.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,34 +13,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/topic/data/dataset_processor_adapted.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="928">
-              <caret line="141" lean-forward="true" selection-start-line="141" selection-end-line="141" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="618">
-              <caret line="219" lean-forward="true" selection-start-line="219" selection-end-line="219" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="14212">
-              <caret line="847" lean-forward="true" selection-start-line="847" selection-end-line="847" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb">
           <provider selected="true" editor-type-id="jupyter-editor" />
         </entry>
@@ -259,18 +228,17 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="30366000" />
+    <option name="totallyTimeSpent" value="31019000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="21" y="591" width="1936" height="1526" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49250534" visible="true" weight="0.25053304" />
-      <window_info active="true" id="Structure" order="1" sideWeight="0.5074946" side_tool="true" visible="true" weight="0.25053304" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49185947" visible="true" weight="0.2531983" />
+      <window_info id="Structure" order="1" sideWeight="0.5081405" side_tool="true" visible="true" weight="0.2531983" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32950467" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32950467" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -281,7 +249,7 @@
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32961223" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32961223" />
-      <window_info anchor="bottom" id="Jupyter" order="13" weight="0.16223978" />
+      <window_info active="true" anchor="bottom" id="Jupyter" order="13" visible="true" weight="0.16223978" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -314,29 +282,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/topic/data/dataset_processor_adapted.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="928">
-          <caret line="141" lean-forward="true" selection-start-line="141" selection-end-line="141" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb">
-      <provider selected="true" editor-type-id="jupyter-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="14212">
-          <caret line="847" lean-forward="true" selection-start-line="847" selection-end-line="847" />
+        <state relative-caret-position="1311">
+          <caret line="847" selection-start-line="847" selection-end-line="847" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="618">
-          <caret line="219" lean-forward="true" selection-start-line="219" selection-end-line="219" />
+        <state relative-caret-position="533">
+          <caret line="214" column="32" lean-forward="true" selection-start-line="214" selection-start-column="32" selection-end-line="214" selection-end-column="32" />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/topic/data/dataset_processor_adapted.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="141" selection-start-line="141" selection-end-line="141" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb">
+      <provider selected="true" editor-type-id="jupyter-editor" />
     </entry>
   </component>
 </project>
