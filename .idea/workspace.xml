@@ -2,12 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="15a3f3a2-c024-4bc3-b6a4-9ef365c4db84" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/slo-classifiers-repo.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/slo-classifiers-repo.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/dataset_processor_adapted.py" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/dataset_processor_adapted.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-language-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-language-statistics.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,29 +20,26 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/topic/data/dataset_processor_adapted.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="642">
-              <caret line="515" column="7" lean-forward="true" selection-start-line="515" selection-start-column="7" selection-end-line="515" selection-end-column="7" />
-              <folding>
-                <element signature="e#967#976#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="626">
-              <caret line="797" column="23" lean-forward="true" selection-start-line="797" selection-start-column="23" selection-end-line="797" selection-end-column="23" />
+            <state relative-caret-position="928">
+              <caret line="141" lean-forward="true" selection-start-line="141" selection-end-line="141" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="618">
+              <caret line="219" lean-forward="true" selection-start-line="219" selection-end-line="219" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="305">
-              <caret line="851" column="86" selection-start-line="851" selection-start-column="86" selection-end-line="851" selection-end-column="86" />
+            <state relative-caret-position="14212">
+              <caret line="847" lean-forward="true" selection-start-line="847" selection-end-line="847" />
             </state>
           </provider>
         </entry>
@@ -93,7 +90,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -134,6 +130,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -163,7 +160,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.slo_twitter_data_analysis (1)">
+  <component name="RunManager" selected="Python.slo_twitter_data_analysis (2)">
     <configuration name="slo_twitter_data_analysis (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="slo-classifiers-repo" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -178,6 +175,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="D:\Dropbox\slo-classifiers-repo\topic\data\slo_twitter_data_analysis.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="slo_twitter_data_analysis (2)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="slo-classifiers-repo" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/topic/data" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -210,6 +229,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.slo_twitter_data_analysis (2)" />
         <item itemvalue="Python.slo_twitter_data_analysis (1)" />
         <item itemvalue="Python.slo_twitter_data_analysis" />
       </list>
@@ -234,22 +254,23 @@
       <workItem from="1562589737859" duration="118000" />
       <workItem from="1562591808239" duration="1620000" />
       <workItem from="1562623034319" duration="3209000" />
+      <workItem from="1562686493609" duration="1358000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28221000" />
+    <option name="totallyTimeSpent" value="30366000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="21" y="591" width="1936" height="1526" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49357328" visible="true" weight="0.24786781" />
-      <window_info active="true" id="Structure" order="1" sideWeight="0.50642675" side_tool="true" visible="true" weight="0.24786781" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49250534" visible="true" weight="0.25053304" />
+      <window_info active="true" id="Structure" order="1" sideWeight="0.5074946" side_tool="true" visible="true" weight="0.25053304" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32961223" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32950467" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -260,7 +281,7 @@
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32961223" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32961223" />
-      <window_info anchor="bottom" id="Jupyter" order="13" visible="true" weight="0.16223978" />
+      <window_info anchor="bottom" id="Jupyter" order="13" weight="0.16223978" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -271,18 +292,8 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py</url>
-          <line>198</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/slo_classifiers_repo$slo_twitter_data_analysis__2_.coverage" NAME="slo_twitter_data_analysis (2) Coverage Results" MODIFIED="1562687266650" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/topic/data" />
     <SUITE FILE_PATH="coverage/slo_classifiers_repo$slo_twitter_data_analysis__1_.coverage" NAME="slo_twitter_data_analysis (1) Coverage Results" MODIFIED="1562445903231" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/topic/data/notebooks" />
     <SUITE FILE_PATH="coverage/slo_classifiers_repo$slo_twitter_data_analysis.coverage" NAME="slo_twitter_data_analysis Coverage Results" MODIFIED="1562431475161" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/topic/data" />
   </component>
@@ -305,28 +316,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/topic/data/dataset_processor_adapted.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="642">
-          <caret line="515" column="7" lean-forward="true" selection-start-line="515" selection-start-column="7" selection-end-line="515" selection-end-column="7" />
-          <folding>
-            <element signature="e#967#976#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="928">
+          <caret line="141" lean-forward="true" selection-start-line="141" selection-end-line="141" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb">
       <provider selected="true" editor-type-id="jupyter-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py">
+    <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="626">
-          <caret line="797" column="23" lean-forward="true" selection-start-line="797" selection-start-column="23" selection-end-line="797" selection-end-column="23" />
+        <state relative-caret-position="14212">
+          <caret line="847" lean-forward="true" selection-start-line="847" selection-end-line="847" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py">
+    <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="305">
-          <caret line="851" column="86" selection-start-line="851" selection-start-column="86" selection-end-line="851" selection-end-column="86" />
+        <state relative-caret-position="618">
+          <caret line="219" lean-forward="true" selection-start-line="219" selection-end-line="219" />
         </state>
       </provider>
     </entry>

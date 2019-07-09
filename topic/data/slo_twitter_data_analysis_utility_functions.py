@@ -210,7 +210,7 @@ def import_dataset(input_file_path, file_type, show_df_info):
     """
     if file_type == "csv":
         # Read in the CSV file.
-        tweet_dataset = pd.read_csv(f"{input_file_path}", sep=",", encoding="iso-8859-1")
+        tweet_dataset = pd.read_csv(f"{input_file_path}", sep=",", encoding="utf-8")
     elif file_type == "json":
         # Read in the JSON file.
         tweet_dataset = pd.read_json(f"{input_file_path}", orient='records', lines=True)
@@ -774,7 +774,7 @@ def determine_multiple_companies_count_fixed(tweet_dataframe):
         Note: we convert derived_series to a series to avoid Pandas warning.
         :param row: example in the dataset we are operating on.
         :return:  the modified example.
-        TODO - check we have fixed our logic error!
+        TODO - check we have fixed our logic error! (we haven't - work on this)
         """
         global counter
         counter += 1
@@ -786,10 +786,10 @@ def determine_multiple_companies_count_fixed(tweet_dataframe):
         print(f"The derived string: {derived_string}")
         if derived_string.count('|') > 0:
             row["multiple_companies_derived_count"] = derived_string.count('|') + 1
-        elif derived_string != "Series([], )":
-            row["multiple_companies_derived_count"] = 1
-        else:
+        elif "none" in derived_string:
             row["multiple_companies_derived_count"] = 0
+        else:
+            row["multiple_companies_derived_count"] = 1
         return row["multiple_companies_derived_count"]
 
     dataframe = pd.DataFrame(tweet_dataframe)
