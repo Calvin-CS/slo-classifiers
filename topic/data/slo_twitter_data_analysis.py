@@ -452,24 +452,24 @@ def hashtag_statistics(tweet_dataframe):
     # Select only rows with one associated company. (don't graph company combos)
     # single_company_only_df = tweet_dataframe.loc[tweet_dataframe['multiple_companies_derived_count'] == 1]
 
-    # print(f"The Number of Hashtags within each Tweet:")
-    # tweet_dataframe['#hashtags'] = tweet_dataframe['tweet_entities_hashtags'].apply(
-    #     lambda x: len(x) if x is not None and not isinstance(x, float) else 0)
-    # # companies = df['company']
-    #
-    # print("Hashtag Count for Tweets by Percentage of All Tweets Associated with a Given Company:")
-    # plt.figure()
-    # grid = sns.FacetGrid(
-    #     tweet_dataframe[['#hashtags', 'company_derived_designation']], col='company_derived_designation', col_wrap=6,
-    #     ylim=(0, 1), xlim=(-1, 10))
-    # grid.map_dataframe(tweet_util_v2.bar_plot, '#hashtags')
-    # grid.set_titles('{col_name}')
-    # grid.set_xlabels("# of Hashtags").set_ylabels("Percentage of All Tweets")
-    # plt.show()
-    #
-    # has_hashtag = tweet_dataframe['tweet_entities_hashtags'].count()
-    # print(f"The number of Tweets with hashtags is {has_hashtag}")
-    # print(f"The percentage of Tweets with hashtags is {has_hashtag / tweet_dataframe.shape[0] * 100.0}")
+    print(f"The Number of Hashtags within each Tweet:")
+    tweet_dataframe['#hashtags'] = tweet_dataframe['tweet_entities_hashtags'].apply(
+        lambda x: len(x) if x is not None and not isinstance(x, float) else 0)
+    # companies = df['company']
+
+    print("Hashtag Count for Tweets by Percentage of All Tweets Associated with a Given Company:")
+    plt.figure()
+    grid = sns.FacetGrid(
+        tweet_dataframe[['#hashtags', 'company_derived_designation']], col='company_derived_designation', col_wrap=6,
+        ylim=(0, 1), xlim=(-1, 10))
+    grid.map_dataframe(tweet_util_v2.bar_plot, '#hashtags')
+    grid.set_titles('{col_name}')
+    grid.set_xlabels("# of Hashtags").set_ylabels("Percentage of All Tweets")
+    plt.show()
+
+    has_hashtag = tweet_dataframe['tweet_entities_hashtags'].count()
+    print(f"The number of Tweets with hashtags is {has_hashtag}")
+    print(f"The percentage of Tweets with hashtags is {has_hashtag / tweet_dataframe.shape[0] * 100.0}")
 
     ############################################################
 
@@ -488,6 +488,7 @@ def hashtag_statistics(tweet_dataframe):
     #                                 for hashtags in x['tweet_entities_hashtags'] if hashtags is not None
     #                                 for hashtag in hashtags])
     #            .value_counts(normalize=False).head())
+
     ############################################################
 
     end_time = time.time()
@@ -848,14 +849,54 @@ def tweet_language(tweet_dataframe):
     :param tweet_dataframe: the Twitter dataset in a dataframe.
     :return: None.
     """
-    english = tweet_dataframe.loc[tweet_dataframe["spaCy_language_detect_all_tweets"] == "en"]
-    non_english = tweet_dataframe.loc[tweet_dataframe["spaCy_language_detect_all_tweets"] != "en"]
+    english_spacy = tweet_dataframe.loc[tweet_dataframe["spaCy_language_detect_all_tweets"] == "en"]
+    non_english_spacy = tweet_dataframe.loc[tweet_dataframe["spaCy_language_detect_all_tweets"] != "en"]
 
-    print(f"# of English Tweets as determined by spaCy: {english.shape[0]}")
-    print(f"# of non-English Tweets as determined by spaCy: {non_english.shape[0]}")
+    english_twitter = tweet_dataframe.loc[tweet_dataframe["tweet_lang"] == "en"]
+    non_english_twitter = tweet_dataframe.loc[tweet_dataframe["tweet_lang"] != "en"]
 
-    print(f"Percentage of English Tweets in dataset is {english.shape[0] / tweet_dataframe.shape[0] * 100.0}")
-    print(f"Percentage of non-English Tweets in dataset is {non_english.shape[0] / tweet_dataframe.shape[0] * 100.0}")
+    english_spacy_and_twitter = tweet_dataframe.loc[(tweet_dataframe["spaCy_language_detect_all_tweets"] == "en") &
+                                                    (tweet_dataframe["tweet_lang"] == "en")]
+    non_english_spacy_and_twitter = tweet_dataframe.loc[(tweet_dataframe["spaCy_language_detect_all_tweets"] != "en") &
+                                                        (tweet_dataframe["tweet_lang"] != "en")]
+
+    english_spacy_or_twitter = tweet_dataframe.loc[(tweet_dataframe["spaCy_language_detect_all_tweets"] == "en") |
+                                                   (tweet_dataframe["tweet_lang"] == "en")]
+    non_english_spacy_or_twitter = tweet_dataframe.loc[(tweet_dataframe["spaCy_language_detect_all_tweets"] != "en") |
+                                                       (tweet_dataframe["tweet_lang"] != "en")]
+
+    print(f"# of English Tweets as determined by spaCy: {english_spacy.shape[0]}")
+    print(f"# of non-English Tweets as determined by spaCy: {non_english_spacy.shape[0]}\n")
+
+    print(f"# of English Tweets as determined by Twitter API: {english_twitter.shape[0]}")
+    print(f"# of non-English Tweets as determined by Twitter API: {non_english_twitter.shape[0]}\n")
+
+    print(f"# of English Tweets as agreed upon by spaCy AND Twitter API: {english_spacy_and_twitter.shape[0]}")
+    print(
+        f"# of non-English Tweets as agreed upon by spaCy AND Twitter API: {non_english_spacy_and_twitter.shape[0]}\n")
+
+    print(f"# of English Tweets as agreed upon by spaCy OR Twitter API: {english_spacy_or_twitter.shape[0]}")
+    print(f"# of non-English Tweets as agreed upon by spaCy OR Twitter API: {non_english_spacy_or_twitter.shape[0]}\n")
+
+    print(f"Percentage of English Tweets in dataset as determined by spaCy is "
+          f"{english_spacy.shape[0] / tweet_dataframe.shape[0] * 100.0}")
+    print(f"Percentage of non-English Tweets in dataset as determined by spaCy is "
+          f"{non_english_spacy.shape[0] / tweet_dataframe.shape[0] * 100.0}\n")
+
+    print(f"Percentage of English Tweets in dataset as determined by Twitter API is "
+          f"{english_twitter.shape[0] / tweet_dataframe.shape[0] * 100.0}")
+    print(f"Percentage of non-English Tweets in dataset as determined by Twitter API is "
+          f"{non_english_twitter.shape[0] / tweet_dataframe.shape[0] * 100.0}\n")
+
+    print(f"Percentage of English Tweets in dataset as agreed upon by spaCy AND Twitter API is "
+          f"{english_spacy_and_twitter.shape[0] / tweet_dataframe.shape[0] * 100.0}")
+    print(f"Percentage of non-English Tweets in dataset as agreed upon by spaCy AND Twitter API is "
+          f"{non_english_spacy_and_twitter.shape[0] / tweet_dataframe.shape[0] * 100.0}\n")
+
+    print(f"Percentage of English Tweets in dataset as agreed upon by spaCy OR Twitter API is "
+          f"{english_spacy_or_twitter.shape[0] / tweet_dataframe.shape[0] * 100.0}")
+    print(f"Percentage of non-English Tweets in dataset as agreed upon by spaCy OR Twitter API is "
+          f"{non_english_spacy_or_twitter.shape[0] / tweet_dataframe.shape[0] * 100.0}\n")
 
 
 ################################################################################################################
@@ -866,7 +907,6 @@ def tweet_associations(tweet_dataframe):
 
     :param tweet_dataframe: the Twitter dataset in a dataframe.
     :return: None.
-    # TODO - refactor into a List of companies and a for loop through the entire list.
     """
     total_tweets = tweet_dataframe.shape[0]
     adani = tweet_dataframe.loc[tweet_dataframe["company_derived_designation"] == "adani"]

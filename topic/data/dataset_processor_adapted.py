@@ -14,7 +14,6 @@ Ensure there is at least ONE existing non-null value for any attribute you wish 
 otherwise you will encounter a error along the lines of: KeyError: 'quoted_status_id'
 
 # TODO - parallelize the data chunks to reduce computational time, if possible.
-# TODO - clean up this file now that we have added Linux compatability support (or split into a windows version)
 """
 
 #########################################################################################################
@@ -182,16 +181,16 @@ def create_dataset(json_data_filepath, dataset_filepath, drop_irrelevant_tweets)
         # df_chunk['polyglot_lang_detect_all_tweets'] = df_chunk.apply(update_language_all_tweets(), axis=1)
 
         # Determine the Tweet text's language using spaCy natural language processing library. (note: slow)
-        df_chunk["spaCy_language_detect_all_tweets"] = df_chunk.apply(
-            lambda x: what_language(x) if (pd.notnull(x["tweet_full_text"])) else "none", axis=1)
+        # df_chunk["spaCy_language_detect_all_tweets"] = df_chunk.apply(
+        #     lambda x: what_language(x) if (pd.notnull(x["tweet_full_text"])) else "none", axis=1)
 
         # Remove irrelevant tweets (non-English or unknown-company).
-        # TODO - change to spacy instead of polyglot.
         if drop_irrelevant_tweets:
             df_chunk = df_chunk[
-                ((df_chunk['company'] != '') &
-                 (df_chunk['lang'].str.startswith('en') |
-                  df_chunk['language_polyglot'].str.startswith('en')))
+                ((df_chunk['company_derived'] != 'none') &
+                 (df_chunk['tweet_lang'].str.startswith('en') |
+                  df_chunk['spaCy_language_detect_all_tweets'].str.startswith('en')
+                  ))
             ]
 
         # # Write each chunk to the combined dataset file.
@@ -333,7 +332,6 @@ def compute_flatten_retweeted_status_user_attributes(row):
     Function to extract 'retweeted_status' nested "user" attributes from each example in the dataframe.
     :param row: current example (row) passed in.
     :return: nested attributes as individual columns added to the current example (row).
-    FIXME - non-functional.
     """
     retweeted_status_original_user_field_names = [
         'id', 'name', 'screen_name', 'location', 'description', 'followers_count', 'friends_count',
@@ -501,7 +499,7 @@ def compute_company(row):
     #             "\n\t\t\t\tid: " + str(row['tweet_id']) +
     #             "\n\t\t\t\ttweet: " + row['text_derived'] +
     #             "\n\t\t\t\thashtags: " + row['tweet_entities_hashtags'])
-    return ''
+    return 'none'
 
 
 #########################################################################################################
@@ -512,17 +510,16 @@ def compute_multiple_companies(row):
     Note: we convert derived_series to a series to avoid Pandas warning.
     :param row: example in the dataset we are operating on.
     :return:  the modified example.
-    TODO - check we have fixed our logic error!
     """
     derived_series = pd.read_json(json.dumps(row['company_derived']), typ='series')
     derived_series = pd.Series(derived_series)
     derived_string = derived_series.to_string()
     if derived_string.count('|') > 0:
         row["multiple_companies_derived_count"] = derived_string.count('|') + 1
-    elif derived_string != "Series([], )":
-        row["multiple_companies_derived_count"] = 1
-    else:
+    elif "none" in derived_string:
         row["multiple_companies_derived_count"] = 0
+    else:
+        row["multiple_companies_derived_count"] = 1
     return row["multiple_companies_derived_count"]
 
 
@@ -678,8 +675,6 @@ def main(json_data_filepath='dataset.json',
             (default: True)
         logging_level -- the level of logging to use
             (default: logging.INFO)
-
-    TODO - we are not currently using the "Fire" library for CLI operation.
     """
     log.basicConfig(level=logging_level, format='%(message)s')
     # log.info(f'building the dataset')
@@ -736,9 +731,14 @@ if __name__ == '__main__':
     start_time = time.time()
 
     # Absolute file path.
-    create_dataset("/home/jj47/Summer-Research-2019-master/json/dataset_slo_20100101-20180510.json",
-                   "/home/jj47/Summer-Research-2019-master/twitter-dataset-6-27-19",
-                   False)
+    # create_dataset("/home/jj47/Summer-Research-2019-master/json/dataset_slo_20100101-20180510.json",
+    #                "/home/jj47/Summer-Research-2019-master/twitter-dataset-7-8-19-chunk4",
+    #                False)
+
+    # create_dataset("D:/Dropbox/summer-research-2019/jupyter-notebooks/dataset-chunks/raw-twitter-dataset-chunk-4.json",
+    #                "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-7-8-19-chunk4",
+    #                False)
+
     end_time = time.time()
 
     time_elapsed_seconds = (end_time - start_time)
