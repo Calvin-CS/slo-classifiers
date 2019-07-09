@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="15a3f3a2-c024-4bc3-b6a4-9ef365c4db84" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/slo-classifiers-repo.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/slo-classifiers-repo.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-language-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-language-statistics.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/topic/readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,8 +20,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/topic/data/dataset_processor_adapted.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7304">
-              <caret line="299" column="4" selection-start-line="299" selection-start-column="4" selection-end-line="299" selection-end-column="4" />
+            <state relative-caret-position="642">
+              <caret line="515" column="7" lean-forward="true" selection-start-line="515" selection-start-column="7" selection-end-line="515" selection-end-column="7" />
               <folding>
                 <element signature="e#967#976#0" expanded="true" />
               </folding>
@@ -28,8 +32,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-5689">
-              <caret line="461" column="97" selection-start-line="461" selection-start-column="97" selection-end-line="461" selection-end-column="97" />
+            <state relative-caret-position="626">
+              <caret line="797" column="23" lean-forward="true" selection-start-line="797" selection-start-column="23" selection-end-line="797" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="305">
+              <caret line="851" column="86" selection-start-line="851" selection-start-column="86" selection-end-line="851" selection-end-column="86" />
             </state>
           </provider>
         </entry>
@@ -37,27 +50,6 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb">
           <provider selected="true" editor-type-id="jupyter-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="376">
-              <caret line="279" column="4" selection-start-line="279" selection-start-column="4" selection-end-line="279" selection-end-column="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/topic/readme.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="204">
-                <caret line="12" column="22" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
         </entry>
       </file>
     </leaf>
@@ -73,9 +65,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py" />
         <option value="$PROJECT_DIR$/topic/data/notebooks/slo_twitter_data_analysis.py" />
         <option value="$PROJECT_DIR$/topic/readme.md" />
+        <option value="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py" />
+        <option value="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py" />
       </list>
     </option>
   </component>
@@ -89,11 +82,11 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="21" />
+    <option name="y" value="591" />
     <option name="width" value="1936" />
-    <option name="height" value="1066" />
+    <option name="height" value="1526" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -240,18 +233,19 @@
       <workItem from="1562553662240" duration="26000" />
       <workItem from="1562589737859" duration="118000" />
       <workItem from="1562591808239" duration="1620000" />
+      <workItem from="1562623034319" duration="3209000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="25012000" />
+    <option name="totallyTimeSpent" value="28221000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
+    <frame x="21" y="591" width="1936" height="1526" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49475065" visible="true" weight="0.3022388" />
-      <window_info id="Structure" order="1" sideWeight="0.5052493" side_tool="true" visible="true" weight="0.3022388" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49357328" visible="true" weight="0.24786781" />
+      <window_info active="true" id="Structure" order="1" sideWeight="0.50642675" side_tool="true" visible="true" weight="0.24786781" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -266,7 +260,7 @@
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32961223" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32961223" />
-      <window_info anchor="bottom" id="Jupyter" order="13" visible="true" weight="0.16263737" />
+      <window_info anchor="bottom" id="Jupyter" order="13" visible="true" weight="0.16223978" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -299,10 +293,20 @@
     <entry file="file://$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-retweet-statistics.ipynb">
       <provider selected="true" editor-type-id="jupyter-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/topic/readme.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="204">
+            <caret line="12" column="11" selection-start-line="12" selection-start-column="11" selection-end-line="12" selection-end-column="11" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/topic/data/dataset_processor_adapted.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7304">
-          <caret line="299" column="4" selection-start-line="299" selection-start-column="4" selection-end-line="299" selection-end-column="4" />
+        <state relative-caret-position="642">
+          <caret line="515" column="7" lean-forward="true" selection-start-line="515" selection-start-column="7" selection-end-line="515" selection-end-column="7" />
           <folding>
             <element signature="e#967#976#0" expanded="true" />
           </folding>
@@ -314,25 +318,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-5689">
-          <caret line="461" column="97" selection-start-line="461" selection-start-column="97" selection-end-line="461" selection-end-column="97" />
+        <state relative-caret-position="626">
+          <caret line="797" column="23" lean-forward="true" selection-start-line="797" selection-start-column="23" selection-end-line="797" selection-end-column="23" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="376">
-          <caret line="279" column="4" selection-start-line="279" selection-start-column="4" selection-end-line="279" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/topic/readme.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="204">
-            <caret line="12" column="22" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
-          </first_editor>
-          <second_editor />
+        <state relative-caret-position="305">
+          <caret line="851" column="86" selection-start-line="851" selection-start-column="86" selection-end-line="851" selection-end-column="86" />
         </state>
       </provider>
     </entry>

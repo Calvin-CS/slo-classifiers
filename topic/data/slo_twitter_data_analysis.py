@@ -848,14 +848,40 @@ def tweet_language(tweet_dataframe):
     :param tweet_dataframe: the Twitter dataset in a dataframe.
     :return: None.
     """
-    english = tweet_dataframe.loc[tweet_dataframe["spaCy_language_detect_all_tweets"] == "en"]
-    non_english = tweet_dataframe.loc[tweet_dataframe["spaCy_language_detect_all_tweets"] != "en"]
+    english_spacy = tweet_dataframe.loc[tweet_dataframe["spaCy_language_detect_all_tweets"] == "en"]
+    non_english_spacy = tweet_dataframe.loc[tweet_dataframe["spaCy_language_detect_all_tweets"] != "en"]
 
-    print(f"# of English Tweets as determined by spaCy: {english.shape[0]}")
-    print(f"# of non-English Tweets as determined by spaCy: {non_english.shape[0]}")
+    english_twitter = tweet_dataframe.loc[tweet_dataframe["tweet_lang"] == "en"]
+    non_english_twitter = tweet_dataframe.loc[tweet_dataframe["tweet_lang"] != "en"]
 
-    print(f"Percentage of English Tweets in dataset is {english.shape[0] / tweet_dataframe.shape[0] * 100.0}")
-    print(f"Percentage of non-English Tweets in dataset is {non_english.shape[0] / tweet_dataframe.shape[0] * 100.0}")
+    english_spacy_and_twitter = tweet_dataframe.loc[(tweet_dataframe["spaCy_language_detect_all_tweets"] == "en") &
+                                        (tweet_dataframe["tweet_lang"] == "en")]
+    non_english_spacy_and_twitter = tweet_dataframe.loc[(tweet_dataframe["spaCy_language_detect_all_tweets"] != "en") &
+                                            (tweet_dataframe["tweet_lang"] != "en")]
+
+    print(f"# of English Tweets as determined by spaCy: {english_spacy.shape[0]}")
+    print(f"# of non-English Tweets as determined by spaCy: {non_english_spacy.shape[0]}")
+
+    print(f"# of English Tweets as determined by Twitter API: {english_twitter.shape[0]}")
+    print(f"# of non-English Tweets as determined by Twitter API: {non_english_twitter.shape[0]}")
+
+    print(f"# of English Tweets as agreed upon by spaCy and Twitter API: {english_spacy_and_twitter.shape[0]}")
+    print(f"# of non-English Tweets as agreed upon by spaCy and Twitter API: {non_english_spacy_and_twitter.shape[0]}")
+
+    print(f"Percentage of English Tweets in dataset as determined by spaCy is "
+          f"{english_spacy.shape[0] / tweet_dataframe.shape[0] * 100.0}")
+    print(f"Percentage of non-English Tweets in dataset as determined by spaCy is "
+          f"{non_english_spacy.shape[0] / tweet_dataframe.shape[0] * 100.0}")
+
+    print(f"Percentage of English Tweets in dataset as determined by Twitter API is "
+          f"{english_twitter.shape[0] / tweet_dataframe.shape[0] * 100.0}")
+    print(f"Percentage of non-English Tweets in dataset as determined by Twitter API is "
+          f"{non_english_twitter.shape[0] / tweet_dataframe.shape[0] * 100.0}")
+
+    print(f"Percentage of English Tweets in dataset as agreed upon by spaCy and Twitter API is "
+          f"{english_spacy_and_twitter.shape[0] / tweet_dataframe.shape[0] * 100.0}")
+    print(f"Percentage of non-English Tweets in dataset as agreed upon by spaCy and Twitter API is "
+          f"{non_english_spacy_and_twitter.shape[0] / tweet_dataframe.shape[0] * 100.0}")
 
 
 ################################################################################################################
