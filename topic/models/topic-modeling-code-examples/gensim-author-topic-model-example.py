@@ -27,12 +27,14 @@ def example_1():
     print("Corpus contents:")
     print(f"{corpus}\n")
 
+    print(f"Documents in the corpus: ")
     for document in corpus:
         print(f"{document}")
 
-    print("Dictionary contents:")
+    print("\nDictionary contents:")
     print(f"{common_dictionary}\n")
-    print(f"{common_dictionary.token2id}")
+    print(f"Dictionary contents with word index value:")
+    print(f"{common_dictionary.token2id}\n")
 
     with temporary_file("serialized") as s_path:
         model = AuthorTopicModel(
@@ -44,8 +46,8 @@ def example_1():
 
     # construct vectors for authors
     author_vecs = [model.get_author_topics(author) for author in model.id2author.values()]
-    print(author_vecs)
-
+    print(f"Vectors for authors:")
+    print(f"{author_vecs}\n")
 
 ########################################################################################
 

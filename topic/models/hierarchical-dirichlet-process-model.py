@@ -204,14 +204,6 @@ Main function.  Execute the program.
 if __name__ == '__main__':
     my_start_time = time.time()
     ################################################
-
-    """
-    Perform the Twitter dataset preprocessing.
-    """
-    # lda_util.tweet_dataset_preprocessor(
-    #     "D:/Dropbox/summer-research-2019/datasets/dataset_20100101-20180510_tok_PROCESSED.csv",
-    #     "D:/Dropbox/summer-research-2019/datasets/dataset_20100101-20180510_tok_LDA_PROCESSED2.csv", "tweet_t")
-
     """
     Perform the topic extraction.
     """

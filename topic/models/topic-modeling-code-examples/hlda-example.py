@@ -132,7 +132,7 @@ import sys
 import os
 import time
 
-basedir = 'D:/Dropbox/summer-research-2019/topic-model-examples/'
+basedir = 'D:/Dropbox/summer-research-2019/topic-modeling-code-examples/'
 sys.path.append(os.path.join(basedir))
 
 import pylab as plt

@@ -731,13 +731,14 @@ if __name__ == '__main__':
     start_time = time.time()
 
     # Absolute file path.
-    create_dataset("/home/jj47/Summer-Research-2019-master/json/dataset_slo_20100101-20180510.json",
-                   "/home/jj47/Summer-Research-2019-master/twitter-dataset-7-10-19",
-                   True)
-
-    # create_dataset("D:/Dropbox/summer-research-2019/jupyter-notebooks/dataset-chunks/raw-twitter-dataset-chunk-4.json",
-    #                "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-7-8-19-chunk4",
+    # create_dataset("/home/jj47/Summer-Research-2019-master/json/dataset_slo_20100101-20180510.json",
+    #                "/home/jj47/Summer-Research-2019-master/twitter-dataset-7-14-19-with-irrelevant-tweets-included",
     #                False)
+
+    create_dataset("D:/Dropbox/summer-research-2019/json/dataset_slo_20100101-20180510.json",
+                   "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+                   "twitter-dataset-7-14-19-with-irrelevant-tweets-included",
+                   False)
 
     end_time = time.time()
 

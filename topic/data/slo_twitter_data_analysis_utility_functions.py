@@ -835,10 +835,10 @@ def determine_multiple_companies_count_fixed(tweet_dataframe):
 
 ################################################################################################################
 
-tweet_csv_dataframe = import_dataset(
-    "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-    "twitter-dataset-6-27-19.csv",
-    "csv", False)
+# tweet_csv_dataframe = import_dataset(
+#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+#     "twitter-dataset-6-27-19.csv",
+#     "csv", False)
 
 # tweet_csv_dataframe_2 = import_dataset(
 #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
@@ -851,5 +851,5 @@ tweet_csv_dataframe = import_dataset(
 
 # determine_multiple_companies_count_fixed(tweet_csv_dataframe_2)
 
-export_no_company_tweets(tweet_csv_dataframe)
+# export_no_company_tweets(tweet_csv_dataframe)
 # export_non_english_tweets(tweet_csv_dataframe)

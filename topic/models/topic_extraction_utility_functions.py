@@ -31,19 +31,27 @@ https://radimrehurek.com/gensim/utils.html
 https://www.programcreek.com/python/example/98657/nltk.corpus.stopwords.words
 https://www.geeksforgeeks.org/removing-stop-words-nltk-python/
 
+https://spacy.io/usage/spacy-101
+https://www.datacamp.com/community/blog/spacy-cheatsheet
+https://spacy.io/usage/processing-pipelines#disabling
+https://www.nltk.org/api/nltk.tokenize.html
+
 """
 
 ################################################################################################################
 ################################################################################################################
 
 # Import libraries.
+import html
 import logging as log
 import re
 import string
 import warnings
 import pandas as pd
+import spacy
 import nltk
-from nltk import WordNetLemmatizer
+from nltk import WordNetLemmatizer, word_tokenize
+from nltk.tokenize import TweetTokenizer
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.pipeline import Pipeline
@@ -52,6 +60,7 @@ import slo_twitter_data_analysis_utility_functions as tweet_util_v2
 
 nltk.download('stopwords')
 nltk.download('wordnet')
+nltk.download('punkt')
 
 #############################################################
 
@@ -88,38 +97,48 @@ def preprocess_tweet_text(tweet_text):
 
     :return: the processed text.
     """
-    # Remove "RT" tags.
-    preprocessed_tweet_text = re.sub('^(rt @\w+: )', "", tweet_text)
+    # Check that there is text, otherewise convert to empty string.
+    if type(tweet_text) == float:
+        tweet_text = ""
 
-    # Remove URL's.
-    preprocessed_tweet_text = re.sub("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
-                                     "", preprocessed_tweet_text)
+    # Convert html chars. to unicode chars.
+    tweet_text = html.unescape(tweet_text)
+
+    # Remove "RT" tags.
+    preprocessed_tweet_text = re.sub(r'^(rt @\w+: )', "", tweet_text)
 
     # Remove concatenated URL's.
-    preprocessed_tweet_text = re.sub('(.)http', "", preprocessed_tweet_text)
+    preprocessed_tweet_text = re.sub(r'(.)http', r'\1 http', preprocessed_tweet_text)
+
+    # Handle whitespaces.
+    preprocessed_tweet_text = re.sub(r'\s', " ", preprocessed_tweet_text)
+
+    # Remove URL's.
+    preprocessed_tweet_text = re.sub(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+                                     r"slo_url", preprocessed_tweet_text)
 
     # Remove Tweet mentions.
-    preprocessed_tweet_text = re.sub('@[a-zA-Z_0-9]+', "", preprocessed_tweet_text)
+    preprocessed_tweet_text = re.sub(r'@[a-zA-Z_0-9]+', r"slo_mention", preprocessed_tweet_text)
 
     # Remove Tweet stock symbols.
-    preprocessed_tweet_text = re.sub('$[a-zA-Z]+', "", preprocessed_tweet_text)
+    preprocessed_tweet_text = re.sub(r'$[a-zA-Z]+', r"slo_stock", preprocessed_tweet_text)
 
     # Remove Tweet hashtags.
-    preprocessed_tweet_text = re.sub('#\w+', "", preprocessed_tweet_text)
+    preprocessed_tweet_text = re.sub(r'#\w+', r"slo_hash", preprocessed_tweet_text)
 
     # Remove Tweet cashtags.
     preprocessed_tweet_text = \
-        re.sub('\$(?=\(.*\)|[^()]*$)\(?\d{1,3}(,?\d{3})?(\.\d\d?)?\)?([bmk]| hundred| thousand| million| billion)?',
-               "", preprocessed_tweet_text)
+        re.sub(r'\$(?=\(.*\)|[^()]*$)\(?\d{1,3}(,?\d{3})?(\.\d\d?)?\)?([bmk]| hundred| thousand| million| billion)?',
+               r"slo_cash", preprocessed_tweet_text)
 
     # Remove Tweet year.
-    preprocessed_tweet_text = re.sub('[12][0-9]{3}', "", preprocessed_tweet_text)
+    preprocessed_tweet_text = re.sub(r'[12][0-9]{3}', r"slo_year", preprocessed_tweet_text)
 
     # Remove Tweet time.
-    preprocessed_tweet_text = re.sub('[012]?[0-9]:[0-5][0-9]', "", preprocessed_tweet_text)
+    preprocessed_tweet_text = re.sub(r'[012]?[0-9]:[0-5][0-9]', r"slo_time", preprocessed_tweet_text)
 
     # Remove character elongations.
-    preprocessed_tweet_text = re.sub('(.)\1{2,}', "", preprocessed_tweet_text)
+    preprocessed_tweet_text = re.sub(r'(.)\1{2,}', r'\1\1\1', preprocessed_tweet_text)
 
     # Remove irrelevant words from Tweets.
     delete_list = ["slo_url", "slo_mention", "word_n", "slo_year", "slo_cash", "woodside", "auspol", "adani",
@@ -133,11 +152,26 @@ def preprocess_tweet_text(tweet_text):
                    "co", "amp", "riotinto", "carmichael", "abbot", "bill shorten",
                    "slourl", "slomention", "slohashtag", "sloyear", "slocash"]
 
+    # Do not remove anything.
+    delete_list = []
+
     # Convert series to string.
     tweet_string = str(preprocessed_tweet_text)
 
-    # Split Tweet into individual words.
+    # Split Tweet into individual words using Python (tokenize)
     individual_words = tweet_string.split()
+
+    # Tokenize using nltk.
+    nltk_tweet_tokenizer = TweetTokenizer()
+    # individual_words = nltk_tweet_tokenizer.tokenize(tweet_string)
+    # individual_words = word_tokenize(tweet_string)
+
+    # Tokenize using spacy.
+    nlp = spacy.load('en')
+    nlp.remove_pipe("parser")
+    nlp.remove_pipe("tagger")
+    nlp.remove_pipe("ner")
+    # individual_words = nlp(tweet_string)
 
     # Check to see if a word is irrelevant or not.
     words_relevant = []
@@ -236,7 +270,7 @@ def tweet_dataset_preprocessor(input_file_path, output_file_path, column_name):
     # Pre-process each tweet individually (calls a helper function).
     twitter_dataframe[f"{column_name}_preprocessed"] = twitter_dataframe[f"{column_name}"].apply(preprocess_tweet_text)
 
-    # Post-process each tweet individuall (calls a helper function).
+    # Post-process each tweet individually (calls a helper function).
     twitter_dataframe[f"{column_name}_postprocessed"] = \
         twitter_dataframe[f"{column_name}_preprocessed"].apply(postprocess_tweet_text)
 
@@ -421,17 +455,18 @@ def topic_author_model(tweet_dataframe, debug_boolean):
         #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
         #     "group-by-authors-with-tweet-text", "w", "csv")
 
+    return group_by_author_with_tweet_id
 
 ################################################################################################################
 
-# Import CSV dataset and convert to dataframe.
-tweet_csv_dataframe = tweet_util_v2.import_dataset(
-    "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-    "twitter-dataset-6-27-19-test-subset.csv",
-    "csv", False)
+# # Import CSV dataset and convert to dataframe.
+# tweet_csv_dataframe = tweet_util_v2.import_dataset(
+#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+#     "twitter-dataset-7-10-19-test-subset.csv",
+#     "csv", False)
 
-# Create author-topic model dataframe.
-topic_author_model(tweet_csv_dataframe, False)
+# # Create author-topic model dataframe.
+# topic_author_model(tweet_csv_dataframe, False)
 
 # # Test on the already tokenized dataset from stance detection.
 # tweet_dataset_preprocessor(
@@ -442,6 +477,7 @@ topic_author_model(tweet_csv_dataframe, False)
 
 # # Test on our topic modeling dataset.
 # tweet_dataset_preprocessor(
-#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-6-27-19-test-subset.csv",
-#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-6-27-19-lda-ready-test.csv",
+#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+#     "twitter-dataset-7-10-19-test-subset-100-examples.csv",
+#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-7-10-19-lda-ready-test.csv",
 #     "text_derived")

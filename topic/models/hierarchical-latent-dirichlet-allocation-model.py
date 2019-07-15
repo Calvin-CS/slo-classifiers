@@ -27,7 +27,9 @@ import logging as log
 import warnings
 import time
 import pandas as pd
+import spacy
 import numpy as np
+from wordcloud import WordCloud
 from gensim import corpora
 from sklearn.feature_extraction.text import CountVectorizer
 from matplotlib import pyplot as plt
@@ -66,7 +68,8 @@ log.basicConfig(level=log.INFO)
 
 # Import the dataset.
 tweet_dataset_processed = \
-    pd.read_csv("D:/Dropbox/summer-research-2019/datasets/dataset_20100101-20180510_tok_LDA_PROCESSED.csv", sep=",")
+    pd.read_csv("D:/Dropbox/summer-research-2019/datasets/"
+                "dataset_20100101-20180510_tok_LDA_PROCESSED_shortened.csv", sep=",")
 
 # Reindex and shuffle the data randomly.
 tweet_text_dataframe = tweet_dataset_processed.reindex(
@@ -112,36 +115,91 @@ slo_feature_series = processed_features['Tweet']
 slo_feature_series = pd.Series(slo_feature_series)
 slo_feature_list = slo_feature_series.tolist()
 
-# Convert feature list of sentences to comma-separated dictionary of words.
-words = [[text for text in tweet.split()] for tweet in slo_feature_list]
-log.info(f"\nDictionary of individual words:")
-log.info(f"{words[0]}\n")
-
-corpus = []
-vocab = set()
-vocab.update(words)
-corpus.append(words)
-
-# Attach indices to each word.
-vocab = sorted(list(vocab))
-vocab_index = {}
-for i, w in enumerate(vocab):
-    vocab_index[w] = i
-
+# # Convert feature list of sentences to comma-separated dictionary of words.
+# words = [[text for text in tweet.split()] for tweet in slo_feature_list]
+# log.info(f"\nDictionary of individual words:")
+# log.info(f"{words[0]}\n")
 
 # # Create the Gensim dictionary of words.
 # dictionary = corpora.Dictionary(words)
 # log.info(f"\nGensim dictionary of tokenized words.")
 # log.info(f"{dictionary}\n")
-#
+
 # # Create the Gensim corpus of document term frequencies.
 # corpus = [dictionary.doc2bow(word, allow_update=True) for word in words]
 # log.info(f"\nGensim corpus of document-term frequencies.")
 # log.info(f"{corpus[0:10]}\n")
 
+corpus = []
+dictionary = set()
+nlp = spacy.load('en')
+nlp.remove_pipe("parser")
+nlp.remove_pipe("tagger")
+nlp.remove_pipe("ner")
+
+# Create the corpus of documents and dictionary of words (vocabulary)
+for tweet in slo_feature_list:
+    # Tokenize each Tweet (document) and add to List of documents in the corpus.
+    corpus.append(tweet.split())
+    # Tokenize each Tweet (document) and add individual words to the dictionary of words (vocabulary).
+    dictionary.update(tweet.split())
+
+# Attach indices to each word to represent their position in the dictionary of words (vocabulary).
+dictionary = sorted(list(dictionary))
+vocab_index = {}
+for i, w in enumerate(dictionary):
+    vocab_index[w] = i
+
+print(f"\nThe number of documents: {len(slo_feature_list)}")
+
+print(f"\nThe number of words in the dictionary: {len(dictionary)}")
+print(f"Sample of the words in the dictionary:\n {dictionary[0:100]}")
+
+print(f"\nThe number of documents in the corpus: {len(corpus)}")
+print(f"Sample of the documents in the corpus:\n {corpus}")
+
+# Visualize the dictionary of words.
+wordcloud = WordCloud(background_color='white').generate(' '.join(slo_feature_list))
+plt.figure(figsize=(12, 12))
+plt.imshow(wordcloud, interpolation="bilinear")
+plt.axis("off")
+plt.show()
+
+print(f"\nLength of the dictionary, corpus, document 0 in corpus, document 1 in corpus (in that order)")
+print(len(dictionary), len(corpus), len(corpus[0]), len(corpus[1]))
+
+"""
+Modify the corpus of documents to store the index value of each word from the dictionary (vocabulary)
+rather than the words themselves.
+"""
+new_corpus = []
+for document in corpus:
+    new_document = []
+    for word in document:
+        word_index = vocab_index[word]
+        new_document.append(word_index)
+    new_corpus.append(new_document)
+
+print(f"\nLength of the dictionary and corpus (as word dictionary index values (in that order))")
+print(len(dictionary), len(new_corpus))
+
+print(f"\nDocument 0 in the corpus as tokenized words:")
+print(corpus[0][0:10])
+print(f"Document 0 in the corpus as tokenized word index values from the dictionary:")
+print(new_corpus[0][0:10])
+
+print(f"\nDocument 1 in the corpus as tokenized words:")
+print(corpus[1][0:10])
+print(f"Document 1 in the corpus as tokenized word index values from the dictionary:")
+print(new_corpus[1][0:10])
+
+print(f"\nDocument 2 in the corpus as tokenized words:")
+print(corpus[2][0:10])
+print(f"Document 2 in the corpus as tokenized word index values from the dictionary:")
+print(new_corpus[2][0:10])
+
 
 ################################################################################################################
-
 
 def hierarchical_latent_dirichlet_allocation_topic_extraction():
     """
@@ -162,7 +220,7 @@ def hierarchical_latent_dirichlet_allocation_topic_extraction():
     with_weights = False  # whether to print the words with the weights
 
     # Train the model.
-    hlda = HierarchicalLDA(corpus, dictionary, alpha=alpha, gamma=gamma, eta=eta, num_levels=num_levels)
+    hlda = HierarchicalLDA(new_corpus, dictionary, alpha=alpha, gamma=gamma, eta=eta, num_levels=num_levels)
     hlda.estimate(n_samples, display_topics=display_topics, n_words=n_words, with_weights=with_weights)
 
 
@@ -174,14 +232,6 @@ Main function.  Execute the program.
 if __name__ == '__main__':
     my_start_time = time.time()
     ################################################
-
-    """
-    Perform the Twitter dataset preprocessing.
-    """
-    # lda_util.tweet_dataset_preprocessor(
-    #     "D:/Dropbox/summer-research-2019/datasets/dataset_20100101-20180510_tok_PROCESSED.csv",
-    #     "D:/Dropbox/summer-research-2019/datasets/dataset_20100101-20180510_tok_LDA_PROCESSED2.csv", "tweet_t")
-
     """
     Perform the topic extraction.
     """

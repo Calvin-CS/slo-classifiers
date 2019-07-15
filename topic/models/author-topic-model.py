@@ -35,7 +35,8 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 # Import custom utility functions.
-import topic_extraction_utility_functions as lda_util
+import topic_extraction_utility_functions as topic_util
+import slo_twitter_data_analysis_utility_functions as tweet_util_v2
 
 #############################################################
 
@@ -65,16 +66,27 @@ log.basicConfig(level=log.INFO)
 ################################################################################################################
 ################################################################################################################
 
-# Import the dataset.
-tweet_dataset_processed = \
-    pd.read_csv("D:/Dropbox/summer-research-2019/datasets/dataset_20100101-20180510_tok_LDA_PROCESSED.csv", sep=",")
+# Import untokenized CSV dataset.
+tweet_dataset_untokenized = tweet_util_v2.import_dataset(
+    "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+    "twitter-dataset-7-10-19-test-subset-100-examples.csv",
+    "csv", False)
+
+# Create author-document mappings as a dictionary of key: author, values: tweet ID's
+author2doc = topic_util.topic_author_model(tweet_dataset_untokenized, False)
+
+# Import tokenized CSV dataset.
+tweet_dataset_tokenized = tweet_util_v2.import_dataset(
+    "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+    "twitter-dataset-7-10-19-lda-ready-test.csv",
+    "csv", False)
 
 # Reindex and shuffle the data randomly.
-tweet_text_dataframe = tweet_dataset_processed.reindex(
-    pd.np.random.permutation(tweet_dataset_processed.index))
+tweet_text_dataframe = tweet_dataset_tokenized.reindex(
+    pd.np.random.permutation(tweet_dataset_tokenized.index))
 
 # Generate a Pandas dataframe.
-tweet_dataframe_processed = pd.DataFrame(tweet_dataset_processed)
+tweet_dataframe_processed = pd.DataFrame(tweet_dataset_tokenized)
 
 # Print shape and column names.
 log.info(f"\nThe shape of the Tweet text dataframe:")
@@ -91,25 +103,26 @@ log.info(f"{tweet_text_dataframe.shape}\n")
 log.info(f"\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
 log.info(f"{tweet_text_dataframe.columns}\n")
 
+
 # Reindex everything.
 tweet_text_dataframe.index = pd.RangeIndex(len(tweet_text_dataframe.index))
 
-# Assign column names.
-tweet_text_dataframe_column_names = ['Tweet']
-
-# Rename column in dataframe.
-tweet_text_dataframe.columns = tweet_text_dataframe_column_names
+# # Assign column names.
+# tweet_text_dataframe_column_names = ['Tweet']
+#
+# # Rename column in dataframe.
+# tweet_text_dataframe.columns = tweet_text_dataframe_column_names
 
 # Create input feature.
-selected_features = tweet_text_dataframe[['Tweet']]
+selected_features = tweet_text_dataframe[['text_derived_postprocessed']]
 processed_features = selected_features.copy()
 
 # Check what we are using as inputs.
 log.info(f"\nA sample Tweet in our input feature:")
-log.info(f"{processed_features['Tweet'][0]}\n")
+log.info(f"{processed_features['text_derived_postprocessed'][0]}\n")
 
 # Create feature set.
-slo_feature_series = processed_features['Tweet']
+slo_feature_series = processed_features['text_derived_postprocessed']
 slo_feature_series = pd.Series(slo_feature_series)
 slo_feature_list = slo_feature_series.tolist()
 
@@ -137,36 +150,20 @@ def author_topic_model_topic_extraction():
 
     :return: None.
     """
-    from gensim.test.utils import common_corpus, common_dictionary
-    from gensim.models import HdpModel
-    from gensim.sklearn_api import HdpTransformer
+    from gensim.models import AuthorTopicModel
 
-    # LDA can only use raw term counts for LDA because it is a probabilistic graphical model.
-    tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words='english')
-    tf = tf_vectorizer.fit_transform(slo_feature_series)
-    tf_feature_names = tf_vectorizer.get_feature_names()
+    model = AuthorTopicModel(corpus=corpus, num_topics=10, id2word=dictionary.id2token,
+                             author2doc=author2doc, chunksize=2000, passes=1, eval_every=0,
+                             iterations=1, random_state=1)
 
-    log.info("\n.fit_transform - Learn the vocabulary dictionary and return term-document matrix.")
-    log.info(f"{tf}\n")
-    log.info("\n.get_feature_names - Array mapping from feature integer indices to feature name")
-    log.info(f"{tf_feature_names}\n")
+    topic_labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-    # Sample dictionary and corpus.
-    log.info(f"\nExample dictionary format for Gensim:")
-    log.info(f"{common_dictionary}\n")
-    log.info(f"\nExample corpus format for Gensim:")
-    log.info(f"{common_corpus}\n")
-
-    # Train the HDP model.
-    hdp = HdpModel(corpus, dictionary)
-
-    # # For use with Scikit-Learn API.
-    # model = HdpTransformer(id2word=dictionary)
-    # distribution = model.fit_transform(corpus)
-
-    # Display the top words for each topic.
-    topic_info = hdp.print_topics(num_topics=20, num_words=10)
-    print(topic_info)
+    for topic in model.show_topics(num_topics=10):
+        print(f"'Label: ' + {topic_labels[topic[0]]}")
+        wordz = ''
+        for word, prob in model.show_topic(topic[0]):
+            wordz += word + ' '
+        print(f"'Words: ' + {wordz}")
 
 
 ############################################################################################
@@ -177,18 +174,10 @@ Main function.  Execute the program.
 if __name__ == '__main__':
     my_start_time = time.time()
     ################################################
-
-    """
-    Perform the Twitter dataset preprocessing.
-    """
-    # lda_util.tweet_dataset_preprocessor(
-    #     "D:/Dropbox/summer-research-2019/datasets/dataset_20100101-20180510_tok_PROCESSED.csv",
-    #     "D:/Dropbox/summer-research-2019/datasets/dataset_20100101-20180510_tok_LDA_PROCESSED2.csv", "tweet_t")
-
     """
     Perform the topic extraction.
     """
-    # author_topic_model_topic_extraction()
+    author_topic_model_topic_extraction()
 
     ################################################
     my_end_time = time.time()
