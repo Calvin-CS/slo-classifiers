@@ -93,6 +93,14 @@ Turn debug log statements for various sections of code on/off.
 log.basicConfig(level=log.INFO)
 log.disable(level=log.DEBUG)
 
+"""
+Modify spaCy Pipeline for tokenization.
+"""
+nlp = spacy.load('en')
+nlp.remove_pipe("parser")
+nlp.remove_pipe("tagger")
+nlp.remove_pipe("ner")
+
 
 ################################################################################################################
 ################################################################################################################
@@ -107,7 +115,7 @@ def preprocess_tweet_text(tweet_text):
 
     :return: the processed text.
     """
-    # Check that there is text, otherewise convert to empty string.
+    # Check that there is text, otherwise convert to empty string.
     if type(tweet_text) == float:
         tweet_text = ""
 
@@ -133,8 +141,8 @@ def preprocess_tweet_text(tweet_text):
     # Remove Tweet stock symbols.
     preprocessed_tweet_text = re.sub(r'$[a-zA-Z]+', r"slo_stock", preprocessed_tweet_text)
 
-    # Remove Tweet hashtags.
-    preprocessed_tweet_text = re.sub(r'#\w+', r"slo_hash", preprocessed_tweet_text)
+    # # Remove Tweet hashtags.
+    # preprocessed_tweet_text = re.sub(r'#\w+', r"slo_hash", preprocessed_tweet_text)
 
     # Remove Tweet cashtags.
     preprocessed_tweet_text = \
@@ -165,10 +173,6 @@ def preprocess_tweet_text(tweet_text):
     # individual_words = word_tokenize(tweet_string)
 
     # Tokenize using spacy.
-    nlp = spacy.load('en')
-    nlp.remove_pipe("parser")
-    nlp.remove_pipe("tagger")
-    nlp.remove_pipe("ner")
     individual_words = nlp(tweet_string)
 
     # Check to see if a word is irrelevant or not.
@@ -236,10 +240,6 @@ def postprocess_tweet_text(tweet_text):
     # individual_words = word_tokenize(tweet_string)
 
     # Tokenize using spacy.
-    nlp = spacy.load('en')
-    nlp.remove_pipe("parser")
-    nlp.remove_pipe("tagger")
-    nlp.remove_pipe("ner")
     individual_words = nlp(tweet_string)
 
     # NLTK word lemmatizer.
@@ -435,9 +435,17 @@ def dataframe_subset(tweet_dataset, sample_size):
 
 ################################################################################################################
 
-def topic_author_model(tweet_dataframe, debug_boolean):
+def topic_author_model_group_by_dataset_row_index_value(tweet_dataframe, debug_boolean):
     """
     Function to combine all Tweets by the same author into one document (example) for topic extraction.
+
+    Important Note:
+
+    Row index values are always two lower than the actual row index values in the CSV dataset file.
+    This may have something to do with how Pandas dataframe is generated from the CSV dataset file.
+    Therefore, hack-fix by incrementing by a +2 each time (ONLY IF necessary; however, it could be correctly associated
+    in the Pandas dataframe itself, just not to the CSV itself since that has a header row with column names; however,
+    this doesn't explain why it is two off rather than just one off due to the header row with column names)
 
     Resources:
 
@@ -450,6 +458,8 @@ def topic_author_model(tweet_dataframe, debug_boolean):
     https://stackoverflow.com/questions/18695605/python-pandas-dataframe-to-dictionary
     https://www.geeksforgeeks.org/zip-in-python/
     https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_dict.html
+
+    https://stackoverflow.com/questions/43193880/how-to-get-row-number-in-dataframe-in-pandas
 
     :param debug_boolean: turn debug export to CSV on or off.
     :param tweet_dataframe: Pandas dataframe containing Twitter dataset.
@@ -489,6 +499,71 @@ def topic_author_model(tweet_dataframe, debug_boolean):
     #     print(f"Associated Tweets (ID's): {value}")
 
     ##########################################################
+
+    # Group Tweets by Author with Tweet ID field included.
+    group_by_author_with_row_index_value = tweet_dataframe.groupby(["user_screen_name"],
+                                                                   group_keys=True, as_index=True)
+    group_by_author_with_row_index_value = pd.DataFrame(group_by_author_with_row_index_value)
+
+    group_by_author_with_row_index_value.columns = ["user_screen_name", "all_attributes"]
+    print(f"Dataframe columns:\n {group_by_author_with_row_index_value.columns}\n")
+    print(f"Dataframe shape:\n {group_by_author_with_row_index_value.shape}\n")
+    print(f"Dataframe samples:\n {group_by_author_with_row_index_value.sample(5)}\n")
+
+    group_by_author_with_row_index_value_dictionary = {}
+
+    def create_mappings(row):
+        """
+        Function to create author to Row Index Values mappings.
+        :param row: example to operate on.
+        :return: append to Dictionary - key: author, value: Row Index Values
+        """
+        indices = tweet_dataframe.index[tweet_dataframe.user_screen_name == str(row["user_screen_name"])]
+
+        group_by_author_with_row_index_value_dictionary[row["user_screen_name"]] = list(indices)
+
+        row["associated_row_index_values"] = list(indices)
+        return row["associated_row_index_values"]
+
+    group_by_author_with_row_index_value["associated_row_index_values"] = \
+        group_by_author_with_row_index_value.apply(create_mappings, axis=1)
+
+    for key, value in group_by_author_with_row_index_value_dictionary.items():
+        print(f"Author: {key}")
+        print(f"List of associated Row Index Values:\n {value}")
+
+    if debug_boolean:
+        tweet_util_v2.export_to_csv_json(
+            group_by_author_with_row_index_value, ["user_screen_name", "associated_row_index_values"],
+            "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+            "group-by-authors-with-row-index-value", "w", "csv")
+
+    return group_by_author_with_row_index_value_dictionary
+
+
+################################################################################################################
+
+def topic_author_model_group_by_author_tweet_id(tweet_dataframe, debug_boolean):
+    """
+    Function to combine all Tweets by the same author into one document (example) for topic extraction.
+
+    Resources:
+
+    (below lsit of URL's for grouping all Tweets by common author)
+    https://stackoverflow.com/questions/47434426/pandas-groupby-unique-multiple-columns
+    https://www.shanelynn.ie/summarising-aggregation-and-grouping-data-in-python-pandas/
+
+    (below list of URL"s for converting from dataframe to dictionary of key: author, value: tweet ID's)
+    https://stackoverflow.com/questions/18012505/python-pandas-dataframe-columns-convert-to-dict-key-and-value
+    https://stackoverflow.com/questions/18695605/python-pandas-dataframe-to-dictionary
+    https://www.geeksforgeeks.org/zip-in-python/
+    https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_dict.html
+
+    :param debug_boolean: turn debug export to CSV on or off.
+    :param tweet_dataframe: Pandas dataframe containing Twitter dataset.
+    :return: None.
+    """
+    tweet_dataframe = pd.DataFrame(tweet_dataframe)
 
     # Group Tweets by Author with Tweet ID field included.
     group_by_author_with_tweet_id = tweet_dataframe.groupby(["user_screen_name"],
@@ -531,19 +606,87 @@ def topic_author_model(tweet_dataframe, debug_boolean):
         print(f"Author: {key}")
         print(f"List of associated Tweet ID's:\n {value}")
 
-    ##########################################################
-
-    # # Group Tweets by Author with Tweet full text field included.
-    # group_by_author_with_tweet_text = tweet_dataframe.groupby(["user_screen_name"])["tweet_full_text"]
-    # group_by_author_with_tweet_text = pd.DataFrame(group_by_author_with_tweet_text)
-
     if debug_boolean:
         tweet_util_v2.export_to_csv_json(
             group_by_author_with_tweet_id, [],
             "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-            "group-by-authors-with-all-attributes", "w", "csv")
+            "group-by-authors-with-tweet-id", "w", "csv")
 
     return group_by_author_with_tweet_id_dictionary
+
+
+################################################################################################################
+
+def topic_author_model_group_by_author_tweet_text(tweet_dataframe, debug_boolean):
+    """
+    Function to combine all Tweets by the same author into one document (example) for topic extraction.
+
+    Resources:
+
+    (below lsit of URL's for grouping all Tweets by common author)
+    https://stackoverflow.com/questions/47434426/pandas-groupby-unique-multiple-columns
+    https://www.shanelynn.ie/summarising-aggregation-and-grouping-data-in-python-pandas/
+
+    (below list of URL"s for converting from dataframe to dictionary of key: author, value: tweet ID's)
+    https://stackoverflow.com/questions/18012505/python-pandas-dataframe-columns-convert-to-dict-key-and-value
+    https://stackoverflow.com/questions/18695605/python-pandas-dataframe-to-dictionary
+    https://www.geeksforgeeks.org/zip-in-python/
+    https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_dict.html
+
+    :param debug_boolean: turn debug export to CSV on or off.
+    :param tweet_dataframe: Pandas dataframe containing Twitter dataset.
+    :return: None.
+    """
+    tweet_dataframe = pd.DataFrame(tweet_dataframe)
+
+    # Group Tweets by Author with Tweet ID field included.
+    group_by_author_with_tweet_text = tweet_dataframe.groupby(["user_screen_name"],
+                                                              group_keys=True, as_index=True)["text_derived"]
+    group_by_author_with_tweet_text = pd.DataFrame(group_by_author_with_tweet_text)
+
+    group_by_author_with_tweet_text.columns = ["user_screen_name", "associated_tweet_text"]
+    print(f"Dataframe columns:\n {group_by_author_with_tweet_text.columns}\n")
+    print(f"Dataframe shape:\n {group_by_author_with_tweet_text.shape}\n")
+    print(f"Dataframe samples:\n {group_by_author_with_tweet_text.sample(5)}\n")
+
+    def convert_to_strings(row):
+        """
+        Function to convert Tweet Texts (documents) to strings.
+
+        :param row: example to operate on.
+        :return: Tweet Texts (documents) as strings.
+        """
+        text_list = []
+        for element in row["associated_tweet_text"]:
+            text_list.append(str(element))
+        row["associated_tweet_text"] = text_list
+        return row["associated_tweet_text"]
+
+    group_by_author_with_tweet_text_dictionary = {}
+
+    def create_mappings(row):
+        """
+        Function to create author to Tweet Texts (documents) mappings.
+        :param row: example to operate on.
+        :return: append to Dictionary - key: author, value: Tweet Texts (documents)
+        """
+        group_by_author_with_tweet_text_dictionary[row["user_screen_name"]] = row["associated_tweet_text"]
+
+    group_by_author_with_tweet_text["associated_tweet_text"] = \
+        group_by_author_with_tweet_text.apply(convert_to_strings, axis=1)
+    group_by_author_with_tweet_text.apply(create_mappings, axis=1)
+
+    for key, value in group_by_author_with_tweet_text_dictionary.items():
+        print(f"Author: {key}")
+        print(f"List of associated Tweet Texts (documents):\n {value}")
+
+    if debug_boolean:
+        tweet_util_v2.export_to_csv_json(
+            group_by_author_with_tweet_text, [],
+            "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+            "group-by-authors-with-tweet-text", "w", "csv")
+
+    return group_by_author_with_tweet_text_dictionary
 
 
 ################################################################################################################
@@ -551,14 +694,16 @@ def topic_author_model(tweet_dataframe, debug_boolean):
 
 start_time = time.time()
 
-# Import CSV dataset and convert to dataframe.
-tweet_csv_dataframe = tweet_util_v2.import_dataset(
-    "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-    "twitter-dataset-7-10-19-test-subset-100-examples.csv",
-    "csv", False)
+# # Import CSV dataset and convert to dataframe.
+# tweet_csv_dataframe = tweet_util_v2.import_dataset(
+#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+#     "twitter-dataset-7-10-19-test-subset-100-examples.csv",
+#     "csv", False)
 
 # Create author-topic model dataframe.
-topic_author_model(tweet_csv_dataframe, True)
+# topic_author_model_group_by_author_tweet_id(tweet_csv_dataframe, False)
+# topic_author_model_group_by_author_tweet_text(tweet_csv_dataframe, True)
+# topic_author_model_group_by_dataset_row_index_value(tweet_csv_dataframe, True)
 
 # # Test on the already tokenized dataset from stance detection.
 # tweet_dataset_preprocessor(
@@ -568,21 +713,14 @@ topic_author_model(tweet_csv_dataframe, True)
 
 ############################################################
 
-# # Test on our topic modeling dataset.
-# tweet_dataset_preprocessor(
-#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-#     "twitter-dataset-7-10-19-test-subset-100-examples.csv",
-#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-7-10-19-lda-ready-test.csv",
-#     "text_derived")
+# Test on our topic modeling dataset.
+tweet_dataset_preprocessor(
+    "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+    "twitter-dataset-7-10-19-test-subset-100-examples.csv",
+    "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+    "twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv",
+    "text_derived")
 
-# # Test on our topic modeling dataset.
-# tweet_dataset_preprocessor(
-#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-#     "twitter-dataset-7-10-19-test-subset-100-examples.csv",
-#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-#     "twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv",
-#     "text_derived")
-#
 # # Test on our topic modeling dataset.
 # tweet_dataset_preprocessor(
 #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
@@ -598,15 +736,15 @@ topic_author_model(tweet_csv_dataframe, True)
 #     "/home/jj47/Summer-Research-2019-master/"
 #     "twitter-dataset-7-10-19.csv",
 #     "/home/jj47/Summer-Research-2019-master/"
-#     "twitter-dataset-7-10-19-lda-ready-tweet-text.csv",
+#     "twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-included.csv",
 #     "text_derived")
-
+#
 # # Test on our topic modeling dataset.
 # tweet_dataset_preprocessor(
 #     "/home/jj47/Summer-Research-2019-master/"
 #     "twitter-dataset-7-10-19.csv",
 #     "/home/jj47/Summer-Research-2019-master/"
-#     "twitter-dataset-7-10-19-lda-ready-user-description-text.csv",
+#     "twitter-dataset-7-10-19-lda-ready-user-description-text-with-hashtags-included.csv",
 #     "user_description")
 
 ############################################################

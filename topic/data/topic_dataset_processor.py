@@ -252,7 +252,7 @@ def create_dataset(json_data_filepath, dataset_filepath, drop_irrelevant_tweets)
     #          f'\n\t\tnon-English count: {non_english_count_global}'
     #          )
     log.info("\tsaved the dataset to " + dataset_filepath +
-             "\n\t\tnon-English count: " + str(unknown_company_count_global) +
+             "\n\t\tunknown company count: " + str(unknown_company_count_global) +
              "\n\t\tnon-English count: " + str(non_english_count_global)
              )
 
@@ -495,10 +495,10 @@ def compute_company(row):
     #             f"\n\t\t\t\tid: {row['tweet_id']}"
     #             f"\n\t\t\t\ttweet: {row['text_derived']}"
     #             f"\n\t\t\t\thashtags: {row['tweet_entities_hashtags']}")
-    # log.warning("\t\t\tunrecognized company (will be dropped): " +
-    #             "\n\t\t\t\tid: " + str(row['tweet_id']) +
-    #             "\n\t\t\t\ttweet: " + row['text_derived'] +
-    #             "\n\t\t\t\thashtags: " + row['tweet_entities_hashtags'])
+    log.warning("\t\t\tunrecognized company (will be dropped): " +
+                "\n\t\t\t\tid: " + str(row['tweet_id']) +
+                "\n\t\t\t\ttweet: " + row['text_derived'] +
+                "\n\t\t\t\thashtags: " + row['tweet_entities_hashtags'])
     return 'none'
 
 
@@ -600,12 +600,28 @@ def what_language(row):
     :param row: example in the dataset we are operating on.
     :return:  the modified example with additional column specifying its language.
     """
+    global non_english_count_global
+
     nlp = spacy.load("en")
     nlp.add_pipe(LanguageDetector(), name="language_detector", last=True)
     document = nlp(row["tweet_full_text"])
     # document level language detection. Think of it like average language of document!
     text_language = document._.language
     row["spaCy_language_detect"] = str(text_language["language"])
+
+    if not str(text_language["language"]).startswith('en'):
+        non_english_count_global += 1
+        # log.warning(f"\t\t\tnon-English tweet (will be dropped): "
+        #             f"\n\t\t\t\tid: {row['tweet_id']}"
+        #             f"\n\t\t\t\ttweet: {row['text_derived']}"
+        #             f"\n\t\t\t\tLanguage tags: {row['tweet_lang']}
+        #             )
+        log.warning("\t\t\tnon-English tweet (will be dropped): " +
+                    "\n\t\t\t\tid: " + str(row['tweet_id']) +
+                    "\n\t\t\t\ttweet: " + str(row['text_derived']) +
+                    "\n\t\t\t\tLanguage tags: " + row['tweet_lang']
+                    )
+
     return row["spaCy_language_detect"]
 
 
@@ -731,14 +747,14 @@ if __name__ == '__main__':
     start_time = time.time()
 
     # Absolute file path.
-    # create_dataset("/home/jj47/Summer-Research-2019-master/json/dataset_slo_20100101-20180510.json",
-    #                "/home/jj47/Summer-Research-2019-master/twitter-dataset-7-14-19-with-irrelevant-tweets-included",
-    #                False)
+    create_dataset("/home/jj47/Summer-Research-2019-master/json/dataset_slo_20100101-20180510.json",
+                   "/home/jj47/Summer-Research-2019-master/twitter-dataset-7-19-19-with-irrelevant-tweets-excluded",
+                   True)
 
     create_dataset("D:/Dropbox/summer-research-2019/json/dataset_slo_20100101-20180510.json",
                    "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-                   "twitter-dataset-7-14-19-with-irrelevant-tweets-included",
-                   False)
+                   "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded",
+                   True)
 
     end_time = time.time()
 

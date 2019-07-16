@@ -9,15 +9,32 @@ Gensim: ATM - Author-Topic Model.
 ###########################################################
 Notes:
 
-FIXME - IndexError: list index out of range (referring to author2doc mappings, I think)
+It's finally working! w00t!
 
-Possible fixes:
+Initial results on subset of dataset:
 
-Create Dictionary mapping unique author screen-names to the row index value of the dataset who they are the author of.
+'Label: ' + 1
+'Words: ' + adani slo_url slo_mention abbot rt point coal environmental group develop
+'Label: ' + 2
+'Words: ' + adani slo_url slo_mention abbot rt point coal indian environmental group
+'Label: ' + 3
+'Words: ' + adani slo_url point abbot slo_mention rt coal environmental qldpol develop
+'Label: ' + 4
+'Words: ' + adani slo_url slo_mention rt point abbot coal environmental group qldpol
+'Label: ' + 5
+'Words: ' + slo_url adani slo_mention rt abbot coal point galilee environmental indian
+'Label: ' + 6
+'Words: ' + adani slo_url slo_mention rt coal abbot point group qldpol environmental
+'Label: ' + 7
+'Words: ' + adani slo_url slo_mention rt abbot point coal indian group develop
+'Label: ' + 8
+'Words: ' + adani slo_url slo_mention rt abbot point indian coal group environmental
+'Label: ' + 9
+'Words: ' + adani slo_url slo_mention rt point abbot coal group indian environmental
+'Label: ' + 10
+'Words: ' + adani slo_url slo_mention rt abbot point coal indian group breach
 
-Then, the author2doc data structure should map each author to a List of those row index values instead of Tweet ID's.
-
-Then, create a Gensim corpus of documents that associates each Tweet with their respective row index values.
+Time taken to process dataset: 0.02193593978881836 seconds, 0.000365598996480306 minutes, 6.0933166080051e-06 hours.
 
 ###########################################################
 Resources Used:
@@ -81,7 +98,7 @@ tweet_dataset_untokenized = tweet_util_v2.import_dataset(
     "csv", False)
 
 # Create author-document mappings as a dictionary of key: author, values: tweet ID's
-author2doc = topic_util.topic_author_model(tweet_dataset_untokenized, False)
+author2doc = topic_util.topic_author_model_group_by_dataset_row_index_value(tweet_dataset_untokenized, False)
 
 # Import tokenized CSV dataset.
 tweet_dataset_tokenized = tweet_util_v2.import_dataset(
