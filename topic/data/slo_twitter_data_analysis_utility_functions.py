@@ -209,10 +209,12 @@ def import_dataset(input_file_path, file_type, show_df_info):
     """
     if file_type == "csv":
         # Read in the CSV file.
-        tweet_dataset = pd.read_csv(f"{input_file_path}", sep=",", encoding="utf-8")
+        # tweet_dataset = pd.read_csv(f"{input_file_path}", sep=",", encoding="utf-8")
+        tweet_dataset = pd.read_csv(input_file_path, sep=",", encoding="utf-8")
     elif file_type == "json":
         # Read in the JSON file.
-        tweet_dataset = pd.read_json(f"{input_file_path}", orient='records', lines=True)
+        # tweet_dataset = pd.read_json(f"{input_file_path}", orient='records', lines=True)
+        tweet_dataset = pd.read_json(input_file_path, orient='records', lines=True)
     else:
         print("Invalid file type - aborting operation")
         return
@@ -251,17 +253,23 @@ def export_to_csv_json(tweet_dataframe, attribute_list, output_file_path, export
     :return: None. Saves to file.
     """
     if len(attribute_list) > 0 and file_type == "json":
-        tweet_dataframe[attribute_list].to_json(f"{output_file_path}.json", orient='records', lines=True)
+        # tweet_dataframe[attribute_list].to_json(f"{output_file_path}.json", orient='records', lines=True)
+        tweet_dataframe[attribute_list].to_json(output_file_path + ".json", orient='records', lines=True)
 
     elif len(attribute_list) > 0 and file_type == "csv":
-        tweet_dataframe[attribute_list].to_csv(f"{output_file_path}.csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
+        # tweet_dataframe[attribute_list].to_csv(f"{output_file_path}.csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
+        #                                        mode=export_mode, header=True, encoding="utf-8")
+        tweet_dataframe[attribute_list].to_csv(output_file_path + ".csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
                                                mode=export_mode, header=True, encoding="utf-8")
 
     elif len(attribute_list) == 0 and file_type == "json":
-        tweet_dataframe.to_json(f"{output_file_path}.json", orient='records', lines=True)
+        # tweet_dataframe.to_json(f"{output_file_path}.json", orient='records', lines=True)
+        tweet_dataframe.to_json(output_file_path + ".json", orient='records', lines=True)
 
     elif len(attribute_list) == 0 and file_type == "csv":
-        tweet_dataframe.to_csv(f"{output_file_path}.csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
+        # tweet_dataframe.to_csv(f"{output_file_path}.csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
+        #                        mode=export_mode, header=True, encoding="utf-8")
+        tweet_dataframe.to_csv(output_file_path + ".csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
                                mode=export_mode, header=True, encoding="utf-8")
     else:
         print("Invalid export mode or file type entered!")

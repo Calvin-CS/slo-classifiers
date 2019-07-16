@@ -9,7 +9,15 @@ Gensim: ATM - Author-Topic Model.
 ###########################################################
 Notes:
 
-TODO - remove stop words before training.
+FIXME - IndexError: list index out of range (referring to author2doc mappings, I think)
+
+Possible fixes:
+
+Create Dictionary mapping unique author screen-names to the row index value of the dataset who they are the author of.
+
+Then, the author2doc data structure should map each author to a List of those row index values instead of Tweet ID's.
+
+Then, create a Gensim corpus of documents that associates each Tweet with their respective row index values.
 
 ###########################################################
 Resources Used:
@@ -78,7 +86,7 @@ author2doc = topic_util.topic_author_model(tweet_dataset_untokenized, False)
 # Import tokenized CSV dataset.
 tweet_dataset_tokenized = tweet_util_v2.import_dataset(
     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-    "twitter-dataset-7-10-19-lda-ready-test.csv",
+    "twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv",
     "csv", False)
 
 # Reindex and shuffle the data randomly.
@@ -102,7 +110,6 @@ log.info(f"\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped
 log.info(f"{tweet_text_dataframe.shape}\n")
 log.info(f"\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
 log.info(f"{tweet_text_dataframe.columns}\n")
-
 
 # Reindex everything.
 tweet_text_dataframe.index = pd.RangeIndex(len(tweet_text_dataframe.index))
@@ -135,10 +142,13 @@ log.info(f"{words[0]}\n")
 dictionary = corpora.Dictionary(words)
 log.info(f"\nGensim dictionary of tokenized words.")
 log.info(f"{dictionary}\n")
+log.info(f"\nGensim dictionary of tokenized words with index ID's.")
+log.info(f"{dictionary.token2id}\n")
 
 # Create the Gensim corpus of document term frequencies.
 corpus = [dictionary.doc2bow(word, allow_update=True) for word in words]
-log.info(f"\nGensim corpus of document-term frequencies.")
+log.info(f"# of documents in corpus: {len(corpus)}\n")
+log.info(f"\nSample of Gensim corpus of document-term frequencies.")
 log.info(f"{corpus[0:10]}\n")
 
 
@@ -152,7 +162,7 @@ def author_topic_model_topic_extraction():
     """
     from gensim.models import AuthorTopicModel
 
-    model = AuthorTopicModel(corpus=corpus, num_topics=10, id2word=dictionary.id2token,
+    model = AuthorTopicModel(corpus=corpus, num_topics=10, id2word=dictionary,
                              author2doc=author2doc, chunksize=2000, passes=1, eval_every=0,
                              iterations=1, random_state=1)
 
