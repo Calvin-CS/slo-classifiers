@@ -2,8 +2,34 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="15a3f3a2-c024-4bc3-b6a4-9ef365c4db84" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-codebase-intro.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-codebase-intro.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-hashtag-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-hashtag-statistics.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-language-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-language-statistics.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-mentions-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-mentions-statistics.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-one-versus-multiple-companies-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-one-versus-multiple-companies-statistics.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-other-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-other-statistics.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-retweet-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-retweet-statistics.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-stock-symbols-and-urls-emojis.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-stock-symbols-and-urls-emojis.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-time-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-time-statistics.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-tweet-api-intro.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-tweet-api-intro.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-tweet-text-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-tweet-text-statistics.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-user-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-user-statistics.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/author-topic/slo-author-topic-implementation.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/author-topic/slo-author-topic-introduction.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/biterm/slo-biterm-implementation.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/biterm/slo-biterm-introduction.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/hierarchical-dirichlet-process/slo-hdp-implementation.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/hierarchical-dirichlet-process/slo-hdp-introduction.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/hierarchical-latent-dirichlet-allocation/slo-hlda-implementation.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/hierarchical-latent-dirichlet-allocation/slo-hlda-introduction.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/latent-dirichlet-allocation/images/dirichlet_distribution.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/latent-dirichlet-allocation/images/lda_equation.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/latent-dirichlet-allocation/images/lda_model.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/latent-dirichlet-allocation/slo-lda-grid-search.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/latent-dirichlet-allocation/slo-lda-implementation.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/latent-dirichlet-allocation/slo-lda-introduction.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/topic-modeling-algorithms-table-of-contents.ipynb" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -12,13 +38,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb">
-          <provider selected="true" editor-type-id="jupyter-editor" />
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -48,11 +68,11 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="21" />
-    <option name="y" value="591" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
     <option name="width" value="1936" />
-    <option name="height" value="1526" />
+    <option name="height" value="1066" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -69,17 +89,6 @@
             <path>
               <item name="slo-classifiers-repo" type="b2602c69:ProjectViewProjectNode" />
               <item name="slo-classifiers-repo" type="462c0819:PsiDirectoryNode" />
-              <item name="stance" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="slo-classifiers-repo" type="b2602c69:ProjectViewProjectNode" />
-              <item name="slo-classifiers-repo" type="462c0819:PsiDirectoryNode" />
-              <item name="stance" type="462c0819:PsiDirectoryNode" />
-              <item name="data" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="slo-classifiers-repo" type="b2602c69:ProjectViewProjectNode" />
-              <item name="slo-classifiers-repo" type="462c0819:PsiDirectoryNode" />
               <item name="topic" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -92,8 +101,7 @@
               <item name="slo-classifiers-repo" type="b2602c69:ProjectViewProjectNode" />
               <item name="slo-classifiers-repo" type="462c0819:PsiDirectoryNode" />
               <item name="topic" type="462c0819:PsiDirectoryNode" />
-              <item name="data" type="462c0819:PsiDirectoryNode" />
-              <item name="notebooks" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -224,17 +232,20 @@
       <workItem from="1562591808239" duration="1620000" />
       <workItem from="1562623034319" duration="3209000" />
       <workItem from="1562686493609" duration="1358000" />
+      <workItem from="1562942387889" duration="315000" />
+      <workItem from="1562942876135" duration="642000" />
+      <workItem from="1563218375462" duration="72000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="31019000" />
+    <option name="totallyTimeSpent" value="32048000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="21" y="591" width="1936" height="1526" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49185947" visible="true" weight="0.2531983" />
-      <window_info id="Structure" order="1" sideWeight="0.5081405" side_tool="true" visible="true" weight="0.2531983" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48754916" visible="true" weight="0.26119402" />
+      <window_info id="Structure" order="1" sideWeight="0.5124509" side_tool="true" visible="true" weight="0.26119402" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -249,7 +260,7 @@
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32961223" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32961223" />
-      <window_info active="true" anchor="bottom" id="Jupyter" order="13" visible="true" weight="0.16223978" />
+      <window_info active="true" anchor="bottom" id="Jupyter" order="13" visible="true" weight="0.16153847" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -296,12 +307,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/topic/data/dataset_processor_adapted.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="141" selection-start-line="141" selection-end-line="141" />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/topic/data/dataset_processor_adapted.py" />
+    <entry file="file://$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/topic-modeling-algorithms-table-of-contents.ipynb">
+      <provider selected="true" editor-type-id="jupyter-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb">
       <provider selected="true" editor-type-id="jupyter-editor" />

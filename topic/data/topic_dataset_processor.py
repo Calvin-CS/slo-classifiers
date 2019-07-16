@@ -181,8 +181,8 @@ def create_dataset(json_data_filepath, dataset_filepath, drop_irrelevant_tweets)
         # df_chunk['polyglot_lang_detect_all_tweets'] = df_chunk.apply(update_language_all_tweets(), axis=1)
 
         # Determine the Tweet text's language using spaCy natural language processing library. (note: slow)
-        # df_chunk["spaCy_language_detect_all_tweets"] = df_chunk.apply(
-        #     lambda x: what_language(x) if (pd.notnull(x["tweet_full_text"])) else "none", axis=1)
+        df_chunk["spaCy_language_detect_all_tweets"] = df_chunk.apply(
+            lambda x: what_language(x) if (pd.notnull(x["tweet_full_text"])) else "none", axis=1)
 
         # Remove irrelevant tweets (non-English or unknown-company).
         if drop_irrelevant_tweets:
@@ -732,12 +732,13 @@ if __name__ == '__main__':
 
     # Absolute file path.
     # create_dataset("/home/jj47/Summer-Research-2019-master/json/dataset_slo_20100101-20180510.json",
-    #                "/home/jj47/Summer-Research-2019-master/twitter-dataset-7-8-19-chunk4",
+    #                "/home/jj47/Summer-Research-2019-master/twitter-dataset-7-14-19-with-irrelevant-tweets-included",
     #                False)
 
-    # create_dataset("D:/Dropbox/summer-research-2019/jupyter-notebooks/dataset-chunks/raw-twitter-dataset-chunk-4.json",
-    #                "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-7-8-19-chunk4",
-    #                False)
+    create_dataset("D:/Dropbox/summer-research-2019/json/dataset_slo_20100101-20180510.json",
+                   "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+                   "twitter-dataset-7-14-19-with-irrelevant-tweets-included",
+                   False)
 
     end_time = time.time()
 

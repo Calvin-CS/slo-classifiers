@@ -206,14 +206,15 @@ def import_dataset(input_file_path, file_type, show_df_info):
     Note: Does NOT import in chunks.  Assumes file will fit in system RAM.
 
     :return: the Pandas Dataframe containing the dataset.
-    # TODO - return to encoding = "utf-8" after resolving mixed data types issues with specific columns in dataset.
     """
     if file_type == "csv":
         # Read in the CSV file.
-        tweet_dataset = pd.read_csv(f"{input_file_path}", sep=",", encoding="utf-8")
+        # tweet_dataset = pd.read_csv(f"{input_file_path}", sep=",", encoding="utf-8")
+        tweet_dataset = pd.read_csv(input_file_path, sep=",", encoding="utf-8")
     elif file_type == "json":
         # Read in the JSON file.
-        tweet_dataset = pd.read_json(f"{input_file_path}", orient='records', lines=True)
+        # tweet_dataset = pd.read_json(f"{input_file_path}", orient='records', lines=True)
+        tweet_dataset = pd.read_json(input_file_path, orient='records', lines=True)
     else:
         print("Invalid file type - aborting operation")
         return
@@ -252,17 +253,23 @@ def export_to_csv_json(tweet_dataframe, attribute_list, output_file_path, export
     :return: None. Saves to file.
     """
     if len(attribute_list) > 0 and file_type == "json":
-        tweet_dataframe[attribute_list].to_json(f"{output_file_path}.json", orient='records', lines=True)
+        # tweet_dataframe[attribute_list].to_json(f"{output_file_path}.json", orient='records', lines=True)
+        tweet_dataframe[attribute_list].to_json(output_file_path + ".json", orient='records', lines=True)
 
     elif len(attribute_list) > 0 and file_type == "csv":
-        tweet_dataframe[attribute_list].to_csv(f"{output_file_path}.csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
+        # tweet_dataframe[attribute_list].to_csv(f"{output_file_path}.csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
+        #                                        mode=export_mode, header=True, encoding="utf-8")
+        tweet_dataframe[attribute_list].to_csv(output_file_path + ".csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
                                                mode=export_mode, header=True, encoding="utf-8")
 
     elif len(attribute_list) == 0 and file_type == "json":
-        tweet_dataframe.to_json(f"{output_file_path}.json", orient='records', lines=True)
+        # tweet_dataframe.to_json(f"{output_file_path}.json", orient='records', lines=True)
+        tweet_dataframe.to_json(output_file_path + ".json", orient='records', lines=True)
 
     elif len(attribute_list) == 0 and file_type == "csv":
-        tweet_dataframe.to_csv(f"{output_file_path}.csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
+        # tweet_dataframe.to_csv(f"{output_file_path}.csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
+        #                        mode=export_mode, header=True, encoding="utf-8")
+        tweet_dataframe.to_csv(output_file_path + ".csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
                                mode=export_mode, header=True, encoding="utf-8")
     else:
         print("Invalid export mode or file type entered!")
@@ -293,14 +300,11 @@ def call_data_analysis_function_on_json_file_chunks(input_file_path, function_na
     # Create a empty Pandas dataframe.
     json_dataframe = pd.DataFrame()
 
-    counter = 0
     chunk_number = 0
 
     # Loop through chunk-by-chunk and call the data analysis function on each chunk.
     for data in twitter_data:
         json_dataframe = json_dataframe.append(data, ignore_index=True)
-
-        counter += 1
         chunk_number += 1
 
         if chunk_number == 1 and function_name == "none":
@@ -456,13 +460,46 @@ def export_multi_company_tweets(tweet_dataframe):
 
     :param tweet_dataframe: Tweet dataframe.
     :return: None.
-    # FIXME - why int/string comparison error when checking "multiple_companies_derived_count"?
     """
     dataframe = pd.DataFrame(tweet_dataframe)
     multi_company_only_df = dataframe.loc[dataframe['company_derived_designation'] == "multiple"]
     export_to_csv_json(
         multi_company_only_df, [],
         "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/multi-company-tweets", "w", "csv")
+
+
+################################################################################################################
+
+def export_no_company_tweets(tweet_dataframe):
+    """
+    This function exports to a CSV dataset file only those Tweets that are associated with no companies.
+
+    :param tweet_dataframe: Tweet dataframe.
+    :return: None.
+    """
+    dataframe = pd.DataFrame(tweet_dataframe)
+    no_company_only_df = dataframe.loc[(dataframe['company_derived_designation'].isnull())]
+    export_to_csv_json(
+        no_company_only_df, [],
+        "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/no-company-tweets", "w", "csv")
+
+
+################################################################################################################
+
+def export_non_english_tweets(tweet_dataframe):
+    """
+    This function exports to a CSV dataset file only those Tweets that are designated as non-English by both
+    spacy-langdetect and the Twitter API.
+
+    :param tweet_dataframe: Tweet dataframe.
+    :return: None.
+    """
+    dataframe = pd.DataFrame(tweet_dataframe)
+    non_english_spacy_and_twitter = tweet_dataframe.loc[(tweet_dataframe["spaCy_language_detect_all_tweets"] != "en") &
+                                                        (tweet_dataframe["tweet_lang"] != "en")]
+    export_to_csv_json(
+        non_english_spacy_and_twitter, [],
+        "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/non-english-tweets", "w", "csv")
 
 
 ################################################################################################################
@@ -548,7 +585,7 @@ def extract_single_multi_json_attributes(input_file_path, output_file_path, attr
         log.debug(f"{row}\n")
         return row[attributes_list]
 
-    counter = 0
+    count_records = 0
     include_header = True
     # Read Json in chunks to avoid RAM issues.
     for df_chunk in pd.read_json(input_file_path, orient='records', lines=True, chunksize=1000):
@@ -560,8 +597,8 @@ def extract_single_multi_json_attributes(input_file_path, output_file_path, attr
                                          quoting=csv.QUOTE_NONNUMERIC,
                                          mode='a', header=include_header, encoding="utf-8")
         # Print a progress message.
-        counter += df_chunk.shape[0]
-        print(f'\t\tprocessed {counter} records...')
+        count_records += df_chunk.shape[0]
+        print(f'\t\tprocessed {count_records} records...')
         # Only include the header once, at the top of the file.
         include_header = False
         # break
@@ -621,7 +658,7 @@ def flatten_extract_nested_json_attributes(input_file_path, output_file_path, to
         row[nested_attributes_list] = np.NaN
         return row[nested_attributes_list]
 
-    counter = 0
+    count_examples = 0
     include_header = True
     # Read Json in chunks to avoid RAM issues.
     for df_chunk in pd.read_json(input_file_path, orient='records', lines=True, chunksize=1000):
@@ -633,8 +670,8 @@ def flatten_extract_nested_json_attributes(input_file_path, output_file_path, to
                                                 quoting=csv.QUOTE_NONNUMERIC,
                                                 mode='a', header=include_header, encoding="utf-8")
         # Print a progress message.
-        counter += df_chunk.shape[0]
-        print(f'\t\tprocessed {counter} records...')
+        count_examples += df_chunk.shape[0]
+        print(f'\t\tprocessed {count_examples} records...')
         # Only include the header once, at the top of the file.
         include_header = False
         # break
@@ -676,6 +713,7 @@ def spacy_language_detection(tweet_dataframe):
     :return: None. Saves to file.
     """
 
+    # noinspection PyProtectedMember
     def what_language(row):
         """
          This helper function executes spaCy N.L.P. library and "spacy-langdetect"
@@ -745,10 +783,13 @@ def find_mixed_data_types_in_dataset_rows(tweet_dataframe):
     """
     This function finds mixed data types that should not exist for the specified column(s) in the dataset.
 
+    Note: Takes way too long to run on a large file.
+
     :param tweet_dataframe: Tweet dataframe.
     :return: None. Saves to file.
     """
 
+    # noinspection PyUnresolvedReferences
     weird = (tweet_dataframe.applymap(type) != tweet_dataframe.iloc[1].apply(type)).any(axis=1)
 
     print("These rows contain data type(s) that is different from the rest of the rows in the column(s):")
@@ -774,7 +815,6 @@ def determine_multiple_companies_count_fixed(tweet_dataframe):
         Note: we convert derived_series to a series to avoid Pandas warning.
         :param row: example in the dataset we are operating on.
         :return:  the modified example.
-        TODO - check we have fixed our logic error! (we haven't - work on this)
         """
         global counter
         counter += 1
@@ -805,7 +845,7 @@ def determine_multiple_companies_count_fixed(tweet_dataframe):
 
 # tweet_csv_dataframe = import_dataset(
 #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-#     "twitter-dataset-6-22-19-test-no-company-count-field.csv",
+#     "twitter-dataset-6-27-19.csv",
 #     "csv", False)
 
 # tweet_csv_dataframe_2 = import_dataset(
@@ -818,3 +858,6 @@ def determine_multiple_companies_count_fixed(tweet_dataframe):
 #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/debug", "w", "json")
 
 # determine_multiple_companies_count_fixed(tweet_csv_dataframe_2)
+
+# export_no_company_tweets(tweet_csv_dataframe)
+# export_non_english_tweets(tweet_csv_dataframe)

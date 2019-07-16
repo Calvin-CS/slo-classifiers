@@ -116,3 +116,4 @@ stance/data/wordvec
 stance/data/SemEval2016taskA
 stance/*.csv
 stance/*.pkl
+topic/models/topic-modeling-code-examples/bbc/
