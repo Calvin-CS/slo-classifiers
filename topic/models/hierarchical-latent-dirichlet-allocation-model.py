@@ -62,73 +62,90 @@ Turn debug log statements for various sections of code on/off.
 (adjust log level as necessary)
 """
 log.basicConfig(level=log.INFO)
+log.disable(level=log.DEBUG)
 
 ################################################################################################################
 ################################################################################################################
 
-# Import the dataset.
+# # Import the dataset (relative path).
+# tweet_dataset_processed = \
+#     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
+
+# Import the dataset (absolute path).
 tweet_dataset_processed = \
-    pd.read_csv("D:/Dropbox/summer-research-2019/datasets/"
-                "dataset_20100101-20180510_tok_LDA_PROCESSED_shortened.csv", sep=",")
+    pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+                "twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
+
+# # Import the dataset (test/debug).
+# tweet_dataset_processed = \
+#     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
+
+# # Import the dataset (test/debug).
+# tweet_dataset_processed = \
+#     pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+#                 "twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
 
 # Reindex and shuffle the data randomly.
-tweet_text_dataframe = tweet_dataset_processed.reindex(
+tweet_dataset_processed = tweet_dataset_processed.reindex(
     pd.np.random.permutation(tweet_dataset_processed.index))
 
 # Generate a Pandas dataframe.
-tweet_dataframe_processed = pd.DataFrame(tweet_dataset_processed)
+tweet_text_dataframe = pd.DataFrame(tweet_dataset_processed)
+
+# # Print shape and column names.
+# log.info(f"\nThe shape of the Tweet text dataframe:")
+# log.info(f"{tweet_text_dataframe.shape}\n")
+# log.info(f"\nThe columns of the Tweet text dataframe:")
+# log.info(f"{tweet_text_dataframe.columns}\n")
 
 # Print shape and column names.
-log.info(f"\nThe shape of the Tweet text dataframe:")
-log.info(f"{tweet_text_dataframe.shape}\n")
-log.info(f"\nThe columns of the Tweet text dataframe:")
-log.info(f"{tweet_text_dataframe.columns}\n")
+log.info("\nThe shape of the Tweet text dataframe:")
+log.info(tweet_text_dataframe.shape)
+log.info("\nThe columns of the Tweet text dataframe:")
+log.info(tweet_text_dataframe.columns)
 
 # Drop any NaN or empty Tweet rows in dataframe (or else CountVectorizer will blow up).
 tweet_text_dataframe = tweet_text_dataframe.dropna()
 
+# # Print shape and column names.
+# log.info(f"\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
+# log.info(f"{tweet_text_dataframe.shape}\n")
+# log.info(f"\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
+# log.info(f"{tweet_text_dataframe.columns}\n")
+
 # Print shape and column names.
-log.info(f"\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
-log.info(f"{tweet_text_dataframe.shape}\n")
-log.info(f"\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
-log.info(f"{tweet_text_dataframe.columns}\n")
+log.info("\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
+log.info(tweet_text_dataframe.shape)
+log.info("\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
+log.info(tweet_text_dataframe.columns)
 
 # Reindex everything.
 tweet_text_dataframe.index = pd.RangeIndex(len(tweet_text_dataframe.index))
 
 # Assign column names.
-tweet_text_dataframe_column_names = ['Tweet']
+tweet_text_dataframe_column_names = ['text_derived', 'text_derived_preprocessed', 'text_derived_postprocessed']
 
 # Rename column in dataframe.
 tweet_text_dataframe.columns = tweet_text_dataframe_column_names
 
 # Create input feature.
-selected_features = tweet_text_dataframe[['Tweet']]
+selected_features = tweet_text_dataframe[['text_derived_postprocessed']]
 processed_features = selected_features.copy()
 
+# # Check what we are using as inputs.
+# log.info(f"\nA sample Tweet in our input feature:")
+# log.info(f"{processed_features['text_derived_postprocessed'][0]}\n")
+
 # Check what we are using as inputs.
-log.info(f"\nA sample Tweet in our input feature:")
-log.info(f"{processed_features['Tweet'][0]}\n")
+log.info("\nA sample Tweet in our input feature:")
+log.info(processed_features['text_derived_postprocessed'][0])
 
 # Create feature set.
-slo_feature_series = processed_features['Tweet']
+slo_feature_series = processed_features['text_derived_postprocessed']
 slo_feature_series = pd.Series(slo_feature_series)
 slo_feature_list = slo_feature_series.tolist()
 
-# # Convert feature list of sentences to comma-separated dictionary of words.
-# words = [[text for text in tweet.split()] for tweet in slo_feature_list]
-# log.info(f"\nDictionary of individual words:")
-# log.info(f"{words[0]}\n")
-
-# # Create the Gensim dictionary of words.
-# dictionary = corpora.Dictionary(words)
-# log.info(f"\nGensim dictionary of tokenized words.")
-# log.info(f"{dictionary}\n")
-
-# # Create the Gensim corpus of document term frequencies.
-# corpus = [dictionary.doc2bow(word, allow_update=True) for word in words]
-# log.info(f"\nGensim corpus of document-term frequencies.")
-# log.info(f"{corpus[0:10]}\n")
+#############################################################
 
 corpus = []
 dictionary = set()
@@ -150,13 +167,17 @@ vocab_index = {}
 for i, w in enumerate(dictionary):
     vocab_index[w] = i
 
-print(f"\nThe number of documents: {len(slo_feature_list)}")
+# print(f"\nThe number of documents: {len(slo_feature_list)}")
+# print(f"\nThe number of words in the dictionary: {len(dictionary)}")
+# print(f"Sample of the words in the dictionary:\n {dictionary[0:100]}")
+# print(f"\nThe number of documents in the corpus: {len(corpus)}")
+# print(f"Sample of the documents in the corpus:\n {corpus}")
 
-print(f"\nThe number of words in the dictionary: {len(dictionary)}")
-print(f"Sample of the words in the dictionary:\n {dictionary[0:100]}")
-
-print(f"\nThe number of documents in the corpus: {len(corpus)}")
-print(f"Sample of the documents in the corpus:\n {corpus}")
+print("\nThe number of documents: " + str(len(slo_feature_list)))
+print("\nThe number of words in the dictionary: " + str(len(dictionary)))
+print("Sample of the words in the dictionary:\n " + str(dictionary[0:100]))
+print("\nThe number of documents in the corpus: " + str(len(corpus)))
+print("Sample of the documents in the corpus:\n " + str(corpus))
 
 # Visualize the dictionary of words.
 wordcloud = WordCloud(background_color='white').generate(' '.join(slo_feature_list))
@@ -165,7 +186,7 @@ plt.imshow(wordcloud, interpolation="bilinear")
 plt.axis("off")
 plt.show()
 
-print(f"\nLength of the dictionary, corpus, document 0 in corpus, document 1 in corpus (in that order)")
+print("\nLength of the dictionary, corpus, document 0 in corpus, document 1 in corpus (in that order)")
 print(len(dictionary), len(corpus), len(corpus[0]), len(corpus[1]))
 
 """
@@ -180,22 +201,22 @@ for document in corpus:
         new_document.append(word_index)
     new_corpus.append(new_document)
 
-print(f"\nLength of the dictionary and corpus (as word dictionary index values (in that order))")
+print("\nLength of the dictionary and corpus (as word dictionary index values (in that order))")
 print(len(dictionary), len(new_corpus))
 
-print(f"\nDocument 0 in the corpus as tokenized words:")
+print("\nDocument 0 in the corpus as tokenized words:")
 print(corpus[0][0:10])
-print(f"Document 0 in the corpus as tokenized word index values from the dictionary:")
+print("Document 0 in the corpus as tokenized word index values from the dictionary:")
 print(new_corpus[0][0:10])
 
-print(f"\nDocument 1 in the corpus as tokenized words:")
+print("\nDocument 1 in the corpus as tokenized words:")
 print(corpus[1][0:10])
-print(f"Document 1 in the corpus as tokenized word index values from the dictionary:")
+print("Document 1 in the corpus as tokenized word index values from the dictionary:")
 print(new_corpus[1][0:10])
 
-print(f"\nDocument 2 in the corpus as tokenized words:")
+print("\nDocument 2 in the corpus as tokenized words:")
 print(corpus[2][0:10])
-print(f"Document 2 in the corpus as tokenized word index values from the dictionary:")
+print("Document 2 in the corpus as tokenized word index values from the dictionary:")
 print(new_corpus[2][0:10])
 
 
@@ -243,7 +264,9 @@ if __name__ == '__main__':
     time_elapsed_in_seconds = (my_end_time - my_start_time)
     time_elapsed_in_minutes = (my_end_time - my_start_time) / 60.0
     time_elapsed_in_hours = (my_end_time - my_start_time) / 60.0 / 60.0
-    print(f"Time taken to process dataset: {time_elapsed_in_seconds} seconds, "
-          f"{time_elapsed_in_minutes} minutes, {time_elapsed_in_hours} hours.")
+    # print(f"Time taken to process dataset: {time_elapsed_in_seconds} seconds, "
+    #       f"{time_elapsed_in_minutes} minutes, {time_elapsed_in_hours} hours.")
+    print("\n\nTime taken to process dataset: " + str(time_elapsed_in_seconds) + " seconds, " +
+          str(time_elapsed_in_minutes) + " minutes, " + str(time_elapsed_in_hours) + " hours.\n")
 
 ############################################################################################

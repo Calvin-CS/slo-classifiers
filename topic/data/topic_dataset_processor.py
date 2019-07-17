@@ -608,6 +608,8 @@ def what_language(row):
     # document level language detection. Think of it like average language of document!
     text_language = document._.language
     row["spaCy_language_detect"] = str(text_language["language"])
+    print("language string is:")
+    print(str(text_language["language"]))
 
     if not str(text_language["language"]).startswith('en'):
         non_english_count_global += 1
@@ -747,14 +749,16 @@ if __name__ == '__main__':
     start_time = time.time()
 
     # Absolute file path.
-    create_dataset("/home/jj47/Summer-Research-2019-master/json/dataset_slo_20100101-20180510.json",
-                   "/home/jj47/Summer-Research-2019-master/twitter-dataset-7-19-19-with-irrelevant-tweets-excluded",
+    create_dataset("/home/jj47/Summer-Research-2019-master/json/"
+                   "dataset_slo_20100101-20180510-reduced-size.json",
+                   "/home/jj47/Summer-Research-2019-master/"
+                   "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded-reduced-size",
                    True)
 
-    create_dataset("D:/Dropbox/summer-research-2019/json/dataset_slo_20100101-20180510.json",
-                   "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-                   "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded",
-                   True)
+    # create_dataset("D:/Dropbox/summer-research-2019/json/dataset_slo_20100101-20180510.json",
+    #                "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+    #                "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded-reduced-size",
+    #                True)
 
     end_time = time.time()
 

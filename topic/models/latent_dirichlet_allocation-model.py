@@ -39,80 +39,108 @@ import topic_extraction_utility_functions as lda_util
 
 #############################################################
 
-# Miscellaneous parameter adjustments for pandas and python.
-pd.options.display.max_rows = 10
-# pd.options.display.float_format = '{:.1f}'.format
-pd.set_option('precision', 7)
+# Pandas options.
+pd.options.display.max_rows = None
+pd.options.display.max_columns = None
+pd.options.display.width = None
+pd.options.display.max_colwidth = 1000
+# Pandas float precision display.
+pd.set_option('precision', 12)
+# Don't output these types of warnings to terminal.
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=DeprecationWarning)
+warnings.simplefilter(action='ignore', category=UserWarning)
+# Matplotlib log settings.
+mylog = log.getLogger("matplotlib")
+mylog.setLevel(log.INFO)
 
 """
 Turn debug log statements for various sections of code on/off.
 (adjust log level as necessary)
 """
 log.basicConfig(level=log.INFO)
-# tf.logging.set_verbosity(tf.logging.INFO)
+log.disable(level=log.DEBUG)
 
 ################################################################################################################
 ################################################################################################################
 
-# Import the dataset.
-tweet_dataset_processed = \
-    pd.read_csv("datasets/dataset_20100101-20180510_tok_LDA_PROCESSED.csv", sep=",")
-
-# Import the dataset.
+# # Import the dataset (relative path).
 # tweet_dataset_processed = \
-#     pd.read_csv("D:/Dropbox/summer-research-2019/datasets/dataset_20100101-20180510_tok_LDA_PROCESSED.csv", sep=",")
+#     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
+
+# Import the dataset (absolute path).
+tweet_dataset_processed = \
+    pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+                "twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
+
+# # Import the dataset (test/debug).
+# tweet_dataset_processed = \
+#     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
+
+# # Import the dataset (test/debug).
+# tweet_dataset_processed = \
+#     pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+#                 "twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
 
 # Reindex and shuffle the data randomly.
 tweet_dataset_processed = tweet_dataset_processed.reindex(
     pd.np.random.permutation(tweet_dataset_processed.index))
 
 # Generate a Pandas dataframe.
-tweet_dataframe_processed = pd.DataFrame(tweet_dataset_processed)
+tweet_text_dataframe = pd.DataFrame(tweet_dataset_processed)
+
+# # Print shape and column names.
+# log.info(f"\nThe shape of the Tweet text dataframe:")
+# log.info(f"{tweet_text_dataframe.shape}\n")
+# log.info(f"\nThe columns of the Tweet text dataframe:")
+# log.info(f"{tweet_text_dataframe.columns}\n")
 
 # Print shape and column names.
-log.info("\n")
-log.info("The shape of our preprocessed SLO dataframe:")
-log.info(tweet_dataframe_processed.shape)
-log.info("\n")
-log.info("The columns of our preprocessed SLO dataframe:")
-log.info(tweet_dataframe_processed.head)
-log.info("\n")
+log.info("\nThe shape of the Tweet text dataframe:")
+log.info(tweet_text_dataframe.shape)
+log.info("\nThe columns of the Tweet text dataframe:")
+log.info(tweet_text_dataframe.columns)
 
 # Drop any NaN or empty Tweet rows in dataframe (or else CountVectorizer will blow up).
-tweet_dataframe_processed = tweet_dataframe_processed.dropna()
+tweet_text_dataframe = tweet_text_dataframe.dropna()
+
+# # Print shape and column names.
+# log.info(f"\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
+# log.info(f"{tweet_text_dataframe.shape}\n")
+# log.info(f"\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
+# log.info(f"{tweet_text_dataframe.columns}\n")
 
 # Print shape and column names.
-log.info("\n")
-log.info("The shape of our preprocessed SLO dataframe with NaN (empty) rows dropped:")
-log.info(tweet_dataframe_processed.shape)
-log.info("\n")
-log.info("The columns of our preprocessed SLO dataframe with NaN (empty) rows dropped:")
-log.info(tweet_dataframe_processed.head)
-log.info("\n")
+log.info("\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
+log.info(tweet_text_dataframe.shape)
+log.info("\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
+log.info(tweet_text_dataframe.columns)
 
 # Reindex everything.
-tweet_dataframe_processed.index = pd.RangeIndex(len(tweet_dataframe_processed.index))
+tweet_text_dataframe.index = pd.RangeIndex(len(tweet_text_dataframe.index))
 
 # Assign column names.
-tweet_dataframe_processed_column_names = ['Tweet']
+tweet_text_dataframe_column_names = ['text_derived', 'text_derived_preprocessed', 'text_derived_postprocessed']
 
 # Rename column in dataframe.
-tweet_dataframe_processed.columns = tweet_dataframe_processed_column_names
+tweet_text_dataframe.columns = tweet_text_dataframe_column_names
 
 # Create input feature.
-selected_features = tweet_dataframe_processed[tweet_dataframe_processed_column_names]
+selected_features = tweet_text_dataframe[['text_derived_postprocessed']]
 processed_features = selected_features.copy()
 
+# # Check what we are using as inputs.
+# log.info(f"\nA sample Tweet in our input feature:")
+# log.info(f"{processed_features['text_derived_postprocessed'][0]}\n")
+
 # Check what we are using as inputs.
-log.debug("\n")
-log.debug("The Tweets in our input feature:")
-log.debug(processed_features['Tweet'])
-log.debug("\n")
+log.info("\nA sample Tweet in our input feature:")
+log.info(processed_features['text_derived_postprocessed'][0])
 
 # Create feature set.
-slo_feature_set = processed_features['Tweet']
+slo_feature_series = processed_features['text_derived_postprocessed']
+slo_feature_series = pd.Series(slo_feature_series)
+slo_feature_list = slo_feature_series.tolist()
 
 
 ################################################################################################################
@@ -127,12 +155,13 @@ def latent_dirichlet_allocation_topic_extraction():
 
     # LDA can only use raw term counts for LDA because it is a probabilistic graphical model.
     tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words='english')
-    tf = tf_vectorizer.fit_transform(slo_feature_set)
+    tf = tf_vectorizer.fit_transform(slo_feature_series)
     tf_feature_names = tf_vectorizer.get_feature_names()
 
     # Run LDA.
-    lda = LatentDirichletAllocation(n_topics=20, max_iter=5, learning_method='online', learning_offset=50.,
+    lda = LatentDirichletAllocation(n_components=20, max_iter=5, learning_method='online', learning_offset=50.,
                                     random_state=0).fit(tf)
+    time.sleep(3)
 
     # Display the top words for each topic.
     lda_util.display_topics(lda, tf_feature_names, 10)
@@ -152,7 +181,7 @@ def latent_dirichlet_allocation_collapsed_gibbs_sampling():
 
     # LDA can only use raw term counts for LDA because it is a probabilistic graphical model.
     tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words='english')
-    tf = tf_vectorizer.fit_transform(slo_feature_set)
+    tf = tf_vectorizer.fit_transform(slo_feature_series)
     tf_feature_names = tf_vectorizer.get_feature_names()
 
     # Train and fit the LDA model.
@@ -160,6 +189,7 @@ def latent_dirichlet_allocation_collapsed_gibbs_sampling():
     model.fit(tf)  # model.fit_transform(X) is also available
     topic_word = model.topic_word_  # model.components_ also works
     n_top_words = 10
+    time.sleep(3)
 
     # Display the topics and the top words associated with.
     for i, topic_dist in enumerate(topic_word):
@@ -175,7 +205,7 @@ def latent_dirichlet_allocation_collapsed_gibbs_sampling():
 Main function.  Execute the program.
 """
 if __name__ == '__main__':
-    start_time = time.time()
+    my_start_time = time.time()
     ################################################
     """
     Perform the Twitter dataset preprocessing.
@@ -230,16 +260,16 @@ if __name__ == '__main__':
     """
     Perform the topic extraction using collapsed Gibbs Sampling.
     """
-    # latent_dirichlet_allocation_collapsed_gibbs_sampling()
+    latent_dirichlet_allocation_collapsed_gibbs_sampling()
     ################################################
-    end_time = time.time()
+    my_end_time = time.time()
 
-    log.info("The time taken to perform the operation is: ")
-    total_time = end_time - start_time
-    log.info(str(total_time))
-    log.info("\n")
-
-    # For debugging purposes for Jupyter notebook.
-    # lda_util.test_function()
+    time_elapsed_in_seconds = (my_end_time - my_start_time)
+    time_elapsed_in_minutes = (my_end_time - my_start_time) / 60.0
+    time_elapsed_in_hours = (my_end_time - my_start_time) / 60.0 / 60.0
+    # print(f"Time taken to process dataset: {time_elapsed_in_seconds} seconds, "
+    #       f"{time_elapsed_in_minutes} minutes, {time_elapsed_in_hours} hours.")
+    print("\n\nTime taken to process dataset: " + str(time_elapsed_in_seconds) + " seconds, " +
+          str(time_elapsed_in_minutes) + " minutes, " + str(time_elapsed_in_hours) + " hours.\n")
 
 ############################################################################################
