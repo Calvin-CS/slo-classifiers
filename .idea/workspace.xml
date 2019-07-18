@@ -2,34 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="15a3f3a2-c024-4bc3-b6a4-9ef365c4db84" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-codebase-intro.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-codebase-intro.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-hashtag-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-hashtag-statistics.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-language-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-language-statistics.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-mentions-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-mentions-statistics.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-one-versus-multiple-companies-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-one-versus-multiple-companies-statistics.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-other-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-other-statistics.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-retweet-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-retweet-statistics.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-stock-symbols-and-urls-emojis.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-stock-symbols-and-urls-emojis.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-time-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-time-statistics.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-tweet-api-intro.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-tweet-api-intro.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-tweet-text-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-tweet-text-statistics.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-user-statistics.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-user-statistics.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/author-topic/slo-author-topic-implementation.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/author-topic/slo-author-topic-introduction.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/biterm/slo-biterm-implementation.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/biterm/slo-biterm-introduction.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/hierarchical-dirichlet-process/slo-hdp-implementation.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/hierarchical-dirichlet-process/slo-hdp-introduction.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/hierarchical-latent-dirichlet-allocation/slo-hlda-implementation.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/hierarchical-latent-dirichlet-allocation/slo-hlda-introduction.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/latent-dirichlet-allocation/images/dirichlet_distribution.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/latent-dirichlet-allocation/images/lda_equation.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/latent-dirichlet-allocation/images/lda_model.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/latent-dirichlet-allocation/slo-lda-grid-search.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/latent-dirichlet-allocation/slo-lda-implementation.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/algorithms/latent-dirichlet-allocation/slo-lda-introduction.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/topic-modeling-algorithms-table-of-contents.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/topic/readme.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -38,7 +11,20 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/topic/readme.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="153">
+                <caret line="9" column="35" lean-forward="true" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
+              </first_editor>
+              <second_editor />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -52,9 +38,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/topic/data/notebooks/slo_twitter_data_analysis.py" />
-        <option value="$PROJECT_DIR$/topic/readme.md" />
         <option value="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py" />
         <option value="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py" />
+        <option value="$PROJECT_DIR$/topic/readme.md" />
       </list>
     </option>
   </component>
@@ -79,6 +65,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -107,7 +94,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -235,17 +221,19 @@
       <workItem from="1562942387889" duration="315000" />
       <workItem from="1562942876135" duration="642000" />
       <workItem from="1563218375462" duration="72000" />
+      <workItem from="1563464351909" duration="1814000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="32048000" />
+    <option name="totallyTimeSpent" value="33862000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48754916" visible="true" weight="0.26119402" />
-      <window_info id="Structure" order="1" sideWeight="0.5124509" side_tool="true" visible="true" weight="0.26119402" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4868132" visible="true" weight="0.26385927" />
+      <window_info id="Structure" order="1" sideWeight="0.5131868" side_tool="true" visible="true" weight="0.26385927" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -283,16 +271,6 @@
     <entry file="file://$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-retweet-statistics.ipynb">
       <provider selected="true" editor-type-id="jupyter-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/topic/readme.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="204">
-            <caret line="12" column="11" selection-start-line="12" selection-start-column="11" selection-end-line="12" selection-end-column="11" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1311">
@@ -308,11 +286,19 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/topic/data/dataset_processor_adapted.py" />
-    <entry file="file://$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/topic-modeling-algorithms-table-of-contents.ipynb">
-      <provider selected="true" editor-type-id="jupyter-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/topic-modeling-algorithms-table-of-contents.ipynb" />
     <entry file="file://$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb">
       <provider selected="true" editor-type-id="jupyter-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/topic/readme.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="153">
+            <caret line="9" column="35" lean-forward="true" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
     </entry>
   </component>
 </project>
