@@ -62,7 +62,7 @@ import nltk
 from nltk import WordNetLemmatizer, word_tokenize
 from nltk.tokenize import TweetTokenizer
 from nltk.corpus import stopwords
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.pipeline import Pipeline
 # Import custom utility functions.
 import slo_twitter_data_analysis_utility_functions as tweet_util_v2
@@ -393,6 +393,48 @@ def latent_dirichlet_allocation_grid_search(dataframe, search_parameters):
 
 ################################################################################################################
 
+def non_negative_matrix_factorization_grid_search(dataframe, search_parameters):
+    """
+    Function performs exhaustive grid search for Scikit-Learn NMF model.
+
+    https://scikit-learn.org/stable/modules/model_evaluation.html#common-cases-predefined-values
+    https://stackoverflow.com/questions/54983241/gridsearchcv-and-randomizedsearchcv-sklearn-typeerror-call-missing-1-r
+    https://stackoverflow.com/questions/44636370/scikit-learn-gridsearchcv-without-cross-validation-unsupervised-learning/44661188
+
+    FIXME - no functional unless we find a way to disable cross-validation since NMF is unsupervised training.
+    :return: None.
+    """
+    from sklearn.decomposition import NMF
+    from sklearn.model_selection import GridSearchCV
+
+    # Construct the pipeline.
+    non_negative_matrix_factorization_clf = Pipeline([
+        ('vect', TfidfVectorizer()),
+        ('clf', NMF()),
+    ])
+
+    # Perform the grid search.
+    non_negative_matrix_factorization_clf = GridSearchCV(non_negative_matrix_factorization_clf, search_parameters, cv=[(slice(None), slice(None))],
+                                                         iid=False, n_jobs=None, scoring="accuracy")
+    non_negative_matrix_factorization_clf.fit(dataframe)
+
+    # View all the information stored in the model after training it.
+    classifier_results = pd.DataFrame(non_negative_matrix_factorization_clf.cv_results_)
+    log.debug("The shape of the Non-Negative Matrix Factorization model's result data structure is:")
+    log.debug(classifier_results.shape)
+    log.debug(
+        "The contents of the Non-Negative Matrix Factorization model's result data structure is:")
+    log.debug(classifier_results.head())
+
+    # Display the optimal parameters.
+    log.info("The optimal parameters found for the Non-Negative Matrix Factorization is:")
+    for param_name in sorted(search_parameters.keys()):
+        log.info("%s: %r" % (param_name, non_negative_matrix_factorization_clf.best_params_[param_name]))
+    log.info("\n")
+
+
+################################################################################################################
+
 def dataframe_subset(tweet_dataset, sample_size):
     """
     Function slices the Twitter dataset into a smaller dataset for the purposes of saving compute time on using
@@ -421,7 +463,7 @@ def dataframe_subset(tweet_dataset, sample_size):
     tweet_dataframe_processed.sample(n=sample_size)
 
     # Assign column names.
-    tweet_dataframe_processed_column_names = ['Tweet']
+    tweet_dataframe_processed_column_names = ['text_derived', 'text_derived_preprocessed', 'text_derived_postprocessed']
 
     # Rename column in dataframe.
     tweet_dataframe_processed.columns = tweet_dataframe_processed_column_names
@@ -431,7 +473,7 @@ def dataframe_subset(tweet_dataset, sample_size):
     processed_features = selected_features.copy()
 
     # Create feature set.
-    slo_feature_set = processed_features['Tweet']
+    slo_feature_set = processed_features['text_derived_postprocessed']
 
     return slo_feature_set
 
@@ -740,7 +782,7 @@ start_time = time.time()
 #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
 #     "twitter-dataset-7-10-19-test-subset-100-examples.csv",
 #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-#     "twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv",
+#     "twitter-dataset-7-10-19-topic-extraction-ready-tweet-text-with-hashtags-excluded-created-7-18-19-test.csv",
 #     "text_derived")
 
 # # Test on our topic modeling dataset.
@@ -748,25 +790,25 @@ start_time = time.time()
 #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
 #     "twitter-dataset-7-10-19-test-subset-100-examples.csv",
 #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-#     "twitter-dataset-7-10-19-lda-ready-user-description-text-test.csv",
+#     "twitter-dataset-7-10-19-topic-extraction-ready-user-description-text-with-hashtags-excluded-created-7-18-19-test.csv",
 #     "user_description")
 
 ############################################################
 
-# # Test on our topic modeling dataset.
+# # Tokenize using our Twitter dataset.
 # tweet_dataset_preprocessor(
 #     "/home/jj47/Summer-Research-2019-master/"
-#     "twitter-dataset-7-10-19.csv",
+#     "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded",
 #     "/home/jj47/Summer-Research-2019-master/"
-#     "twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv",
+#     "twitter-dataset-7-19-19-topic-extraction-ready-tweet-text-with-hashtags-excluded-created-7-19-19.csv",
 #     "text_derived")
 
-# # Test on our topic modeling dataset.
+# # Tokenize using our Twitter dataset.
 # tweet_dataset_preprocessor(
 #     "/home/jj47/Summer-Research-2019-master/"
-#     "twitter-dataset-7-10-19.csv",
+#     "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded",
 #     "/home/jj47/Summer-Research-2019-master/"
-#     "twitter-dataset-7-10-19-lda-ready-user-description-text-with-hashtags-excluded-created-7-17-19.csv",
+#     "twitter-dataset-7-19-19-topic-extraction-ready-user-description-text-with-hashtags-excluded-created-7-19-19.csv",
 #     "user_description")
 
 ############################################################
@@ -784,4 +826,4 @@ time_elapsed_seconds = end_time - start_time
 time_elapsed_minutes = (end_time - start_time) / 60.0
 time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
 log.info("The time taken to process the file(s) is " + str(time_elapsed_seconds) + "seconds, " +
-          str(time_elapsed_minutes) + " minutes, " + str(time_elapsed_hours) + " hours")
+         str(time_elapsed_minutes) + " minutes, " + str(time_elapsed_hours) + " hours")

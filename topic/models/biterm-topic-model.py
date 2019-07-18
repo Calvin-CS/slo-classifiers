@@ -223,8 +223,12 @@ def biterm_topic_model_topic_extraction():
     topic_summuary(btm.phi_wz.T, tf_array, tf_feature_names, 10)
 
     print("\n\n Texts & Topics ..")
-    for i in range(len(slo_feature_series)):
+    for i in range(1, 10):
         print("{} (topic: {})".format(slo_feature_series[i], topics[i].argmax()))
+
+    # print("\n\n Texts & Topics ..")
+    # for i in range(len(slo_feature_series)):
+    #     print("{} (topic: {})".format(slo_feature_series[i], topics[i].argmax()))
 
 ############################################################################################
 

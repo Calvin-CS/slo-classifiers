@@ -177,7 +177,7 @@ print("\nThe number of documents: " + str(len(slo_feature_list)))
 print("\nThe number of words in the dictionary: " + str(len(dictionary)))
 print("Sample of the words in the dictionary:\n " + str(dictionary[0:100]))
 print("\nThe number of documents in the corpus: " + str(len(corpus)))
-print("Sample of the documents in the corpus:\n " + str(corpus))
+print("Sample of the documents in the corpus:\n " + str(corpus[0]))
 
 # Visualize the dictionary of words.
 wordcloud = WordCloud(background_color='white').generate(' '.join(slo_feature_list))

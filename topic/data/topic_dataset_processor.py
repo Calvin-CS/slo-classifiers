@@ -748,13 +748,14 @@ if __name__ == '__main__':
 
     start_time = time.time()
 
-    # Absolute file path.
-    create_dataset("/home/jj47/Summer-Research-2019-master/json/"
-                   "dataset_slo_20100101-20180510-reduced-size.json",
-                   "/home/jj47/Summer-Research-2019-master/"
-                   "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded-reduced-size",
-                   True)
+    # # Relative file path.
+    # create_dataset("/home/jj47/Summer-Research-2019-master/json/"
+    #                "dataset_slo_20100101-20180510-reduced-size.json",
+    #                "/home/jj47/Summer-Research-2019-master/"
+    #                "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded-reduced-size",
+    #                True)
 
+    # # Absolute file path.
     # create_dataset("D:/Dropbox/summer-research-2019/json/dataset_slo_20100101-20180510.json",
     #                "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
     #                "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded-reduced-size",
