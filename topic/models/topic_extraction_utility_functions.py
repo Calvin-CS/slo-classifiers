@@ -62,7 +62,7 @@ import nltk
 from nltk import WordNetLemmatizer, word_tokenize
 from nltk.tokenize import TweetTokenizer
 from nltk.corpus import stopwords
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.pipeline import Pipeline
 # Import custom utility functions.
 import slo_twitter_data_analysis_utility_functions as tweet_util_v2
@@ -123,7 +123,7 @@ def preprocess_tweet_text(tweet_text):
     tweet_text = html.unescape(tweet_text)
 
     # Remove "RT" tags.
-    preprocessed_tweet_text = re.sub(r'^(rt @\w+: )', "", tweet_text)
+    preprocessed_tweet_text = re.sub(r'^(RT @\w+: )', "", tweet_text)
 
     # Remove concatenated URL's.
     preprocessed_tweet_text = re.sub(r'(.)http', r'\1 http', preprocessed_tweet_text)
@@ -141,8 +141,8 @@ def preprocess_tweet_text(tweet_text):
     # Remove Tweet stock symbols.
     preprocessed_tweet_text = re.sub(r'$[a-zA-Z]+', r"slo_stock", preprocessed_tweet_text)
 
-    # # Remove Tweet hashtags.
-    # preprocessed_tweet_text = re.sub(r'#\w+', r"slo_hash", preprocessed_tweet_text)
+    # Remove Tweet hashtags.
+    preprocessed_tweet_text = re.sub(r'#\w+', r"slo_hash", preprocessed_tweet_text)
 
     # Remove Tweet cashtags.
     preprocessed_tweet_text = \
@@ -210,8 +210,11 @@ def postprocess_tweet_text(tweet_text):
     # Remove all punctuation. (using spaCy check instead)
     # postprocessed_tweet_text = tweet_text.translate(str.maketrans('', '', string.punctuation))
 
+    # Remove all "slo_" placeholders. TODO - make functional
+    # preprocessed_tweet_text = re.sub(r'(.*slo_.*)', r" ", tweet_text)
+
     # Remove irrelevant words from Tweets.
-    delete_list = ["slo_url", "slo_mention", "word_n", "slo_year", "slo_cash", "woodside", "auspol", "adani",
+    delete_list = ["word_n", "woodside", "auspol", "adani",
                    "stopadani",
                    "ausbiz", "santos", "whitehaven", "tinto", "fortescue", "bhp", "adelaide", "billiton", "csg",
                    "nswpol",
@@ -220,13 +223,13 @@ def postprocess_tweet_text(tweet_text):
                    "melbourne", "andrew", "fuck", "spadani", "greg", "th", "australians", "http", "https", "rt",
                    "goadani",
                    "co", "amp", "riotinto", "carmichael", "abbot", "bill shorten",
-                   "slourl", "slomention", "slohash", "sloyear", "slotime", "slocash", "slostock"]
+                   "slo_url", "slo_mention", "slo_hash", "slo_year", "slo_time", "slo_cash", "slo_stock"]
 
     # Remove stop words from Tweets using nltk.
-    delete_list = list(stopwords.words('english'))
+    # delete_list = list(stopwords.words('english'))
 
     # Do not remove anything.
-    delete_list = []
+    # delete_list = []
 
     # Convert series to string.
     tweet_string = str(tweet_text)
@@ -390,6 +393,48 @@ def latent_dirichlet_allocation_grid_search(dataframe, search_parameters):
 
 ################################################################################################################
 
+def non_negative_matrix_factorization_grid_search(dataframe, search_parameters):
+    """
+    Function performs exhaustive grid search for Scikit-Learn NMF model.
+
+    https://scikit-learn.org/stable/modules/model_evaluation.html#common-cases-predefined-values
+    https://stackoverflow.com/questions/54983241/gridsearchcv-and-randomizedsearchcv-sklearn-typeerror-call-missing-1-r
+    https://stackoverflow.com/questions/44636370/scikit-learn-gridsearchcv-without-cross-validation-unsupervised-learning/44661188
+
+    FIXME - no functional unless we find a way to disable cross-validation since NMF is unsupervised training.
+    :return: None.
+    """
+    from sklearn.decomposition import NMF
+    from sklearn.model_selection import GridSearchCV
+
+    # Construct the pipeline.
+    non_negative_matrix_factorization_clf = Pipeline([
+        ('vect', TfidfVectorizer()),
+        ('clf', NMF()),
+    ])
+
+    # Perform the grid search.
+    non_negative_matrix_factorization_clf = GridSearchCV(non_negative_matrix_factorization_clf, search_parameters, cv=[(slice(None), slice(None))],
+                                                         iid=False, n_jobs=None, scoring="accuracy")
+    non_negative_matrix_factorization_clf.fit(dataframe)
+
+    # View all the information stored in the model after training it.
+    classifier_results = pd.DataFrame(non_negative_matrix_factorization_clf.cv_results_)
+    log.debug("The shape of the Non-Negative Matrix Factorization model's result data structure is:")
+    log.debug(classifier_results.shape)
+    log.debug(
+        "The contents of the Non-Negative Matrix Factorization model's result data structure is:")
+    log.debug(classifier_results.head())
+
+    # Display the optimal parameters.
+    log.info("The optimal parameters found for the Non-Negative Matrix Factorization is:")
+    for param_name in sorted(search_parameters.keys()):
+        log.info("%s: %r" % (param_name, non_negative_matrix_factorization_clf.best_params_[param_name]))
+    log.info("\n")
+
+
+################################################################################################################
+
 def dataframe_subset(tweet_dataset, sample_size):
     """
     Function slices the Twitter dataset into a smaller dataset for the purposes of saving compute time on using
@@ -418,7 +463,7 @@ def dataframe_subset(tweet_dataset, sample_size):
     tweet_dataframe_processed.sample(n=sample_size)
 
     # Assign column names.
-    tweet_dataframe_processed_column_names = ['Tweet']
+    tweet_dataframe_processed_column_names = ['text_derived', 'text_derived_preprocessed', 'text_derived_postprocessed']
 
     # Rename column in dataframe.
     tweet_dataframe_processed.columns = tweet_dataframe_processed_column_names
@@ -428,7 +473,7 @@ def dataframe_subset(tweet_dataset, sample_size):
     processed_features = selected_features.copy()
 
     # Create feature set.
-    slo_feature_set = processed_features['Tweet']
+    slo_feature_set = processed_features['text_derived_postprocessed']
 
     return slo_feature_set
 
@@ -506,9 +551,12 @@ def topic_author_model_group_by_dataset_row_index_value(tweet_dataframe, debug_b
     group_by_author_with_row_index_value = pd.DataFrame(group_by_author_with_row_index_value)
 
     group_by_author_with_row_index_value.columns = ["user_screen_name", "all_attributes"]
-    print(f"Dataframe columns:\n {group_by_author_with_row_index_value.columns}\n")
-    print(f"Dataframe shape:\n {group_by_author_with_row_index_value.shape}\n")
-    print(f"Dataframe samples:\n {group_by_author_with_row_index_value.sample(5)}\n")
+    # print(f"Dataframe columns:\n {group_by_author_with_row_index_value.columns}\n")
+    # print(f"Dataframe shape:\n {group_by_author_with_row_index_value.shape}\n")
+    # print(f"Dataframe samples:\n {group_by_author_with_row_index_value.sample(5)}\n")
+    print("Dataframe columns:\n" + str(group_by_author_with_row_index_value.columns) + "\n")
+    print("Dataframe shape:\n" + str(group_by_author_with_row_index_value.shape) + "\n")
+    print("Dataframe samples:\n" + str(group_by_author_with_row_index_value.sample(5)) + "\n")
 
     group_by_author_with_row_index_value_dictionary = {}
 
@@ -528,15 +576,21 @@ def topic_author_model_group_by_dataset_row_index_value(tweet_dataframe, debug_b
     group_by_author_with_row_index_value["associated_row_index_values"] = \
         group_by_author_with_row_index_value.apply(create_mappings, axis=1)
 
-    for key, value in group_by_author_with_row_index_value_dictionary.items():
-        print(f"Author: {key}")
-        print(f"List of associated Row Index Values:\n {value}")
+    # for key, value in group_by_author_with_row_index_value_dictionary.items():
+    #     # print(f"Author: {key}")
+    #     # print(f"List of associated Row Index Values:\n {value}")
+    #     print("Author:" + str(key))
+    #     print("List of associated Tweet Texts (documents):\n" + str(value))
 
     if debug_boolean:
         tweet_util_v2.export_to_csv_json(
             group_by_author_with_row_index_value, ["user_screen_name", "associated_row_index_values"],
             "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
             "group-by-authors-with-row-index-value", "w", "csv")
+        # tweet_util_v2.export_to_csv_json(
+        #     group_by_author_with_row_index_value, ["user_screen_name", "associated_row_index_values"],
+        #     "/home/jj47/Summer-Research-2019-master/"
+        #     "group-by-authors-with-row-index-value", "w", "csv")
 
     return group_by_author_with_row_index_value_dictionary
 
@@ -571,9 +625,12 @@ def topic_author_model_group_by_author_tweet_id(tweet_dataframe, debug_boolean):
     group_by_author_with_tweet_id = pd.DataFrame(group_by_author_with_tweet_id)
 
     group_by_author_with_tweet_id.columns = ["user_screen_name", "associated_tweet_ids"]
-    print(f"Dataframe columns:\n {group_by_author_with_tweet_id.columns}\n")
-    print(f"Dataframe shape:\n {group_by_author_with_tweet_id.shape}\n")
-    print(f"Dataframe samples:\n {group_by_author_with_tweet_id.sample(5)}\n")
+    # print(f"Dataframe columns:\n {group_by_author_with_tweet_id.columns}\n")
+    # print(f"Dataframe shape:\n {group_by_author_with_tweet_id.shape}\n")
+    # print(f"Dataframe samples:\n {group_by_author_with_tweet_id.sample(5)}\n")
+    print("Dataframe columns:\n" + str(group_by_author_with_tweet_id.columns) + "\n")
+    print("Dataframe shape:\n" + str(group_by_author_with_tweet_id.shape) + "\n")
+    print("Dataframe samples:\n" + str(group_by_author_with_tweet_id.sample(5)) + "\n")
 
     def convert_to_integers(row):
         """
@@ -602,9 +659,11 @@ def topic_author_model_group_by_author_tweet_id(tweet_dataframe, debug_boolean):
         group_by_author_with_tweet_id.apply(convert_to_integers, axis=1)
     group_by_author_with_tweet_id.apply(create_mappings, axis=1)
 
-    for key, value in group_by_author_with_tweet_id_dictionary.items():
-        print(f"Author: {key}")
-        print(f"List of associated Tweet ID's:\n {value}")
+    # for key, value in group_by_author_with_tweet_id_dictionary.items():
+    #     # print(f"Author: {key}")
+    #     # print(f"List of associated Tweet ID's:\n {value}")
+    #     print("Author:" + str(key))
+    #     print("List of associated Tweet Texts (documents):\n" + str(value))
 
     if debug_boolean:
         tweet_util_v2.export_to_csv_json(
@@ -645,9 +704,12 @@ def topic_author_model_group_by_author_tweet_text(tweet_dataframe, debug_boolean
     group_by_author_with_tweet_text = pd.DataFrame(group_by_author_with_tweet_text)
 
     group_by_author_with_tweet_text.columns = ["user_screen_name", "associated_tweet_text"]
-    print(f"Dataframe columns:\n {group_by_author_with_tweet_text.columns}\n")
-    print(f"Dataframe shape:\n {group_by_author_with_tweet_text.shape}\n")
-    print(f"Dataframe samples:\n {group_by_author_with_tweet_text.sample(5)}\n")
+    # print(f"Dataframe columns:\n {group_by_author_with_tweet_text.columns}\n")
+    # print(f"Dataframe shape:\n {group_by_author_with_tweet_text.shape}\n")
+    # print(f"Dataframe samples:\n {group_by_author_with_tweet_text.sample(5)}\n")
+    print("Dataframe columns:\n" + str(group_by_author_with_tweet_text.columns) + "\n")
+    print("Dataframe shape:\n" + str(group_by_author_with_tweet_text.shape) + "\n")
+    print("Dataframe samples:\n" + str(group_by_author_with_tweet_text.sample(5)) + "\n")
 
     def convert_to_strings(row):
         """
@@ -676,9 +738,11 @@ def topic_author_model_group_by_author_tweet_text(tweet_dataframe, debug_boolean
         group_by_author_with_tweet_text.apply(convert_to_strings, axis=1)
     group_by_author_with_tweet_text.apply(create_mappings, axis=1)
 
-    for key, value in group_by_author_with_tweet_text_dictionary.items():
-        print(f"Author: {key}")
-        print(f"List of associated Tweet Texts (documents):\n {value}")
+    # for key, value in group_by_author_with_tweet_text_dictionary.items():
+    #     # print(f"Author: {key}")
+    #     # print(f"List of associated Tweet Texts (documents):\n {value}")
+    #     print("Author:" + str(key))
+    #     print("List of associated Tweet Texts (documents):\n" + str(value))
 
     if debug_boolean:
         tweet_util_v2.export_to_csv_json(
@@ -713,52 +777,53 @@ start_time = time.time()
 
 ############################################################
 
-# Test on our topic modeling dataset.
-tweet_dataset_preprocessor(
-    "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-    "twitter-dataset-7-10-19-test-subset-100-examples.csv",
-    "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-    "twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv",
-    "text_derived")
+# # Test on our topic modeling dataset.
+# tweet_dataset_preprocessor(
+#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+#     "twitter-dataset-7-10-19-test-subset-100-examples.csv",
+#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+#     "twitter-dataset-7-10-19-topic-extraction-ready-tweet-text-with-hashtags-excluded-created-7-18-19-test.csv",
+#     "text_derived")
 
 # # Test on our topic modeling dataset.
 # tweet_dataset_preprocessor(
 #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
 #     "twitter-dataset-7-10-19-test-subset-100-examples.csv",
 #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-#     "twitter-dataset-7-10-19-lda-ready-user-description-text-test.csv",
+#     "twitter-dataset-7-10-19-topic-extraction-ready-user-description-text-with-hashtags-excluded-created-7-18-19-test.csv",
 #     "user_description")
 
 ############################################################
 
-# # Test on our topic modeling dataset.
+# # Tokenize using our Twitter dataset.
 # tweet_dataset_preprocessor(
 #     "/home/jj47/Summer-Research-2019-master/"
-#     "twitter-dataset-7-10-19.csv",
+#     "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded",
 #     "/home/jj47/Summer-Research-2019-master/"
-#     "twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-included.csv",
+#     "twitter-dataset-7-19-19-topic-extraction-ready-tweet-text-with-hashtags-excluded-created-7-19-19.csv",
 #     "text_derived")
-#
-# # Test on our topic modeling dataset.
+
+# # Tokenize using our Twitter dataset.
 # tweet_dataset_preprocessor(
 #     "/home/jj47/Summer-Research-2019-master/"
-#     "twitter-dataset-7-10-19.csv",
+#     "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded",
 #     "/home/jj47/Summer-Research-2019-master/"
-#     "twitter-dataset-7-10-19-lda-ready-user-description-text-with-hashtags-included.csv",
+#     "twitter-dataset-7-19-19-topic-extraction-ready-user-description-text-with-hashtags-excluded-created-7-19-19.csv",
 #     "user_description")
 
 ############################################################
-
-end_time = time.time()
-time_elapsed_seconds = end_time - start_time
-time_elapsed_minutes = (end_time - start_time) / 60.0
-time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
-log.debug(f"The time taken to visualize the statistics is {time_elapsed_seconds} seconds, "
-          f"{time_elapsed_minutes} minutes, {time_elapsed_hours} hours")
 
 # end_time = time.time()
 # time_elapsed_seconds = end_time - start_time
 # time_elapsed_minutes = (end_time - start_time) / 60.0
 # time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
-# log.debug("The time taken to process the file(s) is " + str(time_elapsed_seconds) + "seconds, " +
-#           str(time_elapsed_minutes) + " minutes, " + str(time_elapsed_hours) + " hours")
+# time.sleep(3)
+# log.info(f"The time taken to visualize the statistics is {time_elapsed_seconds} seconds, "
+#          f"{time_elapsed_minutes} minutes, {time_elapsed_hours} hours")
+
+end_time = time.time()
+time_elapsed_seconds = end_time - start_time
+time_elapsed_minutes = (end_time - start_time) / 60.0
+time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
+log.info("The time taken to process the file(s) is " + str(time_elapsed_seconds) + "seconds, " +
+         str(time_elapsed_minutes) + " minutes, " + str(time_elapsed_hours) + " hours")

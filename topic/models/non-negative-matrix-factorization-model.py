@@ -2,25 +2,16 @@
 SLO Topic Modeling
 Advisor: Professor VanderLinden
 Name: Joseph Jinn
-Date: 5-29-19
+Date: 7-19-19
 
-Scikit-Learn: LDA - Latent Dirichlet Allocation
+Scikit-Learn: NMF - Non-negative Matrix Factorization
 
 ###########################################################
 Notes:
 
-LDA can only use raw term counts (CANNOT use tfidf transformer)
-
 ###########################################################
 Resources Used:
 
-https://scikit-learn.org/stable/modules/decomposition.html#latentdirichletallocation
-https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.LatentDirichletAllocation.html#sklearn.decomposition.LatentDirichletAllocation
-https://medium.com/mlreview/topic-modeling-with-scikit-learn-e80d33668730
-https://pypi.org/project/lda/
-
-TODO - setup Singularity container and perform exhaustive grid search or randomized grid search for LDA hyperparameters.
-TODO - Add topic extraction logging that outputs the # of records processed so far. (set to INFO level), if possible.
 """
 
 ################################################################################################################
@@ -32,10 +23,10 @@ import warnings
 import time
 import pandas as pd
 import numpy as np
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Import custom utility functions.
-import topic_extraction_utility_functions as lda_util
+import topic_extraction_utility_functions as topic_util
 
 #############################################################
 
@@ -68,10 +59,10 @@ log.disable(level=log.DEBUG)
 # tweet_dataset_processed = \
 #     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
 
-# Import the dataset (absolute path).
-tweet_dataset_processed = \
-    pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-                "twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
+# # Import the dataset (absolute path).
+# tweet_dataset_processed = \
+#     pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+#                 "twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
 
 # # Import the dataset (test/debug).
 # tweet_dataset_processed = \
@@ -81,6 +72,11 @@ tweet_dataset_processed = \
 # tweet_dataset_processed = \
 #     pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
 #                 "twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
+
+# Test on a small debug dataset.
+tweet_dataset_processed = \
+    pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+                "twitter-dataset-7-10-19-topic-extraction-ready-tweet-text-test.csv", sep=",")
 
 # Reindex and shuffle the data randomly.
 tweet_dataset_processed = tweet_dataset_processed.reindex(
@@ -145,56 +141,38 @@ slo_feature_list = slo_feature_series.tolist()
 
 ################################################################################################################
 
-def latent_dirichlet_allocation_topic_extraction():
+def non_negative_matrix_factorization_topic_extraction():
     """
-    Function performs topic extraction on Tweets using Scikit-Learn LDA model.
+    Function performs topic extraction on Tweets using Scikit-Learn NMF model.
 
     :return: None.
     """
-    from sklearn.decomposition import LatentDirichletAllocation
+    from sklearn.decomposition import NMF
 
-    # LDA can only use raw term counts for LDA because it is a probabilistic graphical model.
-    tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words='english')
-    tf = tf_vectorizer.fit_transform(slo_feature_series)
-    tf_feature_names = tf_vectorizer.get_feature_names()
+    # Use tf-idf features for NMF.
+    print("\nExtracting tf-idf features for NMF...")
+    tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words='english')
+    tfidf = tfidf_vectorizer.fit_transform(slo_feature_series)
+    tfidf_feature_names = tfidf_vectorizer.get_feature_names()
 
-    # Run LDA.
-    lda = LatentDirichletAllocation(n_components=20, max_iter=5, learning_method='online', learning_offset=50.,
-                                    random_state=0).fit(tf)
+    # Run NMF using Frobenius norm.
+    nmf_frobenius = NMF(n_components=20, random_state=1,
+                        alpha=.1, l1_ratio=.5).fit(tfidf)
+
+    # Run NMF using generalized Kullback-Leibler divergence.
+    nmf_kullback_leibler = NMF(n_components=20, random_state=1,
+                               beta_loss='kullback-leibler', solver='mu', max_iter=1000, alpha=.1,
+                               l1_ratio=.5).fit(tfidf)
+
     time.sleep(3)
 
     # Display the top words for each topic.
-    lda_util.display_topics(lda, tf_feature_names, 10)
+    print("\nTopics using NMF Frobenius norm:")
+    topic_util.display_topics(nmf_frobenius, tfidf_feature_names, 10)
 
-
-################################################################################################################
-
-def latent_dirichlet_allocation_collapsed_gibbs_sampling():
-    """
-    Functions performs LDA topic extraction using collapsed Gibbs Sampling.
-
-    https://pypi.org/project/lda/
-
-    :return: None.
-    """
-    import lda
-
-    # LDA can only use raw term counts for LDA because it is a probabilistic graphical model.
-    tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words='english')
-    tf = tf_vectorizer.fit_transform(slo_feature_series)
-    tf_feature_names = tf_vectorizer.get_feature_names()
-
-    # Train and fit the LDA model.
-    model = lda.LDA(n_topics=12, n_iter=1000, random_state=1)
-    model.fit(tf)  # model.fit_transform(X) is also available
-    topic_word = model.topic_word_  # model.components_ also works
-    n_top_words = 10
-    time.sleep(3)
-
-    # Display the topics and the top words associated with.
-    for i, topic_dist in enumerate(topic_word):
-        topic_words = np.array(tf_feature_names)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
-        print('Topic {}: {}'.format(i, ' '.join(topic_words)))
+    # Display the top words for each topic.
+    print("\nTopics using generalized Kullback-Leibler divergence:")
+    topic_util.display_topics(nmf_kullback_leibler, tfidf_feature_names, 10)
 
 
 ################################################################################################################
@@ -210,6 +188,7 @@ if __name__ == '__main__':
     """
     Perform exhaustive grid search.
     """
+    # FIXME - non functional unless we find a way to disable cross-validation "cv" parameter in GridSearchCV Class.
     # What parameters do we search for?
     lda_search_parameters = {
         'vect__strip_accents': [None],
@@ -221,37 +200,29 @@ if __name__ == '__main__':
         'vect__max_df': [0.95],
         'vect__max_features': [1000],
         'clf__n_components': [5, 10, 20],
-        'clf__doc_topic_prior': [None],
-        'clf__topic_word_prior': [None],
-        'clf__learning_method': ['online'],
-        'clf__learning_decay': [0.5, 0.7, 0.9],
-        'clf__learning_offset': [5, 10, 15],
-        'clf__max_iter': [1, 5, 10],
-        'clf__batch_size': [64, 128, 256],
-        'clf__evaluate_every': [0],
-        # 'clf__total_samples': [1e4, 1e6, 1e8],
-        # 'clf__perp_tol': [1e-1, 1e-2, 1e-3],
-        'clf__mean_change_tol': [1e-1, 1e-3, 1e-5],
-        'clf__max_doc_update_iter': [50, 100, 150],
-        'clf__n_jobs': [-1],
-        'clf__verbose': [0],
+        'clf__init': ['random', 'nndsvd', 'nndsvda', 'nndsvdar'],
+        'clf__solver': ['cd', 'mu'],
+        'clf__beta_loss': ['frobenius', 'kullback-leibler', 'itakura-saito'],
+        'clf__tol': [1e-2, 1e-4, 1e-6],
+        'clf__max_iter': [100, 200, 300],
+        'clf__alpha': [0],
+        'clf__l1_ratio': [0],
+        'clf__verbose': [False],
+        'clf__shuffle': [False],
         'clf__random_state': [None],
     }
-    # lda_util.latent_dirichlet_allocation_grid_search(slo_feature_set, lda_search_parameters)
+    # topic_util.non_negative_matrix_factorization_grid_search(slo_feature_series, lda_search_parameters)
     """
     Perform exhaustive grid search on data subset.
     """
-    # data_subset = lda_util.dataframe_subset(tweet_dataset_processed, 50)
-    # lda_util.latent_dirichlet_allocation_grid_search(data_subset, lda_search_parameters)
+    # data_subset = topic_util.dataframe_subset(tweet_dataset_processed, 50)
+    # topic_util.non_negative_matrix_factorization_grid_search(data_subset, lda_search_parameters)
 
     """
     Perform the topic extraction.
     """
-    latent_dirichlet_allocation_topic_extraction()
-    """
-    Perform the topic extraction using collapsed Gibbs Sampling.
-    """
-    latent_dirichlet_allocation_collapsed_gibbs_sampling()
+    # non_negative_matrix_factorization_topic_extraction()
+
     ################################################
     my_end_time = time.time()
 

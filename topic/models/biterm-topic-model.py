@@ -89,20 +89,35 @@ Turn debug log statements for various sections of code on/off.
 (adjust log level as necessary)
 """
 log.basicConfig(level=log.INFO)
+log.disable(level=log.DEBUG)
 
 ################################################################################################################
 ################################################################################################################
 
-# Import the dataset.
+# # Import the dataset (relative path).
+# tweet_dataset_processed = \
+#     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
+
+# Import the dataset (absolute path).
 tweet_dataset_processed = \
-    pd.read_csv("/home/jj47/Summer-Research-2019-master/datasets/dataset_20100101-20180510_tok_LDA_PROCESSED_shortened.csv", sep=",")
+    pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+                "twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
+
+# # Import the dataset (test/debug).
+# tweet_dataset_processed = \
+#     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
+
+# # Import the dataset (test/debug).
+# tweet_dataset_processed = \
+#     pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+#                 "twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
 
 # Reindex and shuffle the data randomly.
-tweet_text_dataframe = tweet_dataset_processed.reindex(
+tweet_dataset_processed = tweet_dataset_processed.reindex(
     pd.np.random.permutation(tweet_dataset_processed.index))
 
 # Generate a Pandas dataframe.
-tweet_dataframe_processed = pd.DataFrame(tweet_dataset_processed)
+tweet_text_dataframe = pd.DataFrame(tweet_dataset_processed)
 
 # # Print shape and column names.
 # log.info(f"\nThe shape of the Tweet text dataframe:")
@@ -135,51 +150,27 @@ log.info(tweet_text_dataframe.columns)
 tweet_text_dataframe.index = pd.RangeIndex(len(tweet_text_dataframe.index))
 
 # Assign column names.
-tweet_text_dataframe_column_names = ['Tweet']
+tweet_text_dataframe_column_names = ['text_derived', 'text_derived_preprocessed', 'text_derived_postprocessed']
 
 # Rename column in dataframe.
 tweet_text_dataframe.columns = tweet_text_dataframe_column_names
 
 # Create input feature.
-selected_features = tweet_text_dataframe[['Tweet']]
+selected_features = tweet_text_dataframe[['text_derived_postprocessed']]
 processed_features = selected_features.copy()
 
 # # Check what we are using as inputs.
 # log.info(f"\nA sample Tweet in our input feature:")
-# log.info(f"{processed_features['Tweet'][0]}\n")
+# log.info(f"{processed_features['text_derived_postprocessed'][0]}\n")
 
 # Check what we are using as inputs.
 log.info("\nA sample Tweet in our input feature:")
-log.info(processed_features['Tweet'][0])
+log.info(processed_features['text_derived_postprocessed'][0])
 
 # Create feature set.
-slo_feature_series = processed_features['Tweet']
+slo_feature_series = processed_features['text_derived_postprocessed']
 slo_feature_series = pd.Series(slo_feature_series)
 slo_feature_list = slo_feature_series.tolist()
-
-# Convert feature list of sentences to comma-separated dictionary of words.
-words = [[text for text in tweet.split()] for tweet in slo_feature_list]
-# log.info(f"\nDictionary of individual words:")
-# log.info(f"{words[0]}\n")
-
-log.info("\nDictionary of individual words:")
-log.info(words[0])
-
-# Create the Gensim dictionary of words.
-# dictionary = corpora.Dictionary(words)
-# log.info(f"\nGensim dictionary of tokenized words.")
-# log.info(f"{dictionary}\n")
-
-# log.info("\nGensim dictionary of tokenized words.")
-# log.info(dictionary)
-
-# Create the Gensim corpus of document term frequencies.
-# corpus = [dictionary.doc2bow(word, allow_update=True) for word in words]
-# log.info(f"\nGensim corpus of document-term frequencies.")
-# log.info(f"{corpus[0:10]}\n")
-
-# log.info("\nGensim corpus of document-term frequencies.")
-# log.info(corpus[0:10])
 
 
 ################################################################################################################
@@ -222,6 +213,7 @@ def biterm_topic_model_topic_extraction():
         biterms_chunk = biterms[i:i + 100]
         btm.fit(biterms_chunk, iterations=50)
     topics = btm.transform(biterms)
+    time.sleep(3)
 
     # print("\n\n Visualize Topics ..")
     # vis = pyLDAvis.prepare(btm.phi_wz.T, topics, np.count_nonzero(tf_array, axis=1), tf_feature_names, np.sum(tf_array, axis=0))
@@ -231,8 +223,12 @@ def biterm_topic_model_topic_extraction():
     topic_summuary(btm.phi_wz.T, tf_array, tf_feature_names, 10)
 
     print("\n\n Texts & Topics ..")
-    for i in range(len(slo_feature_series)):
+    for i in range(1, 10):
         print("{} (topic: {})".format(slo_feature_series[i], topics[i].argmax()))
+
+    # print("\n\n Texts & Topics ..")
+    # for i in range(len(slo_feature_series)):
+    #     print("{} (topic: {})".format(slo_feature_series[i], topics[i].argmax()))
 
 ############################################################################################
 
@@ -255,7 +251,7 @@ if __name__ == '__main__':
     time_elapsed_in_hours = (my_end_time - my_start_time) / 60.0 / 60.0
     # print(f"Time taken to process dataset: {time_elapsed_in_seconds} seconds, "
     #       f"{time_elapsed_in_minutes} minutes, {time_elapsed_in_hours} hours.")
-    print("Time taken to process dataset: " + str(time_elapsed_in_seconds) + " seconds, " +
-          str(time_elapsed_in_minutes) + " minutes, " + str(time_elapsed_in_hours) + " hours.")
+    print("\n\nTime taken to process dataset: " + str(time_elapsed_in_seconds) + " seconds, " +
+          str(time_elapsed_in_minutes) + " minutes, " + str(time_elapsed_in_hours) + " hours.\n")
 
 ############################################################################################

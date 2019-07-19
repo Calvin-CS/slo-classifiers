@@ -87,73 +87,125 @@ Turn debug log statements for various sections of code on/off.
 (adjust log level as necessary)
 """
 log.basicConfig(level=log.INFO)
+log.disable(level=log.DEBUG)
 
 
 ################################################################################################################
 ################################################################################################################
 
-# Import the dataset.
+# # Import the dataset (relative path).
+# tweet_dataset_processed = \
+#     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
+
+# Import the dataset (absolute path).
 tweet_dataset_processed = \
-    pd.read_csv("D:/Dropbox/summer-research-2019/datasets/dataset_20100101-20180510_tok_LDA_PROCESSED.csv", sep=",")
+    pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+                "twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
+
+# # Import the dataset (test/debug).
+# tweet_dataset_processed = \
+#     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
+
+# # Import the dataset (test/debug).
+# tweet_dataset_processed = \
+#     pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+#                 "twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
 
 # Reindex and shuffle the data randomly.
-tweet_text_dataframe = tweet_dataset_processed.reindex(
+tweet_dataset_processed = tweet_dataset_processed.reindex(
     pd.np.random.permutation(tweet_dataset_processed.index))
 
 # Generate a Pandas dataframe.
-tweet_dataframe_processed = pd.DataFrame(tweet_dataset_processed)
+tweet_text_dataframe = pd.DataFrame(tweet_dataset_processed)
+
+# # Print shape and column names.
+# log.info(f"\nThe shape of the Tweet text dataframe:")
+# log.info(f"{tweet_text_dataframe.shape}\n")
+# log.info(f"\nThe columns of the Tweet text dataframe:")
+# log.info(f"{tweet_text_dataframe.columns}\n")
 
 # Print shape and column names.
-log.info(f"\nThe shape of the Tweet text dataframe:")
-log.info(f"{tweet_text_dataframe.shape}\n")
-log.info(f"\nThe columns of the Tweet text dataframe:")
-log.info(f"{tweet_text_dataframe.columns}\n")
+log.info("\nThe shape of the Tweet text dataframe:")
+log.info(tweet_text_dataframe.shape)
+log.info("\nThe columns of the Tweet text dataframe:")
+log.info(tweet_text_dataframe.columns)
 
 # Drop any NaN or empty Tweet rows in dataframe (or else CountVectorizer will blow up).
 tweet_text_dataframe = tweet_text_dataframe.dropna()
 
+# # Print shape and column names.
+# log.info(f"\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
+# log.info(f"{tweet_text_dataframe.shape}\n")
+# log.info(f"\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
+# log.info(f"{tweet_text_dataframe.columns}\n")
+
 # Print shape and column names.
-log.info(f"\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
-log.info(f"{tweet_text_dataframe.shape}\n")
-log.info(f"\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
-log.info(f"{tweet_text_dataframe.columns}\n")
+log.info("\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
+log.info(tweet_text_dataframe.shape)
+log.info("\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
+log.info(tweet_text_dataframe.columns)
 
 # Reindex everything.
 tweet_text_dataframe.index = pd.RangeIndex(len(tweet_text_dataframe.index))
 
 # Assign column names.
-tweet_text_dataframe_column_names = ['Tweet']
+tweet_text_dataframe_column_names = ['text_derived', 'text_derived_preprocessed', 'text_derived_postprocessed']
 
 # Rename column in dataframe.
 tweet_text_dataframe.columns = tweet_text_dataframe_column_names
 
 # Create input feature.
-selected_features = tweet_text_dataframe[['Tweet']]
+selected_features = tweet_text_dataframe[['text_derived_postprocessed']]
 processed_features = selected_features.copy()
 
+# # Check what we are using as inputs.
+# log.info(f"\nA sample Tweet in our input feature:")
+# log.info(f"{processed_features['text_derived_postprocessed'][0]}\n")
+
 # Check what we are using as inputs.
-log.info(f"\nA sample Tweet in our input feature:")
-log.info(f"{processed_features['Tweet'][0]}\n")
+log.info("\nA sample Tweet in our input feature:")
+log.info(processed_features['text_derived_postprocessed'][0])
 
 # Create feature set.
-slo_feature_series = processed_features['Tweet']
+slo_feature_series = processed_features['text_derived_postprocessed']
 slo_feature_series = pd.Series(slo_feature_series)
 slo_feature_list = slo_feature_series.tolist()
 
 # Convert feature list of sentences to comma-separated dictionary of words.
 words = [[text for text in tweet.split()] for tweet in slo_feature_list]
-log.info(f"\nDictionary of individual words:")
-log.info(f"{words[0]}\n")
+# log.info(f"\nDictionary of individual words:")
+# log.info(f"{words[0]}\n")
+log.info("\nDictionary of individual words:")
+log.info(words[0])
+
+# # Create the Gensim dictionary of words.
+# dictionary = corpora.Dictionary(words)
+# log.info(f"\nGensim dictionary of tokenized words.")
+# log.info(f"{dictionary}\n")
+# log.info(f"\nGensim dictionary of tokenized words with index ID's.")
+# log.info(f"{dictionary.token2id}\n")
 
 # Create the Gensim dictionary of words.
 dictionary = corpora.Dictionary(words)
-log.info(f"\nGensim dictionary of tokenized words.")
-log.info(f"{dictionary}\n")
+log.info("\nGensim dictionary of tokenized words.")
+log.info(dictionary)
+log.info("\n")
+log.info("\nGensim dictionary of tokenized words with index ID's.")
+log.info(dictionary.token2id)
+log.info("\n")
+
+# # Create the Gensim corpus of document term frequencies.
+# corpus = [dictionary.doc2bow(word, allow_update=True) for word in words]
+# log.info(f"# of documents in corpus: {len(corpus)}\n")
+# log.info(f"\nSample of Gensim corpus of document-term frequencies.")
+# log.info(f"{corpus[0:10]}\n")
 
 # Create the Gensim corpus of document term frequencies.
 corpus = [dictionary.doc2bow(word, allow_update=True) for word in words]
-log.info(f"\nGensim corpus of document-term frequencies.")
-log.info(f"{corpus[0:10]}\n")
+log.info("# of documents in corpus: " + str(len(corpus)) + "\n")
+log.info("\nSample of Gensim corpus of document-term frequencies.")
+log.info(corpus[0:10])
+log.info("\n")
 
 
 ################################################################################################################
@@ -173,27 +225,35 @@ def hierarchical_dirichlet_process_topic_extraction():
     tf = tf_vectorizer.fit_transform(slo_feature_series)
     tf_feature_names = tf_vectorizer.get_feature_names()
 
-    log.info("\n.fit_transform - Learn the vocabulary dictionary and return term-document matrix.")
-    log.info(f"{tf}\n")
-    log.info("\n.get_feature_names - Array mapping from feature integer indices to feature name")
-    log.info(f"{tf_feature_names}\n")
+    # log.info("\n.fit_transform - Learn the vocabulary dictionary and return term-document matrix.")
+    # log.info(f"{tf}\n")
+    # log.info("\n.get_feature_names - Array mapping from feature integer indices to feature name")
+    # log.info(f"{tf_feature_names}\n")
 
-    # Sample dictionary and corpus.
-    log.info(f"\nExample dictionary format for Gensim:")
-    log.info(f"{common_dictionary}\n")
-    log.info(f"\nExample corpus format for Gensim:")
-    log.info(f"{common_corpus}\n")
+    log.info("\n.fit_transform - Learn the vocabulary dictionary and return term-document matrix.")
+    log.info(tf)
+    log.info("\n.get_feature_names - Array mapping from feature integer indices to feature name")
+    log.info(tf_feature_names)
+
+    # # Sample dictionary and corpus.
+    # log.info(f"\nExample dictionary format for Gensim:")
+    # log.info(f"{common_dictionary}\n")
+    # log.info(f"\nExample corpus format for Gensim:")
+    # log.info(f"{common_corpus}\n")
 
     # Train the HDP model.
     hdp = HdpModel(corpus, dictionary)
+    time.sleep(3)
 
-    # # For use with Scikit-Learn API.
+    # # For use as wrapper with Scikit-Learn API.
     # model = HdpTransformer(id2word=dictionary)
     # distribution = model.fit_transform(corpus)
 
     # Display the top words for each topic.
     topic_info = hdp.print_topics(num_topics=20, num_words=10)
-    print(topic_info)
+
+    for topic in topic_info:
+        print(topic)
 
 
 ############################################################################################
@@ -215,7 +275,9 @@ if __name__ == '__main__':
     time_elapsed_in_seconds = (my_end_time - my_start_time)
     time_elapsed_in_minutes = (my_end_time - my_start_time) / 60.0
     time_elapsed_in_hours = (my_end_time - my_start_time) / 60.0 / 60.0
-    print(f"Time taken to process dataset: {time_elapsed_in_seconds} seconds, "
-          f"{time_elapsed_in_minutes} minutes, {time_elapsed_in_hours} hours.")
+    # print(f"Time taken to process dataset: {time_elapsed_in_seconds} seconds, "
+    #       f"{time_elapsed_in_minutes} minutes, {time_elapsed_in_hours} hours.")
+    print("\n\nTime taken to process dataset: " + str(time_elapsed_in_seconds) + " seconds, " +
+          str(time_elapsed_in_minutes) + " minutes, " + str(time_elapsed_in_hours) + " hours.\n")
 
 ############################################################################################
