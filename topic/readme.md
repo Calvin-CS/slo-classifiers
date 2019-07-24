@@ -34,6 +34,8 @@ https://github.com/J-Jinn/cs344/tree/master/Project
 
 "Model" - SLO Twitter Dataset Topic Modeling Algorithms
 
+"TBL" - SLO Twitter Triple-Bottom-Line Topic Classification (Joseph Jinn - CS 344 A.I. Final Project)
+
 ### Data Directory:
 
 - "images" directory - stores .png and .jpeg files used in Jupyter Notebooks
@@ -54,12 +56,15 @@ https://github.com/J-Jinn/cs344/tree/master/Project
 - topic_dataset_processor.py
     - Python file that creates our CSV dataset from the raw JSON file.
 
-### Model Directory:
+### Models Directory:
 
 - "images" directory - stores .png and .jpeg files used in Jupyter Notebooks
 
 - "notebooks" directory - stores Jupyter Notebooks linked to by the topic analysis table of contents Jupyter Notebook
 
+- "topic-modeling-code-examples" directory - sub-directory containing example code running topic modeling algorithms 
+on a sample dataset (not our Twitter dataset)
+    
 &nbsp;
 
 - author-topic-model.py
@@ -77,14 +82,20 @@ https://github.com/J-Jinn/cs344/tree/master/Project
 - latent_dirichlet_allocation-model.py
     - Scikit-Learn LDA Topic Model Algorithm.
     
+- non-negative-matrix-factorization-model
+    - Scikit-Learn Non-Negative Matrix Factorization Topic Model Algorithm.
+    
 &nbsp;
 
 - topic-modeling-algorithms-table-of-contents.ipynb
-    - Jupyter Notebook table of contentsn file linking to each of the topic analysis sub-categories.
+    - Jupyter Notebook table of contents file linking to each of the topic analysis sub-categories.
 
 - topic_extraction_utility_functions.py
     - utility functions for Twitter topic extraction.
 
-- topic-modeling-code-examples/
-    - example code running topic modeling algorithms on a sample dataset (not our Twitter dataset)
+### TBL Directory:
 
+- Refer to README.md in this directory for more information.
+
+- This directory contains all Jupyter Notebook and Python files related to the supervised/unsupervised 
+algorithms used for SLO TBL topic classification.
