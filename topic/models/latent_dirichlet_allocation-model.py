@@ -2,7 +2,7 @@
 SLO Topic Modeling
 Advisor: Professor VanderLinden
 Name: Joseph Jinn
-Date: 5-29-19
+Date: 8-1-19
 
 Scikit-Learn: LDA - Latent Dirichlet Allocation
 
@@ -20,7 +20,6 @@ https://medium.com/mlreview/topic-modeling-with-scikit-learn-e80d33668730
 https://pypi.org/project/lda/
 
 TODO - setup Singularity container and perform exhaustive grid search or randomized grid search for LDA hyperparameters.
-TODO - Add topic extraction logging that outputs the # of records processed so far. (set to INFO level), if possible.
 """
 
 ################################################################################################################
@@ -64,23 +63,17 @@ log.disable(level=log.DEBUG)
 ################################################################################################################
 ################################################################################################################
 
-# # Import the dataset (relative path).
-# tweet_dataset_processed = \
-#     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
-
 # Import the dataset (absolute path).
 tweet_dataset_processed = \
     pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-                "twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
-
-# # Import the dataset (test/debug).
-# tweet_dataset_processed = \
-#     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
+                "twitter-dataset-7-10-19-topic-extraction-ready-tweet-text-with-hashtags-excluded"
+                "-created-7-29-19-tokenized.csv", sep=",")
 
 # # Import the dataset (test/debug).
 # tweet_dataset_processed = \
 #     pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-#                 "twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
+#                 "twitter-dataset-7-10-19-topic-extraction-ready-tweet-text-with-hashtags-excluded"
+#                 "-created-7-30-19-test.csv", sep=",")
 
 # Reindex and shuffle the data randomly.
 tweet_dataset_processed = tweet_dataset_processed.reindex(
@@ -89,32 +82,20 @@ tweet_dataset_processed = tweet_dataset_processed.reindex(
 # Generate a Pandas dataframe.
 tweet_text_dataframe = pd.DataFrame(tweet_dataset_processed)
 
-# # Print shape and column names.
-# log.info(f"\nThe shape of the Tweet text dataframe:")
-# log.info(f"{tweet_text_dataframe.shape}\n")
-# log.info(f"\nThe columns of the Tweet text dataframe:")
-# log.info(f"{tweet_text_dataframe.columns}\n")
-
 # Print shape and column names.
-log.info("\nThe shape of the Tweet text dataframe:")
-log.info(tweet_text_dataframe.shape)
-log.info("\nThe columns of the Tweet text dataframe:")
-log.info(tweet_text_dataframe.columns)
+log.info(f"\nThe shape of the Tweet text dataframe:")
+log.info(f"{tweet_text_dataframe.shape}\n")
+log.info(f"\nThe columns of the Tweet text dataframe:")
+log.info(f"{tweet_text_dataframe.columns}\n")
 
 # Drop any NaN or empty Tweet rows in dataframe (or else CountVectorizer will blow up).
 tweet_text_dataframe = tweet_text_dataframe.dropna()
 
-# # Print shape and column names.
-# log.info(f"\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
-# log.info(f"{tweet_text_dataframe.shape}\n")
-# log.info(f"\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
-# log.info(f"{tweet_text_dataframe.columns}\n")
-
 # Print shape and column names.
-log.info("\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
-log.info(tweet_text_dataframe.shape)
-log.info("\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
-log.info(tweet_text_dataframe.columns)
+log.info(f"\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
+log.info(f"{tweet_text_dataframe.shape}\n")
+log.info(f"\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
+log.info(f"{tweet_text_dataframe.columns}\n")
 
 # Reindex everything.
 tweet_text_dataframe.index = pd.RangeIndex(len(tweet_text_dataframe.index))
@@ -129,13 +110,9 @@ tweet_text_dataframe.columns = tweet_text_dataframe_column_names
 selected_features = tweet_text_dataframe[['text_derived_postprocessed']]
 processed_features = selected_features.copy()
 
-# # Check what we are using as inputs.
-# log.info(f"\nA sample Tweet in our input feature:")
-# log.info(f"{processed_features['text_derived_postprocessed'][0]}\n")
-
 # Check what we are using as inputs.
-log.info("\nA sample Tweet in our input feature:")
-log.info(processed_features['text_derived_postprocessed'][0])
+log.info(f"\nA sample Tweet in our input feature:")
+log.info(f"{processed_features['text_derived_postprocessed'][0]}\n")
 
 # Create feature set.
 slo_feature_series = processed_features['text_derived_postprocessed']
@@ -165,6 +142,12 @@ def latent_dirichlet_allocation_topic_extraction():
 
     # Display the top words for each topic.
     lda_util.display_topics(lda, tf_feature_names, 10)
+
+    import pyLDAvis
+    from pyLDAvis import sklearn
+    # pyLDAvis.enable_notebook()
+    visualization = sklearn.prepare(lda_model=lda, vectorizer=tf_vectorizer, dtm=tf)
+    pyLDAvis.save_html(visualization, 'lda_visualization-no-company-words.html')
 
 
 ################################################################################################################
@@ -237,7 +220,7 @@ if __name__ == '__main__':
         'clf__verbose': [0],
         'clf__random_state': [None],
     }
-    # lda_util.latent_dirichlet_allocation_grid_search(slo_feature_set, lda_search_parameters)
+    # lda_util.latent_dirichlet_allocation_grid_search(slo_feature_series, lda_search_parameters)
     """
     Perform exhaustive grid search on data subset.
     """
@@ -251,16 +234,14 @@ if __name__ == '__main__':
     """
     Perform the topic extraction using collapsed Gibbs Sampling.
     """
-    latent_dirichlet_allocation_collapsed_gibbs_sampling()
+    # latent_dirichlet_allocation_collapsed_gibbs_sampling()
     ################################################
     my_end_time = time.time()
 
     time_elapsed_in_seconds = (my_end_time - my_start_time)
     time_elapsed_in_minutes = (my_end_time - my_start_time) / 60.0
     time_elapsed_in_hours = (my_end_time - my_start_time) / 60.0 / 60.0
-    # print(f"Time taken to process dataset: {time_elapsed_in_seconds} seconds, "
-    #       f"{time_elapsed_in_minutes} minutes, {time_elapsed_in_hours} hours.")
-    print("\n\nTime taken to process dataset: " + str(time_elapsed_in_seconds) + " seconds, " +
-          str(time_elapsed_in_minutes) + " minutes, " + str(time_elapsed_in_hours) + " hours.\n")
+    print(f"Time taken to process dataset: {time_elapsed_in_seconds} seconds, "
+          f"{time_elapsed_in_minutes} minutes, {time_elapsed_in_hours} hours.")
 
 ############################################################################################

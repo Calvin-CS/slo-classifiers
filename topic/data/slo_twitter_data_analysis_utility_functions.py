@@ -1,11 +1,11 @@
 """
-Social License to Operate Research
+SLO Topic Modeling
 Advisor: Professor VanderLinden
 Name: Joseph Jinn
-Date: 6-25-19
+Date: 8-1-19
 version: 2.0
 
-SLO Twitter Dataset Analysis Utility Functions
+SLO Twitter Dataset Analysis Utility Functions.
 
 ###########################################################
 Notes:
@@ -429,8 +429,9 @@ def tweet_single_company_name_or_multiple_company_designation(tweet_dataframe):
 
     def compute_company_designation(row):
         """
-         This function adds a attribute to the dataset that identifies a Tweet as being associated with a single
-         company by that company's name or if associated with multiple companies, by the designation of "multiple".
+        This function adds a attribute to the dataset that identifies a Tweet as being associated with a single
+        company by that company's name or if associated with multiple companies, by the designation of "multiple".
+        Note: Modify the absolute file path for export to CSV format as necessary.
 
         :param row: example in the dataset we are operating on.
         :return:  the modified example.
@@ -446,7 +447,7 @@ def tweet_single_company_name_or_multiple_company_designation(tweet_dataframe):
     dataframe = pd.DataFrame(tweet_dataframe)
     # Note: Ensure axis=1 so function applies to entire row rather than per column by default. (axis = 0 = column)
     dataframe["company_derived_designation"] = dataframe.apply(compute_company_designation, axis=1)
-
+    # Modify absolute file path as necessary.
     export_to_csv_json(
         dataframe, [],
         "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/selected-attributes-final", "w", "csv")
@@ -457,12 +458,14 @@ def tweet_single_company_name_or_multiple_company_designation(tweet_dataframe):
 def export_multi_company_tweets(tweet_dataframe):
     """
     This function exports to a CSV dataset file only those Tweets that are associated with multiple companies.
+    Note: Modify the absolute file path for export to CSV format as necessary.
 
     :param tweet_dataframe: Tweet dataframe.
     :return: None.
     """
     dataframe = pd.DataFrame(tweet_dataframe)
     multi_company_only_df = dataframe.loc[dataframe['company_derived_designation'] == "multiple"]
+    # Modify absolute file path as necessary.
     export_to_csv_json(
         multi_company_only_df, [],
         "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/multi-company-tweets", "w", "csv")
@@ -473,12 +476,14 @@ def export_multi_company_tweets(tweet_dataframe):
 def export_no_company_tweets(tweet_dataframe):
     """
     This function exports to a CSV dataset file only those Tweets that are associated with no companies.
+    Note: Modify the absolute file path for export to CSV format as necessary.
 
     :param tweet_dataframe: Tweet dataframe.
     :return: None.
     """
     dataframe = pd.DataFrame(tweet_dataframe)
     no_company_only_df = dataframe.loc[(dataframe['company_derived_designation'].isnull())]
+    # Modify absolute file path as necessary.
     export_to_csv_json(
         no_company_only_df, [],
         "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/no-company-tweets", "w", "csv")
@@ -490,13 +495,14 @@ def export_non_english_tweets(tweet_dataframe):
     """
     This function exports to a CSV dataset file only those Tweets that are designated as non-English by both
     spacy-langdetect and the Twitter API.
+    Note: Modify the absolute file path for export to CSV format as necessary.
 
     :param tweet_dataframe: Tweet dataframe.
     :return: None.
     """
-    dataframe = pd.DataFrame(tweet_dataframe)
     non_english_spacy_and_twitter = tweet_dataframe.loc[(tweet_dataframe["spaCy_language_detect_all_tweets"] != "en") &
                                                         (tweet_dataframe["tweet_lang"] != "en")]
+    # Modify absolute file path as necessary.
     export_to_csv_json(
         non_english_spacy_and_twitter, [],
         "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/non-english-tweets", "w", "csv")
@@ -507,12 +513,14 @@ def export_non_english_tweets(tweet_dataframe):
 def extract_tweets_over_specified_character_length(tweet_dataframe, character_length):
     """
     This function extracts all tweets over the specified character length and exports it to a separate CSV file.
+    Note: Modify the absolute file path for export to CSV format as necessary.
 
     :param tweet_dataframe: Tweet dataframe.
     :param character_length: Tweets over this length should be extracted.
     :return: None.
     """
     long_tweets = tweet_dataframe.loc[tweet_dataframe["tweet_text_length_derived"] > character_length]
+    # Modify absolute file path as necessary.
     export_to_csv_json(
         long_tweets, [],
         "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/tweets-over-140-characters", "w", "csv")
@@ -526,6 +534,7 @@ def compute_user_description_text_length(tweet_dataframe):
 
     Note: This utility function is intended to also be implemented in "dataset_process_adapted.py" to add a new column
     to the CSV dataset produced from the raw JSON datset.
+    Note: Modify the absolute file path for export to CSV format as necessary.
 
     Resources:
     https://stackoverflow.com/questions/26614465/python-pandas-apply-function-if-a-column-value-is-not-null
@@ -549,6 +558,7 @@ def compute_user_description_text_length(tweet_dataframe):
     dataframe["user_description_text_length"] = dataframe.apply(
         lambda x: text_length(x) if (pd.notnull(x["user_description"])) else 0, axis=1)
 
+    # Modify absolute file path as necessary.
     export_to_csv_json(
         dataframe, [],
         "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/selected-attributes-final--subset-test",
@@ -708,6 +718,7 @@ def spacy_language_detection(tweet_dataframe):
 
     Note: This utility function is intended to also be implemented in "dataset_process_adapted.py" to add a new column
     to the CSV dataset produced from the raw JSON datset.
+    Note: Modify the absolute file path for export to CSV format as necessary.
 
     :param tweet_dataframe: Tweet dataframe.
     :return: None. Saves to file.
@@ -737,6 +748,7 @@ def spacy_language_detection(tweet_dataframe):
     dataframe["spaCy_language_detect"] = dataframe.apply(
         lambda x: what_language(x) if (pd.notnull(x["text_derived"])) else "none", axis=1)
 
+    # Modify absolute file path as necessary.
     export_to_csv_json(
         dataframe, [],
         "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/spacy-lang-detect-test", "w", "csv")
@@ -747,6 +759,8 @@ def spacy_language_detection(tweet_dataframe):
 def indicate_is_retweet(tweet_dataframe):
     """
     This function adds a attribute (column) to the dataset that indicates that the Tweet is a re-Tweet.
+    Note: Modify the absolute file path for export to CSV format as necessary.
+
     :param tweet_dataframe: Tweet dataframe.
     :return: None. Saves to file.
     """
@@ -756,12 +770,8 @@ def indicate_is_retweet(tweet_dataframe):
         This helper function determines whether a Tweet in our dataset is a re-tweet.
         :param row: example in the dataset we are operating on.
         :return:  the modified example with additional column specifying if it's a re-tweet.
-        TODO - figure out a way to determine if retweet based on presence of non-null value for retweeted_status
         """
         temp_df = pd.DataFrame(row)
-        # temp_series = pd.Series(row)
-        # print(temp_df)
-        # print(temp_series)
         if "retweeted_status" in temp_df.columns:
             row["is_a_retweet"] = True
             return row["is_a_retweet"]
@@ -771,6 +781,7 @@ def indicate_is_retweet(tweet_dataframe):
     dataframe = pd.DataFrame(tweet_dataframe)
     dataframe["is_a_retweet?"] = dataframe.apply(is_a_retweet, axis=1)
 
+    # Modify absolute file path as necessary.
     export_to_csv_json(
         dataframe, [],
         "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/selected-attributes-final-is-retweet",
@@ -782,13 +793,11 @@ def indicate_is_retweet(tweet_dataframe):
 def find_mixed_data_types_in_dataset_rows(tweet_dataframe):
     """
     This function finds mixed data types that should not exist for the specified column(s) in the dataset.
-
     Note: Takes way too long to run on a large file.
 
     :param tweet_dataframe: Tweet dataframe.
     :return: None. Saves to file.
     """
-
     # noinspection PyUnresolvedReferences
     weird = (tweet_dataframe.applymap(type) != tweet_dataframe.iloc[1].apply(type)).any(axis=1)
 
@@ -804,6 +813,7 @@ counter = 0
 def determine_multiple_companies_count_fixed(tweet_dataframe):
     """
     This function tests that determining the # of companies a Tweet is associated with is fixed.
+    Note: Modify the absolute file path for export to CSV format as necessary.
 
     :param tweet_dataframe: Tweet dataframe.
     :return: None. Saves to file.
@@ -835,29 +845,10 @@ def determine_multiple_companies_count_fixed(tweet_dataframe):
     dataframe = pd.DataFrame(tweet_dataframe)
     dataframe["multiple_companies_derived_count"] = dataframe.apply(compute_multiple_companies_count, axis=1)
 
+    # Modify absolute file path as necessary.
     export_to_csv_json(
         dataframe, [],
         "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/compute-multiple-companies-count-debug",
         "w", "csv")
 
-
 ################################################################################################################
-
-# tweet_csv_dataframe = import_dataset(
-#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-#     "twitter-dataset-6-27-19.csv",
-#     "csv", False)
-
-# tweet_csv_dataframe_2 = import_dataset(
-#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-#     "debug.json",
-#     "json", False)
-
-# export_to_csv_json(
-#     tweet_csv_dataframe, [],
-#     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/debug", "w", "json")
-
-# determine_multiple_companies_count_fixed(tweet_csv_dataframe_2)
-
-# export_no_company_tweets(tweet_csv_dataframe)
-# export_non_english_tweets(tweet_csv_dataframe)

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="15a3f3a2-c024-4bc3-b6a4-9ef365c4db84" name="Default Changelist" comment="" />
+    <list default="true" id="15a3f3a2-c024-4bc3-b6a4-9ef365c4db84" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/topic/readme.md" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="FileEditorManager">
-    <leaf />
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -18,16 +18,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/topic/data/notebooks/slo_twitter_data_analysis.py" />
-        <option value="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py" />
-        <option value="$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py" />
-        <option value="$PROJECT_DIR$/topic/readme.md" />
-      </list>
-    </option>
   </component>
   <component name="ProjectConfigurationFiles">
     <option name="files">
@@ -39,48 +29,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="736" />
-    <option name="y" value="765" />
-    <option name="width" value="1936" />
-    <option name="height" value="1066" />
-  </component>
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="slo-classifiers-repo" type="b2602c69:ProjectViewProjectNode" />
-              <item name="slo-classifiers-repo" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="slo-classifiers-repo" type="b2602c69:ProjectViewProjectNode" />
-              <item name="slo-classifiers-repo" type="462c0819:PsiDirectoryNode" />
-              <item name="topic" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="slo-classifiers-repo" type="b2602c69:ProjectViewProjectNode" />
-              <item name="slo-classifiers-repo" type="462c0819:PsiDirectoryNode" />
-              <item name="topic" type="462c0819:PsiDirectoryNode" />
-              <item name="data" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="slo-classifiers-repo" type="b2602c69:ProjectViewProjectNode" />
-              <item name="slo-classifiers-repo" type="462c0819:PsiDirectoryNode" />
-              <item name="topic" type="462c0819:PsiDirectoryNode" />
-              <item name="models" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
-  </component>
+  <component name="ProjectId" id="1Oh76MUOBcqlZh7iBAkdAtvQqQH" />
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -108,7 +57,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.slo_twitter_data_analysis (2)">
+  <component name="RunManager" selected="Python.topic_extraction_utility_functions">
     <configuration name="slo_twitter_data_analysis (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="slo-classifiers-repo" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -175,8 +124,31 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="topic_extraction_utility_functions" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="slo-classifiers-repo" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/topic/models" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/topic/models/topic_extraction_utility_functions.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.topic_extraction_utility_functions" />
         <item itemvalue="Python.slo_twitter_data_analysis (2)" />
         <item itemvalue="Python.slo_twitter_data_analysis (1)" />
         <item itemvalue="Python.slo_twitter_data_analysis" />
@@ -207,82 +179,35 @@
       <workItem from="1562942876135" duration="642000" />
       <workItem from="1563218375462" duration="72000" />
       <workItem from="1563464351909" duration="1873000" />
+      <workItem from="1564144371778" duration="308000" />
+      <workItem from="1564417727953" duration="28000" />
+      <workItem from="1564417802283" duration="8692000" />
+      <workItem from="1564516762552" duration="189000" />
+      <workItem from="1565041141503" duration="820000" />
+      <workItem from="1565052261684" duration="272000" />
     </task>
     <servers />
-  </component>
-  <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="33921000" />
-  </component>
-  <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
-    <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4868132" visible="true" weight="0.26385927" />
-      <window_info id="Structure" order="1" sideWeight="0.5131868" side_tool="true" visible="true" weight="0.26385927" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32950467" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32961223" />
-      <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32961223" />
-      <window_info anchor="bottom" id="Python Console" order="12" weight="0.32961223" />
-      <window_info active="true" anchor="bottom" id="Jupyter" order="13" visible="true" weight="0.16153847" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="SciView" order="3" weight="0.3294509" />
-      <window_info anchor="right" id="Database" order="4" />
-    </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/slo_classifiers_repo$slo_twitter_data_analysis.coverage" NAME="slo_twitter_data_analysis Coverage Results" MODIFIED="1562431475161" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/topic/data" />
+    <SUITE FILE_PATH="coverage/slo_classifiers_repo$topic_extraction_utility_functions.coverage" NAME="topic_extraction_utility_functions Coverage Results" MODIFIED="1564446287200" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/topic/models" />
     <SUITE FILE_PATH="coverage/slo_classifiers_repo$slo_twitter_data_analysis__2_.coverage" NAME="slo_twitter_data_analysis (2) Coverage Results" MODIFIED="1562687266650" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/topic/data" />
     <SUITE FILE_PATH="coverage/slo_classifiers_repo$slo_twitter_data_analysis__1_.coverage" NAME="slo_twitter_data_analysis (1) Coverage Results" MODIFIED="1562445903231" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/topic/data/notebooks" />
-    <SUITE FILE_PATH="coverage/slo_classifiers_repo$slo_twitter_data_analysis.coverage" NAME="slo_twitter_data_analysis Coverage Results" MODIFIED="1562431475161" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/topic/data" />
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/stance/data/SLO analysis.ipynb">
-      <provider selected="true" editor-type-id="jupyter-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-retweet-statistics.ipynb">
-      <provider selected="true" editor-type-id="jupyter-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1311">
-          <caret line="847" selection-start-line="847" selection-end-line="847" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/topic/data/slo_twitter_data_analysis_utility_functions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="533">
-          <caret line="214" column="32" lean-forward="true" selection-start-line="214" selection-start-column="32" selection-end-line="214" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/topic/data/dataset_processor_adapted.py" />
-    <entry file="file://$PROJECT_DIR$/topic/models/topic-modeling-algorithms-jupyter-notebooks/topic-modeling-algorithms-table-of-contents.ipynb" />
-    <entry file="file://$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb">
-      <provider selected="true" editor-type-id="jupyter-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/topic/readme.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="68">
-            <caret line="4" column="23" lean-forward="true" selection-start-line="4" selection-start-column="23" selection-end-line="4" selection-end-column="23" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
   </component>
 </project>
