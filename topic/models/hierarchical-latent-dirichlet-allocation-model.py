@@ -2,15 +2,14 @@
 SLO Topic Modeling
 Advisor: Professor VanderLinden
 Name: Joseph Jinn
-Date: 7-8-19
+Date: 8-1-19
 
 HlDA - Hierarchical Latent Dirichlet Allocation
 
 ###########################################################
 Notes:
 
-TODO - remove stop words before training.
-FIXME - not functional.
+This model is heavily system RAM intensive.
 
 ###########################################################
 Resources Used:
@@ -24,19 +23,14 @@ https://github.com/jreades/hlda (updated version for Python 3)
 
 # Import libraries.
 import logging as log
-import warnings
 import time
-import pandas as pd
-import spacy
-import numpy as np
-from wordcloud import WordCloud
-from gensim import corpora
-from sklearn.feature_extraction.text import CountVectorizer
-from matplotlib import pyplot as plt
-import seaborn as sns
+import warnings
 
-# Import custom utility functions.
-import topic_extraction_utility_functions as lda_util
+import pandas as pd
+import seaborn as sns
+import spacy
+from matplotlib import pyplot as plt
+from wordcloud import WordCloud
 
 #############################################################
 
@@ -67,23 +61,17 @@ log.disable(level=log.DEBUG)
 ################################################################################################################
 ################################################################################################################
 
-# # Import the dataset (relative path).
-# tweet_dataset_processed = \
-#     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
-
 # Import the dataset (absolute path).
 tweet_dataset_processed = \
     pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-                "twitter-dataset-7-10-19-lda-ready-tweet-text-with-hashtags-excluded-created-7-17-19.csv", sep=",")
-
-# # Import the dataset (test/debug).
-# tweet_dataset_processed = \
-#     pd.read_csv("twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
+                "twitter-dataset-7-10-19-topic-extraction-ready-tweet-text-with-hashtags-excluded"
+                "-created-7-29-19-tokenized.csv", sep=",")
 
 # # Import the dataset (test/debug).
 # tweet_dataset_processed = \
 #     pd.read_csv("D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-#                 "twitter-dataset-7-10-19-lda-ready-tweet-text-test.csv", sep=",")
+#                 "twitter-dataset-7-10-19-topic-extraction-ready-tweet-text-with-hashtags-excluded"
+#                 "-created-7-30-19-test.csv", sep=",")
 
 # Reindex and shuffle the data randomly.
 tweet_dataset_processed = tweet_dataset_processed.reindex(
@@ -92,32 +80,20 @@ tweet_dataset_processed = tweet_dataset_processed.reindex(
 # Generate a Pandas dataframe.
 tweet_text_dataframe = pd.DataFrame(tweet_dataset_processed)
 
-# # Print shape and column names.
-# log.info(f"\nThe shape of the Tweet text dataframe:")
-# log.info(f"{tweet_text_dataframe.shape}\n")
-# log.info(f"\nThe columns of the Tweet text dataframe:")
-# log.info(f"{tweet_text_dataframe.columns}\n")
-
 # Print shape and column names.
-log.info("\nThe shape of the Tweet text dataframe:")
-log.info(tweet_text_dataframe.shape)
-log.info("\nThe columns of the Tweet text dataframe:")
-log.info(tweet_text_dataframe.columns)
+log.info(f"\nThe shape of the Tweet text dataframe:")
+log.info(f"{tweet_text_dataframe.shape}\n")
+log.info(f"\nThe columns of the Tweet text dataframe:")
+log.info(f"{tweet_text_dataframe.columns}\n")
 
 # Drop any NaN or empty Tweet rows in dataframe (or else CountVectorizer will blow up).
 tweet_text_dataframe = tweet_text_dataframe.dropna()
 
-# # Print shape and column names.
-# log.info(f"\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
-# log.info(f"{tweet_text_dataframe.shape}\n")
-# log.info(f"\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
-# log.info(f"{tweet_text_dataframe.columns}\n")
-
 # Print shape and column names.
-log.info("\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
-log.info(tweet_text_dataframe.shape)
-log.info("\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
-log.info(tweet_text_dataframe.columns)
+log.info(f"\nThe shape of the Tweet text dataframe with NaN (empty) rows dropped:")
+log.info(f"{tweet_text_dataframe.shape}\n")
+log.info(f"\nThe columns of the Tweet text dataframe with NaN (empty) rows dropped:")
+log.info(f"{tweet_text_dataframe.columns}\n")
 
 # Reindex everything.
 tweet_text_dataframe.index = pd.RangeIndex(len(tweet_text_dataframe.index))
@@ -132,13 +108,9 @@ tweet_text_dataframe.columns = tweet_text_dataframe_column_names
 selected_features = tweet_text_dataframe[['text_derived_postprocessed']]
 processed_features = selected_features.copy()
 
-# # Check what we are using as inputs.
-# log.info(f"\nA sample Tweet in our input feature:")
-# log.info(f"{processed_features['text_derived_postprocessed'][0]}\n")
-
 # Check what we are using as inputs.
-log.info("\nA sample Tweet in our input feature:")
-log.info(processed_features['text_derived_postprocessed'][0])
+log.info(f"\nA sample Tweet in our input feature:")
+log.info(f"{processed_features['text_derived_postprocessed'][0]}\n")
 
 # Create feature set.
 slo_feature_series = processed_features['text_derived_postprocessed']
@@ -167,17 +139,11 @@ vocab_index = {}
 for i, w in enumerate(dictionary):
     vocab_index[w] = i
 
-# print(f"\nThe number of documents: {len(slo_feature_list)}")
-# print(f"\nThe number of words in the dictionary: {len(dictionary)}")
-# print(f"Sample of the words in the dictionary:\n {dictionary[0:100]}")
-# print(f"\nThe number of documents in the corpus: {len(corpus)}")
-# print(f"Sample of the documents in the corpus:\n {corpus}")
-
-print("\nThe number of documents: " + str(len(slo_feature_list)))
-print("\nThe number of words in the dictionary: " + str(len(dictionary)))
-print("Sample of the words in the dictionary:\n " + str(dictionary[0:100]))
-print("\nThe number of documents in the corpus: " + str(len(corpus)))
-print("Sample of the documents in the corpus:\n " + str(corpus[0]))
+print(f"\nThe number of documents: {len(slo_feature_list)}")
+print(f"\nThe number of words in the dictionary: {len(dictionary)}")
+print(f"Sample of the words in the dictionary:\n {dictionary[0:100]}")
+print(f"\nThe number of documents in the corpus: {len(corpus)}")
+print(f"Sample of the documents in the corpus:\n {corpus}")
 
 # Visualize the dictionary of words.
 wordcloud = WordCloud(background_color='white').generate(' '.join(slo_feature_list))
@@ -264,9 +230,7 @@ if __name__ == '__main__':
     time_elapsed_in_seconds = (my_end_time - my_start_time)
     time_elapsed_in_minutes = (my_end_time - my_start_time) / 60.0
     time_elapsed_in_hours = (my_end_time - my_start_time) / 60.0 / 60.0
-    # print(f"Time taken to process dataset: {time_elapsed_in_seconds} seconds, "
-    #       f"{time_elapsed_in_minutes} minutes, {time_elapsed_in_hours} hours.")
-    print("\n\nTime taken to process dataset: " + str(time_elapsed_in_seconds) + " seconds, " +
-          str(time_elapsed_in_minutes) + " minutes, " + str(time_elapsed_in_hours) + " hours.\n")
+    print(f"Time taken to process dataset: {time_elapsed_in_seconds} seconds, "
+          f"{time_elapsed_in_minutes} minutes, {time_elapsed_in_hours} hours.")
 
 ############################################################################################

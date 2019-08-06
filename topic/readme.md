@@ -11,7 +11,7 @@ Triple-Bottom Line (TBL), which is a more forgiving task.
 
 We have finished preliminary data analysis on the SLO Twitter dataset. Current work consists of topic extraction using 
 Latent Dirichlet Allocation, Hierarchical Latent Dirichlet Allocation, Hierarchical Dirichlet Process,
-Author-Topic Model, Biterm Topic Model, and Non-Negative Matrix Factorization.  We may implement more topic
+Author-Topic Model, Biterm Topic Model, and Non-Negative Matrix Factorization.  We may implement more baseline topic
 models in the future.
 
 ## Project Trello Board:
@@ -33,6 +33,8 @@ https://github.com/J-Jinn/cs344/tree/master/Project
 "Data" - SLO Twitter Dataset Processing and Analysis
 
 "Model" - SLO Twitter Dataset Topic Modeling Algorithms
+
+"TBL" - SLO Twitter Dataset Topic Classification Algorithms (not part of master branch - only a unmerged feature branch)
 
 ### Data Directory:
 
@@ -60,6 +62,9 @@ https://github.com/J-Jinn/cs344/tree/master/Project
 
 - "notebooks" directory - stores Jupyter Notebooks linked to by the topic analysis table of contents Jupyter Notebook
 
+- "topic-modeling-code-examples" directory - stores example code running topic modeling algorithms on a sample dataset 
+(not our Twitter dataset)
+
 &nbsp;
 
 - author-topic-model.py
@@ -76,6 +81,9 @@ https://github.com/J-Jinn/cs344/tree/master/Project
 
 - latent_dirichlet_allocation-model.py
     - Scikit-Learn LDA Topic Model Algorithm.
+
+- non-negative-matrix-factorization-model.py
+    - Scikit-Learn NMF Topic Model Algorithm.
     
 &nbsp;
 
@@ -85,6 +93,8 @@ https://github.com/J-Jinn/cs344/tree/master/Project
 - topic_extraction_utility_functions.py
     - utility functions for Twitter topic extraction.
 
-- topic-modeling-code-examples/
-    - example code running topic modeling algorithms on a sample dataset (not our Twitter dataset)
+### TBL Directory:
+
+Note: Refer to the README.md for more information on the files included in this feature branch that is not part of the
+SLO-classifiers Repository's master branch.
 

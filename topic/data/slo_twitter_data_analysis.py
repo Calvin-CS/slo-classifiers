@@ -1,21 +1,16 @@
 """
-Social License to Operate
+SLO Topic Modeling
 Advisor: Professor VanderLinden
 Name: Joseph Jinn
-Date: 6-25-19
+Date: 8-1-19
 Version: 2.0
 
-SLO Twitter Dataset Analysis
+SLO Twitter Dataset Analysis.
 
 ###########################################################
 Notes:
 
 Perpetual work-in-progress.
-
-Do not "save as" in Microsoft Excel as a utf-8 or any type of encoded CSV comma, delimited file.  Pandas will not be
-able to read it back in as a utf-8 encoded file and this may result in character decryption issues.  If needs to modify
-the dataset, use Pandas and Python code to do so, then export to a new CSV file.  Do NOT use Microsoft Excel to avoid
-potential contamination/corruption of the data.
 
 ###########################################################
 
@@ -104,7 +99,7 @@ def tweets_number_associated_companies(tweet_dataframe):
 
 ################################################################################################################
 
-def mult_company_tweet_statistics(multi_company_tweets_df):
+def multi_company_tweet_statistics(multi_company_tweets_df):
     """
     More statistics on multi-company associated Tweets.
 
@@ -138,8 +133,6 @@ def tweet_count_by_timedate_time_series(tweet_dataframe):
     :param tweet_dataframe: the Twitter dataset in a Pandas dataframe.
     :return: None.
     """
-    start_time = time.time()
-
     # Select only rows with one associated company. (don't graph company combos)
     # single_company_only_df = tweet_dataframe.loc[tweet_dataframe['multiple_companies_derived_count'] == 1]
 
@@ -172,13 +165,6 @@ def tweet_count_by_timedate_time_series(tweet_dataframe):
     grid.set_xlabels("Tweet Creation Date")
     grid.set_ylabels("Tweet Count")
     plt.show()
-
-    end_time = time.time()
-    time_elapsed_seconds = end_time - start_time
-    time_elapsed_minutes = (end_time - start_time) / 60.0
-    time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
-    log.debug(f"The time taken to visualize the statistics is {time_elapsed_seconds} seconds, "
-              f"{time_elapsed_minutes} minutes, {time_elapsed_hours} hours")
 
 
 ################################################################################################################
@@ -223,8 +209,6 @@ def retweet_statistics(tweet_dataframe):
     :param tweet_dataframe: the Twitter dataset in a Pandas dataframe.
     :return: None.
     """
-    start_time = time.time()
-
     # Select only rows with one associated company. (don't graph company combos)
     # single_company_only_df = tweet_dataframe.loc[tweet_dataframe['multiple_companies_derived_count'] == 1]
 
@@ -266,13 +250,6 @@ def retweet_statistics(tweet_dataframe):
         f"Tweets Comprise?.\n")
     print(tweet_dataframe[['company_derived_designation', 'tweet_id']].groupby('company_derived_designation')
           .apply(lambda x: x['tweet_id'].value_counts(normalize=True).head(5)))
-
-    end_time = time.time()
-    time_elapsed_seconds = end_time - start_time
-    time_elapsed_minutes = (end_time - start_time) / 60.0
-    time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
-    log.debug(f"The time taken to visualize the statistics is {time_elapsed_seconds} seconds, "
-              f"{time_elapsed_minutes} minutes, {time_elapsed_hours} hours")
 
 
 ################################################################################################################
@@ -335,8 +312,6 @@ def user_screen_name_statistics(tweet_dataframe):
     :param tweet_dataframe: the Twitter dataset in a Pandas dataframe.
     :return: None.
     """
-    start_time = time.time()
-
     # Select only rows with one associated company. (don't graph company combos)
     # single_company_only_df = tweet_dataframe.loc[tweet_dataframe['multiple_companies_derived_count'] == 1]
 
@@ -357,13 +332,6 @@ def user_screen_name_statistics(tweet_dataframe):
     grid.set_titles('{col_name}')
     grid.set_xlabels('Tweet Author Appearance Count').set_ylabels("Percentage of all Users")
     plt.show()
-
-    end_time = time.time()
-    time_elapsed_seconds = end_time - start_time
-    time_elapsed_minutes = (end_time - start_time) / 60.0
-    time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
-    log.debug(f"The time taken to visualize the statistics is {time_elapsed_seconds} seconds, "
-              f"{time_elapsed_minutes} minutes, {time_elapsed_hours} hours")
 
 
 ################################################################################################################
@@ -395,8 +363,6 @@ def tweet_character_counts(tweet_dataframe):
     :param tweet_dataframe: the Twitter dataset in a Pandas dataframe.
     :return: None.
     """
-    start_time = time.time()
-
     # Select only rows with one associated company. (don't graph company combos)
     # single_company_only_df = tweet_dataframe.loc[tweet_dataframe['multiple_companies_derived_count'] == 1]
 
@@ -429,13 +395,6 @@ def tweet_character_counts(tweet_dataframe):
     long_description = tweet_dataframe.loc[tweet_dataframe["user_description_text_length"] > character_length]
     print(f"The number of user descriptions over {character_length} characters is {long_description.shape[0]}")
 
-    end_time = time.time()
-    time_elapsed_seconds = end_time - start_time
-    time_elapsed_minutes = (end_time - start_time) / 60.0
-    time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
-    log.debug(f"The time taken to visualize the statistics is {time_elapsed_seconds} seconds, "
-              f"{time_elapsed_minutes} minutes, {time_elapsed_hours} hours")
-
 
 ################################################################################################################
 
@@ -447,8 +406,6 @@ def hashtag_statistics(tweet_dataframe):
     :return: None.
     FIXME - graphs functional; text stats non-functional (TypeError: 'float' object is not iterable)
     """
-    start_time = time.time()
-
     # Select only rows with one associated company. (don't graph company combos)
     # single_company_only_df = tweet_dataframe.loc[tweet_dataframe['multiple_companies_derived_count'] == 1]
 
@@ -491,13 +448,8 @@ def hashtag_statistics(tweet_dataframe):
 
     ############################################################
 
-    end_time = time.time()
-    time_elapsed_seconds = end_time - start_time
-    time_elapsed_minutes = (end_time - start_time) / 60.0
-    time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
-    log.debug(f"The time taken to visualize the statistics is {time_elapsed_seconds} seconds, "
-              f"{time_elapsed_minutes} minutes, {time_elapsed_hours} hours")
 
+################################################################################################################
 
 def hashtag_statistics_2(tweet_dataframe):
     """
@@ -536,8 +488,6 @@ def mentions_statistics(tweet_dataframe):
     :param tweet_dataframe: the Twitter dataset in a dataframe.
     :return: None.
     """
-    start_time = time.time()
-
     # Select only rows with one associated company. (don't graph company combos)
     # single_company_only_df = tweet_dataframe.loc[tweet_dataframe['multiple_companies_derived_count'] == 1]
 
@@ -594,13 +544,6 @@ def mentions_statistics(tweet_dataframe):
                                  mentions is not None
                                  for mention in mentions]).value_counts(normalize=True).head()))
 
-    end_time = time.time()
-    time_elapsed_seconds = end_time - start_time
-    time_elapsed_minutes = (end_time - start_time) / 60.0
-    time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
-    log.debug(f"The time taken to visualize the statistics is {time_elapsed_seconds} seconds, "
-              f"{time_elapsed_minutes} minutes, {time_elapsed_hours} hours")
-
 
 ################################################################################################################
 
@@ -618,8 +561,6 @@ def attribute_describe(input_file_path, attribute_name_list, file_type):
     :param file_type: type of input file. (JSON or CSV)
     :return: None.
     """
-    start_time = time.time()
-
     if file_type == "csv":
         twitter_data = pd.read_csv(f"{input_file_path}", sep=",", encoding="ISO-8859-1", dtype=object)
     elif file_type == "json":
@@ -639,13 +580,6 @@ def attribute_describe(input_file_path, attribute_name_list, file_type):
         print(f"\nPandas describe() for the entire dataframe/dataset:\n")
         print(dataframe.describe(include='all'))
 
-    end_time = time.time()
-    time_elapsed_seconds = end_time - start_time
-    time_elapsed_minutes = (end_time - start_time) / 60.0
-    time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
-    log.debug(f"The time taken to visualize the statistics is {time_elapsed_seconds} seconds, "
-              f"{time_elapsed_minutes} minutes, {time_elapsed_hours} hours")
-
 
 ################################################################################################################
 
@@ -658,8 +592,6 @@ def count_nan_non_nan(input_file_path, attribute_name_list, file_type):
     :param file_type: type of input file. (JSON or CSV)
     :return: None.
     """
-    start_time = time.time()
-
     if file_type == "csv":
         twitter_data = pd.read_csv(f"{input_file_path}", sep=",", encoding="ISO-8859-1", dtype=object)
     elif file_type == "json":
@@ -682,63 +614,6 @@ def count_nan_non_nan(input_file_path, attribute_name_list, file_type):
 
         print(f"The number of NaN rows for \"{attribute_name}\" is {null_examples}")
         print(f"The number of non-NaN rows for \"{attribute_name}\" is {non_null_examples}\n")
-
-    end_time = time.time()
-    time_elapsed_seconds = end_time - start_time
-    time_elapsed_minutes = (end_time - start_time) / 60.0
-    time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
-    log.debug(f"The time taken to visualize the statistics is {time_elapsed_seconds} seconds, "
-              f"{time_elapsed_minutes} minutes, {time_elapsed_hours} hours")
-
-
-################################################################################################################
-
-def unique_values(input_file_path, attribute_list, file_type):
-    """
-    Function that determines the # of unique items based on specified attributes list to check for duplicate values.
-
-    Note: If attribute_list is an empty List, then the function will use all columns in the dataframe to check for
-    duplicate values.
-
-    :param file_type: type of file to import. ("json" or "csv")
-    :param input_file_path: absolute file path of the input file to extract the field from.
-    :param attribute_list: List of attributes to use to determine the uniqueness of the examples in the dataframe.
-    :return: the dataframe with only unique rows based on the specified attribute List for uniqueness checking.
-
-    TODO - is this function even necessary/useful? Not tested yet.
-    """
-
-    if file_type == "csv":
-        # Read in the CSV file.
-        tweet_dataset = \
-            pd.read_csv(f"{input_file_path}", sep=",")
-    elif file_type == "json":
-        # Read in the JSON file.
-        tweet_dataset = pd.read_json(f"{input_file_path}",
-                                     orient='records',
-                                     lines=True)
-    else:
-        print("Invalid file type - aborting operation")
-        return
-
-    tweet_dataframe = pd.DataFrame(tweet_dataset)
-
-    print(f"Dataframe shape: \n{tweet_dataframe.shape}\n")
-
-    if len(attribute_list) == 0:
-        # Drop any duplicate rows by checking all columns for duplicate values.
-        tweet_dataframe.drop_duplicates()
-    else:
-        # Drop any duplicate rows by checking specified columns (attributes) for duplicate values.
-        tweet_dataframe.drop_duplicates(subset=[f"{attribute_list}"])
-
-    print(f"Dataframe shaped after dropping duplicate items: \n{tweet_dataframe.shape}\n")
-
-    print(f"The number of unique rows in the dataframe after dropping duplicate values in attribute(s) "
-          f"{attribute_list} is {tweet_dataframe.count()}")
-
-    # Return the dataframe with only the unique items based on the check.
-    return tweet_dataframe
 
 
 ################################################################################################################
@@ -941,32 +816,16 @@ def tweet_associations(tweet_dataframe):
 
 """
 Main function.  Execute the program.
+Note: Provides example invocations of each function.  Modify absolute file paths as necessary.
 """
 if __name__ == '__main__':
     my_start_time = time.time()
 
-    # # Example function call to import libraries and configure virtual environment for data analysis.
-    # tweet_util_v2.import_and_config()
-
     # # Import CSV dataset and convert to dataframe.
     # tweet_csv_dataframe = tweet_util_v2.import_dataset(
-    #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-flatten-json-test.json",
-    #     "json")
-
-    # Import CSV dataset and convert to dataframe.
-    tweet_csv_dataframe = tweet_util_v2.import_dataset(
-        "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-        "twitter-dataset-6-27-19.csv",
-        "csv", False)
-
-    # # Drop the extra header.
-    # tweet_csv_dataframe.drop(102, inplace=True)
-
-    # # Save out to CSV file.
-    # tweet_util_v2.export_to_csv_json(
-    #     tweet_csv_dataframe, [],
     #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-    #     "twitter-dataset-6-22-19-extra-header-removed", "w", "csv")
+    #     "twitter-dataset-6-27-19.csv",
+    #     "csv", False)
 
     # # Specify and call data analysis functions on chunked raw JSON Tweet file.
     # tweet_util_v2.call_data_analysis_function_on_json_file_chunks(
@@ -989,7 +848,7 @@ if __name__ == '__main__':
     #
     # # Determine the language of Tweet text using spaCy NLP and append as new column in CSV dataset.
     # tweet_util_v2.spacy_language_detection(tweet_csv_dataframe)
-
+    #
     # # Determine if a Tweet is a ReTweet.
     # tweet_util_v2.indicate_is_retweet(tweet_csv_dataframe)
 
@@ -1010,9 +869,9 @@ if __name__ == '__main__':
 
     ##############################################################################################
 
-    # Find rows containing mixed data types.
+    # # Find rows containing mixed data types.
     # tweet_util_v2.find_mixed_data_types_in_dataset_rows(tweet_csv_dataframe)
-
+    #
     # # Display Tweet count by time-date time series statistics.
     # tweet_count_by_timedate_time_series(tweet_csv_dataframe)
     #
@@ -1033,25 +892,26 @@ if __name__ == '__main__':
     #
     # # Tweets associated with one or multiple companies.
     # tweets_number_associated_companies(tweet_csv_dataframe)
-
+    #
     # # Unique Tweet Author Statistics.
     # unique_authors_tweet_counts(tweet_csv_dataframe)
-
+    #
     # # More ReTweet statistics.
     # retweet_statistics_2(tweet_csv_dataframe)
-
+    #
     # # Stock symbols statistics.
     # find_stock_symbols(tweet_csv_dataframe)
-
+    #
     # # URL statistics.
     # find_urls(tweet_csv_dataframe)
-
+    #
     # # Emoji statistics.
     # find_emojis(tweet_csv_dataframe)
-
-    # Language statistics.
+    #
+    # # Language statistics.
     # tweet_language(tweet_csv_dataframe)
-
+    #
+    # # Additional statistics.
     # hashtag_statistics_2(tweet_csv_dataframe)
     # time_series_statistics_2(tweet_csv_dataframe)
 
@@ -1061,7 +921,7 @@ if __name__ == '__main__':
     # tweet_util_v2.generalized_data_chunking_file_export_function(
     #     "D:/Dropbox/summer-research-2019/json/dataset_slo_20100101-20180510.json",
     #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/dataset-chunks/", "csv")
-
+    #
     # # Extract various nested attributes from a outer attribute in the raw JSON file and export to CSV or JSON file.
     # # We extract 13 different attributes (some nested).
     # tweet_util_v2.flatten_extract_nested_json_attributes(
@@ -1071,16 +931,7 @@ if __name__ == '__main__':
     #     ['created_at', 'id', 'full_text', 'in_reply_to_status_id', 'in_reply_to_user_id', 'in_reply_to_screen_name',
     #      'retweet_count', 'favorite_count', 'lang', 'entities', 'user', 'coordinates', 'place'],
     #     "csv")
-
-    # # Test the function on JSON files.
-    # tweet_util_v2.flatten_extract_nested_json_attributes(
-    #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-flatten-json-test.json",
-    #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-flatten-test_results",
-    #     "retweeted_status",
-    #     ['created_at', 'id', 'full_text', 'in_reply_to_status_id', 'in_reply_to_user_id', 'in_reply_to_screen_name',
-    #      'retweet_count', 'favorite_count', 'lang', 'entities', 'user', 'coordinates', 'place'],
-    #     "csv")
-
+    #
     # # Extract various single or multiple attributes in the raw JSON file and export to JSON or CSV.
     # tweet_util_v2.extract_single_multi_json_attributes(
     #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-extract-json-test.json",
@@ -1140,16 +991,16 @@ if __name__ == '__main__':
          "user_description_text_length"] + tweet_object_fields + user_object_fields + entities_object_fields + \
         retweeted_status_object_fields
 
-    # # Analyze full-text.
+    # # Analyze all attributes.
     # attribute_describe(
     #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-6-22-19-fixed.csv",
     #     [], "csv")
-
+    #
     # # Determine the number of NaN and non-NaN rows for a attribute in a dataset.
     # count_nan_non_nan(
     #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-6-22-19-fixed.csv",
     #     required_fields, "csv")
-
+    #
     # # Determine the number of non-Company associated Tweets.
     # count_nan_non_nan(
     #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/twitter-dataset-6-22-19-fixed.csv",

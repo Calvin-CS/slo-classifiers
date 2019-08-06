@@ -5,15 +5,13 @@ various derived attributes and native attributes.
 Original Author: Professor Keith VanderLinden
 Modified by: Joseph Jinn
 Modified for: SLO Twitter Data Analysis for Topic Modeling Research.
-Date: June 19, 2019
-Version: 2.0
+Date: August 1, 2019
+Version: 3.0
 
 Notes:
 
-Ensure there is at least ONE existing non-null value for any attribute you wish to rename in the current data chunk,
-otherwise you will encounter a error along the lines of: KeyError: 'quoted_status_id'
+Modified from dataset processor for stance detection.
 
-# TODO - parallelize the data chunks to reduce computational time, if possible.
 """
 
 #########################################################################################################
@@ -35,18 +33,14 @@ import spacy
 from spacy_langdetect import LanguageDetector
 from settings import PTN_rt, PTN_companies
 
-# import dask.dataframe as dask_df
-
 log.basicConfig(level=log.INFO)
 # Count irrelevant tweets.
 unknown_company_count_global = 0
 non_english_count_global = 0
 
-# from polyglot.text import Text, Word
-
 #########################################################################################################
 """
-These Lists hold the attributes/fields/columns we wish to extract/derive from the JSON and export to the CSV/JSON.
+These Lists hold the attributes/fields/columns we wish to extract/derive from the raw JSON and export to the CSV/JSON.
 """
 
 # Original Tweet object attribute names present in raw JSON file.
@@ -54,7 +48,7 @@ original_tweet_object_field_names = [
     'created_at', 'id', 'full_text', 'in_reply_to_status_id', 'in_reply_to_user_id',
     'in_reply_to_screen_name', 'retweet_count', 'favorite_count', 'lang']
 
-# Names to rename main Tweet object attributes.
+# Renamed Tweet object attributes names present in raw JSON file.
 tweet_object_fields = [
     'tweet_created_at', 'tweet_id', 'tweet_full_text', 'tweet_in_reply_to_status_id',
     'tweet_in_reply_to_user_id', 'tweet_in_reply_to_screen_name', 'tweet_retweet_count',
@@ -108,27 +102,22 @@ def create_dataset(json_data_filepath, dataset_filepath, drop_irrelevant_tweets)
     check_for_preexisting_output_file(dataset_filepath)
 
     global unknown_company_count_global, non_english_count_global
-    # log.info(f'\tloading raw tweets from {json_data_filepath}')
-    log.info("\tloading raw tweets from " + json_data_filepath)
+    log.info(f'\tloading raw tweets from {json_data_filepath}')
 
-    # Load/save the file in chunks.
     count = 0
     include_header = True
 
-    # # Parallelize the chunks.
-    # for df_chunk in dask_df.read_json(json_data_filepath, orient='records', lines=True, blocksize=10000,
-    #                                   encoding="ISO-8859-1"):
-    #     print()
+    # Load/save the file in chunks.
+    for df_chunk in pd.read_json(json_data_filepath, orient='records', lines=True, chunksize=100):
 
-    for df_chunk in pd.read_json(json_data_filepath, orient='records', lines=True, chunksize=10000):
-
-        # Modify these to determine what to export to CSV.
+        # Modify these to determine what to export to CSV/JSON.
         required_fields = ['retweeted_derived', 'company_derived', 'text_derived',  # "tweet_quoted_status_id",
                            'tweet_url_link_derived', 'multiple_companies_derived_count', "company_derived_designation",
                            'tweet_text_length_derived', "spaCy_language_detect_all_tweets",
                            "user_description_text_length",  # "polyglot_lang_detect_all_tweets"
                            ] + tweet_object_fields + user_object_fields + entities_object_fields
 
+        # These fields are exported to a separate CSV/JSON file to cut down on file size.
         extra_fields = ["tweet_id"] + retweeted_status_object_fields
 
         # Rename main Tweet object fields.
@@ -160,7 +149,7 @@ def create_dataset(json_data_filepath, dataset_filepath, drop_irrelevant_tweets)
 
         # Count the # of companies each Tweet is associated with.
         df_chunk['multiple_companies_derived_count'] = \
-            df_chunk.apply(compute_multiple_companies, axis=1)
+            df_chunk.apply(compute_number_of_associated_companies, axis=1)
 
         # Determine whether Tweet is associated with "company_name" or "multiple" companies.
         df_chunk["company_derived_designation"] = df_chunk.apply(compute_company_designation, axis=1)
@@ -171,18 +160,13 @@ def create_dataset(json_data_filepath, dataset_filepath, drop_irrelevant_tweets)
         # Extract Tweet object "retweeted_status" object fields.
         df_chunk[retweeted_status_object_fields] = df_chunk.apply(compute_flatten_retweeted_status_attribute, axis=1)
 
-        # Flatten nested fields in "retweeted_status_user".
-        # FIXME - non-functional.
+        # Flatten nested fields in "retweeted_status_user". FIXME - non-functional.
         # df_chunk[retweeted_status_user_object_fields] = df_chunk.apply(
         #     compute_flatten_retweeted_status_user_attributes, axis=1)
 
-        # Polyglot only works on Linux (PITA to get working on Windows - sometimes impossible)
-        # df_chunk['polyglot_lang_detect_non_english_only'] = df_chunk.apply(update_language_non_english_tweets, axis=1)
-        # df_chunk['polyglot_lang_detect_all_tweets'] = df_chunk.apply(update_language_all_tweets(), axis=1)
-
         # Determine the Tweet text's language using spaCy natural language processing library. (note: slow)
         df_chunk["spaCy_language_detect_all_tweets"] = df_chunk.apply(
-            lambda x: what_language(x) if (pd.notnull(x["tweet_full_text"])) else "none", axis=1)
+            lambda x: spacy_language_detection(x) if (pd.notnull(x["tweet_full_text"])) else "none", axis=1)
 
         # Remove irrelevant tweets (non-English or unknown-company).
         if drop_irrelevant_tweets:
@@ -193,67 +177,40 @@ def create_dataset(json_data_filepath, dataset_filepath, drop_irrelevant_tweets)
                   ))
             ]
 
-        # # Write each chunk to the combined dataset file.
-        # df_chunk[required_fields].to_csv(f"{dataset_filepath}.csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
-        #                                  mode='a', header=include_header)
-        #
-        # # Write select attributes within each chunk to a separate dataset file to reduce file size.
-        # df_chunk[extra_fields].to_csv(f"{dataset_filepath}-extra.csv", index=False,
-        #                               quoting=csv.QUOTE_NONNUMERIC, mode='a', header=include_header)
-
         # Write each chunk to the combined dataset file.
-        df_chunk[required_fields].to_csv(dataset_filepath + ".csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
+        df_chunk[required_fields].to_csv(f"{dataset_filepath}.csv", index=False, quoting=csv.QUOTE_NONNUMERIC,
                                          mode='a', header=include_header)
 
         # Write select attributes within each chunk to a separate dataset file to reduce file size.
-        df_chunk[extra_fields].to_csv(dataset_filepath + "-extra.csv", index=False,
+        df_chunk[extra_fields].to_csv(f"{dataset_filepath}-extra.csv", index=False,
                                       quoting=csv.QUOTE_NONNUMERIC, mode='a', header=include_header)
 
         # Print a progress message.
         count += df_chunk.shape[0]
         # Only include the header once, at the top of the file.
         include_header = False
-        # log.info(f'\t\tprocessed {count} records...')
-        log.info("\t\tprocessed " + str(count) + " records...")
+        log.info(f'\t\tprocessed {count} records...')
 
-        # Debug purposes.
-        # break
-
-    # # Drop duplicate rows/examples/Tweets.
-    # df_full = pd.read_csv(f"{dataset_filepath}.csv", sep=',', encoding="utf-8")
-    # df_full.drop_duplicates(inplace=True)
-    # # df_full.dropna(how="all")
-    # df_full.to_csv(f"{dataset_filepath}.csv",
-    #                index=False, header=True, quoting=csv.QUOTE_NONNUMERIC, encoding='utf-8')
-    # df_full.to_json(f"{dataset_filepath}.json", orient='records', lines=True)
-    #
-    # df_extra = pd.read_csv(f"{dataset_filepath}-extra.csv", sep=',', encoding="utf-8")
-    # df_extra.drop_duplicates(inplace=True)
-    # df_extra.to_csv(f"{dataset_filepath}-extra.csv",
-    #                 index=False, header=True, quoting=csv.QUOTE_NONNUMERIC, encoding='utf-8')
-    # df_extra.to_json(f"{dataset_filepath}-extra.json", orient='records', lines=True)
+        # Debug purposes - test on a small subset by setting to small chunk size and breaking out of loop.
+        break
 
     # Drop duplicate rows/examples/Tweets.
-    df_full = pd.read_csv(dataset_filepath + ".csv", sep=',', encoding="utf-8")
+    df_full = pd.read_csv(f"{dataset_filepath}.csv", sep=',', encoding="utf-8")
     df_full.drop_duplicates(inplace=True)
     # df_full.dropna(how="all")
-    df_full.to_csv(dataset_filepath + ".csv",
+    df_full.to_csv(f"{dataset_filepath}.csv",
                    index=False, header=True, quoting=csv.QUOTE_NONNUMERIC, encoding='utf-8')
-    df_full.to_json(dataset_filepath + ".json", orient='records', lines=True)
+    df_full.to_json(f"{dataset_filepath}.json", orient='records', lines=True)
 
-    df_extra = pd.read_csv(dataset_filepath + "-extra.csv", sep=',', encoding="utf-8")
+    df_extra = pd.read_csv(f"{dataset_filepath}-extra.csv", sep=',', encoding="utf-8")
     df_extra.drop_duplicates(inplace=True)
-    df_extra.to_csv(dataset_filepath + "-extra.csv",
+    df_extra.to_csv(f"{dataset_filepath}-extra.csv",
                     index=False, header=True, quoting=csv.QUOTE_NONNUMERIC, encoding='utf-8')
-    df_extra.to_json(dataset_filepath + "-extra.json", orient='records', lines=True)
+    df_extra.to_json(f"{dataset_filepath}-extra.json", orient='records', lines=True)
 
-    # log.info(f'\tsaved the dataset to {dataset_filepath}'
-    #          f'\n\t\tunknown company count: {unknown_company_count_global}'
-    #          f'\n\t\tnon-English count: {non_english_count_global}'
-    #          )
-    log.info("\tsaved the dataset to " + dataset_filepath +
-             "\n\t\tunknown company count: " + str(unknown_company_count_global) +
-             "\n\t\tnon-English count: " + str(non_english_count_global)
+    log.info(f'\tsaved the dataset to {dataset_filepath}'
+             f'\n\t\tunknown company count: {unknown_company_count_global}'
+             f'\n\t\tnon-English count: {non_english_count_global}'
              )
 
 
@@ -330,6 +287,7 @@ def compute_flatten_retweeted_status_attribute(row):
 def compute_flatten_retweeted_status_user_attributes(row):
     """
     Function to extract 'retweeted_status' nested "user" attributes from each example in the dataframe.
+
     :param row: current example (row) passed in.
     :return: nested attributes as individual columns added to the current example (row).
     """
@@ -354,8 +312,7 @@ def compute_url_link(row):
     """This function constructs a URL referencing the full context of the
     given tweet.
     """
-    # return f'https://twitter.com/-/status/{row["id"]}'
-    return "https://twitter.com/-/status/" + str(row["id"])
+    return f'https://twitter.com/-/status/{row["id"]}'
 
 
 #########################################################################################################
@@ -377,8 +334,7 @@ def compute_full_text(row):
     if full_text.startswith('RT @') and full_text.endswith('\u2026') and not pd.isnull(row['retweeted_status']):
         text_header = PTN_rt.search(row['full_text']).group()
         retweet_series = pd.read_json(json.dumps(row['retweeted_status']), typ='series')
-        # full_text = f'{text_header}{retweet_series["full_text"]}'
-        full_text = text_header + retweet_series["full_text"]
+        full_text = f'{text_header}{retweet_series["full_text"]}'
     return clean_text(full_text)
 
 
@@ -491,20 +447,16 @@ def compute_company(row):
 
     # No company pattern applies, so it's unclear how this tweet was selected.
     unknown_company_count_global += 1
-    # log.warning(f"\t\t\tunrecognized company (will be dropped): "
-    #             f"\n\t\t\t\tid: {row['tweet_id']}"
-    #             f"\n\t\t\t\ttweet: {row['text_derived']}"
-    #             f"\n\t\t\t\thashtags: {row['tweet_entities_hashtags']}")
-    log.warning("\t\t\tunrecognized company (will be dropped): " +
-                "\n\t\t\t\tid: " + str(row['tweet_id']) +
-                "\n\t\t\t\ttweet: " + row['text_derived'] +
-                "\n\t\t\t\thashtags: " + row['tweet_entities_hashtags'])
+    log.warning(f"\t\t\tunrecognized company (will be dropped): "
+                f"\n\t\t\t\tid: {row['tweet_id']}"
+                f"\n\t\t\t\ttweet: {row['text_derived']}"
+                f"\n\t\t\t\thashtags: {row['tweet_entities_hashtags']}")
     return 'none'
 
 
 #########################################################################################################
 
-def compute_multiple_companies(row):
+def compute_number_of_associated_companies(row):
     """
     Function determines the number of companies a Tweet is associated with.
     Note: we convert derived_series to a series to avoid Pandas warning.
@@ -542,58 +494,7 @@ def compute_company_designation(row):
 
 #########################################################################################################
 
-def update_language_non_english_tweets(row):
-    """This function computes an alternate language code for the given
-    tweet using TextBlob, a more reliable language coder.
-    """
-    global non_english_count_global
-    if row['lang'].startswith('en'):
-        # Leave English codes (i.e., en, en-gb) unchanged.
-        return row['lang']
-    else:
-        # Compute alternate code for non-English tweets, many of which are
-        # in English as well.
-        lang2 = Text(row['full_text']).language.code
-        if not lang2.startswith('en'):
-            non_english_count_global += 1
-            # log.warning(f"\t\t\tnon-English tweet (will be dropped): "
-            #             f"\n\t\t\t\tid: {row['tweet_id']}"
-            #             f"\n\t\t\t\ttweet: {row['text_derived']}"
-            #             f"\n\t\t\t\tLanguage tags: {row['tweet_lang']} - {lang2}"
-            #             )
-            log.warning("\t\t\tnon-English tweet (will be dropped): " +
-                        "\n\t\t\t\tid: " + str(row['tweet_id']) +
-                        "\n\t\t\t\ttweet: " + str(row['text_derived']) +
-                        "\n\t\t\t\tLanguage tags: " + row['tweet_lang'] + "-" + lang2
-                        )
-        return lang2
-
-
-def update_language_all_tweets(row):
-    """This function computes an alternate language code for the given
-    tweet using TextBlob, a more reliable language coder.
-    """
-    global non_english_count_global
-    # Compute alternate code for all Tweets.
-    lang2 = Text(row['full_text']).language.code
-    if not lang2.startswith('en'):
-        non_english_count_global += 1
-        # log.warning(f"\t\t\tnon-English tweet (will be dropped): "
-        #             f"\n\t\t\t\tid: {row['tweet_id']}"
-        #             f"\n\t\t\t\ttweet: {row['text_derived']}"
-        #             f"\n\t\t\t\tLanguage tags: {row['tweet_lang']} - {lang2}"
-        #             )
-        log.warning("\t\t\tnon-English tweet (will be dropped): " +
-                    "\n\t\t\t\tid: " + str(row['tweet_id']) +
-                    "\n\t\t\t\ttweet: " + str(row['text_derived']) +
-                    "\n\t\t\t\tLanguage tags: " + row['tweet_lang'] + "-" + lang2
-                    )
-    return lang2
-
-
-#########################################################################################################
-
-def what_language(row):
+def spacy_language_detection(row):
     """
      Function utilizes spaCy N.L.P. library, "langdetect" library, and "spacy-langdetect" library
      to determine the language of the Tweet.
@@ -608,22 +509,16 @@ def what_language(row):
     # document level language detection. Think of it like average language of document!
     text_language = document._.language
     row["spaCy_language_detect"] = str(text_language["language"])
-    print("language string is:")
+    print("spaCy language designation:")
     print(str(text_language["language"]))
 
     if not str(text_language["language"]).startswith('en'):
         non_english_count_global += 1
-        # log.warning(f"\t\t\tnon-English tweet (will be dropped): "
-        #             f"\n\t\t\t\tid: {row['tweet_id']}"
-        #             f"\n\t\t\t\ttweet: {row['text_derived']}"
-        #             f"\n\t\t\t\tLanguage tags: {row['tweet_lang']}
-        #             )
-        log.warning("\t\t\tnon-English tweet (will be dropped): " +
-                    "\n\t\t\t\tid: " + str(row['tweet_id']) +
-                    "\n\t\t\t\ttweet: " + str(row['text_derived']) +
-                    "\n\t\t\t\tLanguage tags: " + row['tweet_lang']
+        log.warning(f"\t\t\tnon-English tweet (will be dropped): "
+                    f"\n\t\t\t\tid: {row['tweet_id']}"
+                    f"\n\t\t\t\ttweet: {row['text_derived']}"
+                    f"\n\t\t\t\tLanguage tags: {row['spaCy_language_detect']}"
                     )
-
     return row["spaCy_language_detect"]
 
 
@@ -639,8 +534,7 @@ def clean_text(text):
 def remove_filepath_if_exists(filepath):
     """Delete the given file if it exists."""
     if os.path.isfile(filepath):
-        # log.info(f'\tdeleting existing file: {filepath}')
-        log.info("\tdeleting existing file: " + filepath)
+        log.info(f'\tdeleting existing file: {filepath}')
         os.remove(filepath)
 
 
@@ -650,13 +544,11 @@ def create_separate_company_datasets(dataset_filepath, dataset_path, filename_ba
     """Read the given full/combined dataset file and create/save
     company-specific groups.
     """
-    # log.info(f'\tsplitting dataset into company-specific datasets...')
-    log.info("\tsplitting dataset into company-specific datasets...")
+    log.info(f'\tsplitting dataset into company-specific datasets...')
     df = pd.read_csv(dataset_filepath, encoding='utf-8', engine='python')
     for company_name, group in df.groupby(['company_derived']):
         group.to_csv(
-            # dataset_path / f'{filename_base}-{company_name}.csv',
-            dataset_path / filename_base + "-" + company_name + ".csv",
+            dataset_path / f'{filename_base}-{company_name}.csv',
             index=False)
 
 
@@ -695,16 +587,13 @@ def main(json_data_filepath='dataset.json',
             (default: logging.INFO)
     """
     log.basicConfig(level=logging_level, format='%(message)s')
-    # log.info(f'building the dataset')
-    log.info("building the dataset")
+    log.info(f'building the dataset')
 
     if not os.path.isfile(json_data_filepath):
-        # log.fatal(f'\tfilepath doesn\'t exist: {json_data_filepath}')
-        log.fatal("\tfilepath doesn\'t exist: " + json_data_filepath)
+        log.fatal(f'\tfilepath doesn\'t exist: {json_data_filepath}')
         exit(-1)
 
-    # full_dataset_filepath = Path(dataset_path) / f'{filename_base}.csv'
-    full_dataset_filepath = Path(dataset_path) / filename_base + ".csv"
+    full_dataset_filepath = Path(dataset_path) / f'{filename_base}.csv'
     remove_filepath_if_exists(full_dataset_filepath)
 
     create_dataset(Path(json_data_filepath), full_dataset_filepath, drop_irrelevant_tweets)
@@ -723,14 +612,9 @@ def check_for_preexisting_output_file(output_file_path):
     dataset at the specified save location.  If so, it will ABORT the operation to ensure that we are not appending to
     a pre-existing CSV file.
 
-    Resources:
-    https://www.guru99.com/python-check-if-file-exists.html
-
     :return: None.
     """
-
-    # if path.exists(f"{output_file_path}"):
-    if path.exists(output_file_path):
+    if path.exists(f"{output_file_path}"):
         print("Output file at specified save location file path already exists!")
         print("Aborting operation!")
         sys.exit()
@@ -748,28 +632,19 @@ if __name__ == '__main__':
 
     start_time = time.time()
 
-    # # Relative file path.
-    # create_dataset("/home/jj47/Summer-Research-2019-master/json/"
-    #                "dataset_slo_20100101-20180510-reduced-size.json",
-    #                "/home/jj47/Summer-Research-2019-master/"
-    #                "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded-reduced-size",
-    #                True)
-
-    # # Absolute file path.
-    # create_dataset("D:/Dropbox/summer-research-2019/json/dataset_slo_20100101-20180510.json",
-    #                "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-    #                "twitter-dataset-7-19-19-with-irrelevant-tweets-excluded-reduced-size",
-    #                True)
+    # Absolute file path (modify as necessary).
+    create_dataset("D:/Dropbox/summer-research-2019/json/dataset_slo_20100101-20180510.json",
+                   "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
+                   "twitter-dataset-8-1-19-with-irrelevant-tweets-excluded-test-subset",
+                   True)
 
     end_time = time.time()
 
     time_elapsed_seconds = (end_time - start_time)
     time_elapsed_minutes = (end_time - start_time) / 60.0
     time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
-    # print(f"Time taken to process dataset: {time_elapsed_seconds} seconds, "
-    #       f"{time_elapsed_hours} hours, {time_elapsed_minutes} minutes")
-    print("Time taken to process dataset: " + str(time_elapsed_seconds) + " seconds, " +
-          str(time_elapsed_hours) + "hours, " + str(time_elapsed_minutes) + " minutes")
+    print(f"Time taken to process dataset: {time_elapsed_seconds} seconds, "
+          f"{time_elapsed_hours} hours, {time_elapsed_minutes} minutes")
 
 #########################################################################################################
 #########################################################################################################
