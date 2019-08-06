@@ -30,76 +30,76 @@ https://github.com/J-Jinn/cs344/tree/master/Project
 
 ## Directory Hierarchy:
 
-"data" - SLO Twitter Dataset Processing and Analysis
+- "data" - SLO Twitter Dataset Processing and Analysis
 
-"models" - SLO Twitter Dataset Topic Modeling Algorithms
+- "models" - SLO Twitter Dataset Topic Modeling Algorithms
 
-"TBL" - SLO Twitter Dataset Topic Classification Algorithms (not part of master branch - only a unmerged feature branch)
+- "TBL" - SLO Twitter Dataset Topic Classification Algorithms (not part of master branch - only a unmerged feature branch)
 
 ### Data Directory:
 
-- "images" directory - stores .png and .jpeg files used in Jupyter Notebooks
+- "images" - stores .png and .jpeg files used in Jupyter Notebooks
 
-- "notebooks" directory - stores Jupyter Notebooks linked to by the data analysis table of contents Jupyter Notebook
+- "notebooks" - stores Jupyter Notebooks linked to by the data analysis table of contents Jupyter Notebook
 
 &nbsp;
 
-- slo_twitter_data_analysis.py
+- `slo_twitter_data_analysis.py`
     - codebase for the Twitter dataset analysis.
     
-- slo_twitter_data_analysis_utility_functions.py
+- `slo_twitter_data_analysis_utility_functions.py`
     - utility functions for Twitter dataset analysis.
 
-- slo-twitter-data-analysis-table-of-contents.ipynb
+- `slo-twitter-data-analysis-table-of-contents.ipynb`
     - Jupyter Notebook table of contents file linking to each of the data analysis sub-categories.
 
-- topic_dataset_processor.py
+- `topic_dataset_processor.py`
     - Python file that creates our CSV dataset from the raw JSON file.
 
 ### Models Directory:
 
-- "images" directory - stores .png and .jpeg files used in Jupyter Notebooks
+- "images" - stores .png and .jpeg files used in Jupyter Notebooks
 
-- "notebooks" directory - stores Jupyter Notebooks linked to by the topic analysis table of contents Jupyter Notebook
+- "notebooks" - stores Jupyter Notebooks linked to by the topic analysis table of contents Jupyter Notebook
 
-- "topic-modeling-code-examples" directory - stores example code running topic modeling algorithms on a sample dataset 
+- "topic-modeling-code-examples" - stores example code running topic modeling algorithms on a sample dataset 
 (not our Twitter dataset)
 
 &nbsp;
 
-- author-topic-model.py
+- `author-topic-model.py`
     - Gensim Author-Topic Model Algorithm.
     
-- biterm-topic-model.py
+- `biterm-topic-model.py`
     - Biterm Topic Model Algorithm.
     
-- hierarchical-dirichlet-process-model.py
+- `hierarchical-dirichlet-process-model.py`
     - Gensim HDP Topic Model Algorithm.
     
-- hierarchical-latent-dirichlet-allocation-model.py
+- `hierarchical-latent-dirichlet-allocation-model.py`
     - HLDA Topic Model Algorithm.
 
-- latent_dirichlet_allocation-model.py
+- `latent_dirichlet_allocation-model.py`
     - Scikit-Learn LDA Topic Model Algorithm.
 
-- non-negative-matrix-factorization-model.py
+- `non-negative-matrix-factorization-model.py`
     - Scikit-Learn NMF Topic Model Algorithm.
     
 &nbsp;
 
-- topic-modeling-algorithms-table-of-contents.ipynb
+- `topic-modeling-algorithms-table-of-contents.ipynb`
     - Jupyter Notebook table of contentsn file linking to each of the topic analysis sub-categories.
 
-- topic_extraction_utility_functions.py
+- `topic_extraction_utility_functions.py`
     - utility functions for Twitter topic extraction.
 
 &nbsp;
 
-- lda_visualization.html
+- `lda_visualization.html`
     - pyldAVIS visualization of the Scikit-Learn LDA model topic extraction results with company names included in the
     Tweet text.
     
-- lda_visualization-no-company-words.html
+- `lda_visualization-no-company-words.html`
     - pyldAVIS visualization of the Scikit-Learn LDA model topic extraction results with company names excluded from the
     Tweet text.
 
