@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="15a3f3a2-c024-4bc3-b6a4-9ef365c4db84" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/slo-classifiers-repo.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/slo-classifiers-repo.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/topic/models/topic_extraction_utility_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/topic_extraction_utility_functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/topic/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/topic/readme.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -187,6 +184,7 @@
       <workItem from="1564417802283" duration="8692000" />
       <workItem from="1564516762552" duration="189000" />
       <workItem from="1565041141503" duration="820000" />
+      <workItem from="1565052261684" duration="272000" />
     </task>
     <servers />
   </component>

@@ -30,9 +30,9 @@ https://github.com/J-Jinn/cs344/tree/master/Project
 
 ## Directory Hierarchy:
 
-"Data" - SLO Twitter Dataset Processing and Analysis
+"data" - SLO Twitter Dataset Processing and Analysis
 
-"Model" - SLO Twitter Dataset Topic Modeling Algorithms
+"models" - SLO Twitter Dataset Topic Modeling Algorithms
 
 "TBL" - SLO Twitter Dataset Topic Classification Algorithms (not part of master branch - only a unmerged feature branch)
 
@@ -56,7 +56,7 @@ https://github.com/J-Jinn/cs344/tree/master/Project
 - topic_dataset_processor.py
     - Python file that creates our CSV dataset from the raw JSON file.
 
-### Model Directory:
+### Models Directory:
 
 - "images" directory - stores .png and .jpeg files used in Jupyter Notebooks
 
@@ -92,6 +92,16 @@ https://github.com/J-Jinn/cs344/tree/master/Project
 
 - topic_extraction_utility_functions.py
     - utility functions for Twitter topic extraction.
+
+&nbsp;
+
+- lda_visualization.html
+    - pyldAVIS visualization of the Scikit-Learn LDA model topic extraction results with company names included in the
+    Tweet text.
+    
+- lda_visualization-no-company-words.html
+    - pyldAVIS visualization of the Scikit-Learn LDA model topic extraction results with company names excluded from the
+    Tweet text.
 
 ### TBL Directory:
 
