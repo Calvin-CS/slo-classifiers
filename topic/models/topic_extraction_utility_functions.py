@@ -61,6 +61,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.pipeline import Pipeline
 # Import custom utility functions.
 import slo_twitter_data_analysis_utility_functions as tweet_util_v2
+import utility_functions_settings as settings
 
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -118,43 +119,27 @@ def preprocess_tweet_text(tweet_text):
     tweet_text = html.unescape(tweet_text)
 
     # Remove "RT" tags.
-    preprocessed_tweet_text = re.sub(r'^(rt @\w+: )', "", tweet_text)
-
+    preprocessed_tweet_text = settings.PTN_rt.sub("", tweet_text)
     # Remove concatenated URL's.
-    preprocessed_tweet_text = re.sub(r'(.)http', r'\1 http', preprocessed_tweet_text)
-
+    preprocessed_tweet_text = settings.PTN_concatenated_url.sub(r'\1 http', preprocessed_tweet_text)
     # Handle whitespaces.
-    preprocessed_tweet_text = re.sub(r'\s', " ", preprocessed_tweet_text)
-
+    preprocessed_tweet_text = settings.PTN_whitespace.sub(r' ', preprocessed_tweet_text)
     # Remove URL's.
-    preprocessed_tweet_text = re.sub(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
-                                     r"slo_url", preprocessed_tweet_text)
-
-    # Remove Tweet mentions.
-    preprocessed_tweet_text = re.sub(r'@[a-zA-Z_0-9]+', r"slo_mention", preprocessed_tweet_text)
-
+    preprocessed_tweet_text = settings.PTN_url.sub(r"slo_url", preprocessed_tweet_text)
+    # Remove Tweet user mentions.
+    preprocessed_tweet_text = settings.PTN_mention.sub(r'slo_mention', preprocessed_tweet_text)
     # Remove Tweet stock symbols.
-    preprocessed_tweet_text = re.sub(r'$[a-zA-Z]+', r"slo_stock", preprocessed_tweet_text)
-
+    preprocessed_tweet_text = settings.PTN_stock_symbol.sub(r'slo_stock', preprocessed_tweet_text)
     # Remove Tweet hashtags.
-    preprocessed_tweet_text = re.sub(r'#\w+', r"slo_hash", preprocessed_tweet_text)
-
+    preprocessed_tweet_text = settings.PTN_hash.sub(r'slo_hash', preprocessed_tweet_text)
     # Remove Tweet cashtags.
-    preprocessed_tweet_text = \
-        re.sub(r'\$(?=\(.*\)|[^()]*$)\(?\d{1,3}(,?\d{3})?(\.\d\d?)?\)?([bmk]| hundred| thousand| million| billion)?',
-               r"slo_cash", preprocessed_tweet_text)
-
+    preprocessed_tweet_text = settings.PTN_cash.sub(r'slo_cash', preprocessed_tweet_text)
     # Remove Tweet year.
-    preprocessed_tweet_text = re.sub(r'[12][0-9]{3}', r"slo_year", preprocessed_tweet_text)
-
+    preprocessed_tweet_text = settings.PTN_year.sub(r'slo_year', preprocessed_tweet_text)
     # Remove Tweet time.
-    preprocessed_tweet_text = re.sub(r'[012]?[0-9]:[0-5][0-9]', r"slo_time", preprocessed_tweet_text)
-
+    preprocessed_tweet_text = settings.PTN_time.sub(r'slo_time', preprocessed_tweet_text)
     # Remove character elongations.
-    preprocessed_tweet_text = re.sub(r'(.)\1{2,}', r'\1\1\1', preprocessed_tweet_text)
-
-    # Do not remove anything.
-    delete_list = []
+    preprocessed_tweet_text = settings.PTN_elongation.sub(r'\1\1\1', preprocessed_tweet_text)
 
     # Convert series to string.
     tweet_string = str(preprocessed_tweet_text)
@@ -173,7 +158,7 @@ def preprocess_tweet_text(tweet_text):
     # Check to see if a word is irrelevant or not.
     words_relevant = []
     for w in individual_words:
-        if w.text not in delete_list:
+        if w.text not in settings.delete_list:
             words_relevant.append(w.text)
 
     # Convert list back into original Tweet text minus irrelevant words.
@@ -205,25 +190,8 @@ def postprocess_tweet_text(tweet_text):
     # Remove all remaining "slo_" placeholders nested within other characers. FIXME - make functional.
     # postprocessed_tweet_text = re.sub(r'[^\S].*?slo_.*?[^\S]', " ", tweet_text)
 
-    # Remove irrelevant words from Tweets. (from Derek Fisher's code
-    delete_list = ["word_n", "auspol", "ausbiz", "tinto", "adelaide", "csg", "nswpol",
-                   "nsw", "lng", "don", "rio", "pilliga", "australia", "asx", "just", "today", "great", "says", "like",
-                   "big", "better", "rite", "would", "SCREEN_NAME", "mining", "former", "qldpod", "qldpol", "qld", "wr",
-                   "melbourne", "andrew", "fuck", "spadani", "greg", "th", "australians", "http", "https", "rt",
-                   "co", "amp", "carmichael", "abbot", "bill shorten",
-                   "slo_url", "slo_mention", "slo_hash", "slo_year", "slo_time", "slo_cash", "slo_stock",
-                   "adani", "bhp", "cuesta", "fotescue", "riotinto", "newmontmining", "santos", "oilsearch",
-                   "woodside", "ilukaresources", "whitehavencoal",
-                   "stopadani", "goadani", "bhpbilliton", "billiton", "cuestacoal", "cuests coal", "cqc",
-                   "fortescuenews", "fortescue metals", "rio tinto", "newmont", "newmont mining", "santosltd",
-                   "oilsearchltd", "oil search", "woodsideenergy", "woodside petroleum", "woodside energy",
-                   "iluka", "iluka resources", "whitehaven", "whitehaven coal"]
-
     # Remove stop words from Tweets using nltk.
     # delete_list = list(stopwords.words('english'))
-
-    # Do not remove anything.
-    # delete_list = []
 
     # Convert series to string.
     tweet_string = str(tweet_text)
@@ -251,7 +219,7 @@ def postprocess_tweet_text(tweet_text):
         # if w.text not in delete_list and not w.is_punct and not w.is_stop and "slo_" not in w.text:
 
         # If not a irrelevant word and not punctuation and a stop word.
-        if w.text not in delete_list and not w.is_punct and not w.is_stop:
+        if w.text not in settings.irrelevant_words and not w.is_punct and not w.is_stop:
 
             # word_lemmatized = lemmatizer.lemmatize(w)
             # words_relevant.append(word_lemmatized)
@@ -731,7 +699,7 @@ if __name__ == '__main__':
     #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
     #     "twitter-dataset-7-10-19-test-subset-100-examples.csv",
     #     "D:/Dropbox/summer-research-2019/jupyter-notebooks/attribute-datasets/"
-    #     "twitter-dataset-7-10-19-topic-extraction-ready-tweet-text-with-hashtags-excluded-created-7-30-19-test.csv",
+    #     "twitter-dataset-7-10-19-topic-extraction-ready-tweet-text-with-hashtags-excluded-created-8-6-19-test.csv",
     #     "text_derived")
 
     # # Test on our topic modeling dataset.
