@@ -118,28 +118,7 @@ def preprocess_tweet_text(tweet_text):
     # Convert html chars. to unicode chars.
     tweet_text = html.unescape(tweet_text)
 
-    # Remove "RT" tags.
-    preprocessed_tweet_text = settings.PTN_rt.sub("", tweet_text)
-    # Remove concatenated URL's.
-    preprocessed_tweet_text = settings.PTN_concatenated_url.sub(r'\1 http', preprocessed_tweet_text)
-    # Handle whitespaces.
-    preprocessed_tweet_text = settings.PTN_whitespace.sub(r' ', preprocessed_tweet_text)
-    # Remove URL's.
-    preprocessed_tweet_text = settings.PTN_url.sub(r"slo_url", preprocessed_tweet_text)
-    # Remove Tweet user mentions.
-    preprocessed_tweet_text = settings.PTN_mention.sub(r'slo_mention', preprocessed_tweet_text)
-    # Remove Tweet stock symbols.
-    preprocessed_tweet_text = settings.PTN_stock_symbol.sub(r'slo_stock', preprocessed_tweet_text)
-    # Remove Tweet hashtags.
-    preprocessed_tweet_text = settings.PTN_hash.sub(r'slo_hash', preprocessed_tweet_text)
-    # Remove Tweet cashtags.
-    preprocessed_tweet_text = settings.PTN_cash.sub(r'slo_cash', preprocessed_tweet_text)
-    # Remove Tweet year.
-    preprocessed_tweet_text = settings.PTN_year.sub(r'slo_year', preprocessed_tweet_text)
-    # Remove Tweet time.
-    preprocessed_tweet_text = settings.PTN_time.sub(r'slo_time', preprocessed_tweet_text)
-    # Remove character elongations.
-    preprocessed_tweet_text = settings.PTN_elongation.sub(r'\1\1\1', preprocessed_tweet_text)
+    preprocessed_tweet_text = settings.process_tweet_text(tweet_text)
 
     # Convert series to string.
     tweet_string = str(preprocessed_tweet_text)

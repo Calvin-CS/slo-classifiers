@@ -70,6 +70,37 @@ PTN_time = re.compile(r'[012]?[0-9]:[0-5][0-9]')
 PTN_cash = re.compile(
     r'\$(?=\(.*\)|[^()]*$)\(?\d{1,3}(,?\d{3})?(\.\d\d?)?\)?([bmk]| hundred| thousand| million| billion)?')
 
+
+def process_tweet_text(tweet_text):
+    """This function runs through the text regularization expressions to produce
+    a processed tweet text."""
+
+    # Remove "RT" tags.
+    tweet_text = PTN_rt.sub("", tweet_text)
+    # Remove concatenated URL's.
+    tweet_text = PTN_concatenated_url.sub(r'\1 http', tweet_text)
+    # Handle whitespaces.
+    tweet_text = PTN_whitespace.sub(r' ', tweet_text)
+    # Remove URL's.
+    tweet_text = PTN_url.sub(r"slo_url", tweet_text)
+    # Remove Tweet user mentions.
+    tweet_text = PTN_mention.sub(r'slo_mention', tweet_text)
+    # Remove Tweet stock symbols.
+    tweet_text = PTN_stock_symbol.sub(r'slo_stock', tweet_text)
+    # Remove Tweet hashtags.
+    tweet_text = PTN_hash.sub(r'slo_hash', tweet_text)
+    # Remove Tweet cashtags.
+    tweet_text = PTN_cash.sub(r'slo_cash', tweet_text)
+    # Remove Tweet year.
+    tweet_text = PTN_year.sub(r'slo_year', tweet_text)
+    # Remove Tweet time.
+    tweet_text = PTN_time.sub(r'slo_time', tweet_text)
+    # Remove character elongations.
+    tweet_text = PTN_elongation.sub(r'\1\1\1', tweet_text)
+
+    return tweet_text
+
+
 # Specify tokens to remove during pre-processing function.
 delete_list = []
 
@@ -97,17 +128,16 @@ Unit tests for regular expressions.
 if __name__ == '__main__':
     start_time = time.time()
 
-
-    def whitespace_assertion_test(input_string, expected_string):
-        """
-        Unit test for removing extra whitespace characters.
-        :param input_string: Tweet text to test.
-        :param expected_string:  expected results to assert.
-        :return:
-        """
-        preprocessed_tweet_text = PTN_whitespace.sub(r' ', input_string)
-        print(f"Extra Whitespace Assertion Test Result: {preprocessed_tweet_text}")
-        assert PTN_whitespace.sub(r' ', input_string) == expected_string
+    # def whitespace_assertion_test(input_string, expected_string):
+    #     """
+    #     Unit test for removing extra whitespace characters.
+    #     :param input_string: Tweet text to test.
+    #     :param expected_string:  expected results to assert.
+    #     :return:
+    #     """
+    #     preprocessed_tweet_text = PTN_whitespace.sub(r' ', input_string)
+    #     print(f"Extra Whitespace Assertion Test Result: {preprocessed_tweet_text}")
+    #     assert PTN_whitespace.sub(r' ', input_string) == expected_string
 
 
     def rt_assertion_test(input_string, expected_string):
@@ -118,7 +148,7 @@ if __name__ == '__main__':
         :return:
         """
         preprocessed_tweet_text = PTN_rt.sub("", input_string)
-        print(f"RT Assertion Test Result: {preprocessed_tweet_text}")
+        # print(f"RT Assertion Test Result: {preprocessed_tweet_text}")
         assert PTN_rt.sub("", input_string) == expected_string
 
 
@@ -130,7 +160,7 @@ if __name__ == '__main__':
         :return:
         """
         preprocessed_tweet_text = PTN_url.sub(r"slo_url", input_string)
-        print(f"URL Assertion Test Result: {preprocessed_tweet_text}")
+        # print(f"URL Assertion Test Result: {preprocessed_tweet_text}")
         assert PTN_url.sub("slo_url", input_string) == expected_string
 
 
@@ -143,7 +173,7 @@ if __name__ == '__main__':
         FIXME - is this working as intended?  It seems to just add an extra whitespace.
         """
         preprocessed_tweet_text = PTN_concatenated_url.sub(r'\1 http', input_string)
-        print(f"Concatenated URL Assertion Test Result: {preprocessed_tweet_text}")
+        # print(f"Concatenated URL Assertion Test Result: {preprocessed_tweet_text}")
         assert PTN_concatenated_url.sub(r'\1 http', input_string) == expected_string
 
 
@@ -155,7 +185,7 @@ if __name__ == '__main__':
         :return:
         """
         preprocessed_tweet_text = PTN_mention.sub(r'slo_mention', input_string)
-        print(f"User Mentions Assertion Test Result: {preprocessed_tweet_text}")
+        # print(f"User Mentions Assertion Test Result: {preprocessed_tweet_text}")
         assert PTN_mention.sub(r'slo_mention', input_string) == expected_string
 
 
@@ -167,7 +197,7 @@ if __name__ == '__main__':
         :return:
         """
         preprocessed_tweet_text = PTN_stock_symbol.sub(r'slo_stock', input_string)
-        print(f"Stock Symbols Assertion Test Result: {preprocessed_tweet_text}")
+        # print(f"Stock Symbols Assertion Test Result: {preprocessed_tweet_text}")
         assert PTN_stock_symbol.sub(r'slo_stock', input_string) == expected_string
 
 
@@ -179,7 +209,7 @@ if __name__ == '__main__':
         :return:
         """
         preprocessed_tweet_text = PTN_hash.sub(r'slo_hash', input_string)
-        print(f"Hashtags Assertion Test Result: {preprocessed_tweet_text}")
+        # print(f"Hashtags Assertion Test Result: {preprocessed_tweet_text}")
         assert PTN_hash.sub(r'slo_hash', input_string) == expected_string
 
 
@@ -191,7 +221,7 @@ if __name__ == '__main__':
         :return:
         """
         preprocessed_tweet_text = PTN_cash.sub(r'slo_cash', input_string)
-        print(f"Cashtags Assertion Test Result: {preprocessed_tweet_text}")
+        # print(f"Cashtags Assertion Test Result: {preprocessed_tweet_text}")
         assert PTN_cash.sub(r'slo_cash', input_string) == expected_string
 
 
@@ -203,7 +233,7 @@ if __name__ == '__main__':
         :return:
         """
         preprocessed_tweet_text = PTN_year.sub(r'slo_year', input_string)
-        print(f"Year Stamp Assertion Test Result: {preprocessed_tweet_text}")
+        # print(f"Year Stamp Assertion Test Result: {preprocessed_tweet_text}")
         assert PTN_year.sub(r'slo_year', input_string) == expected_string
 
 
@@ -215,7 +245,7 @@ if __name__ == '__main__':
         :return:
         """
         preprocessed_tweet_text = PTN_time.sub(r'slo_time', input_string)
-        print(f"Time Stamp Assertion Test Result: {preprocessed_tweet_text}")
+        # print(f"Time Stamp Assertion Test Result: {preprocessed_tweet_text}")
         assert PTN_time.sub(r'slo_time', input_string) == expected_string
 
 
@@ -227,7 +257,7 @@ if __name__ == '__main__':
         :return:
         """
         preprocessed_tweet_text = PTN_elongation.sub(r'\1\1\1', input_string)
-        print(f"Character Elongation Assertion Test Result: {preprocessed_tweet_text}")
+        # print(f"Character Elongation Assertion Test Result: {preprocessed_tweet_text}")
         assert PTN_elongation.sub(r'\1\1\1', input_string) == expected_string
 
 
@@ -238,39 +268,42 @@ if __name__ == '__main__':
         :param expected_string:  expected results to assert.
         :return:
         """
-        # Remove "RT" tags.
-        preprocessed_tweet_text = PTN_rt.sub("", input_string)
-        # Remove concatenated URL's.
-        preprocessed_tweet_text = PTN_concatenated_url.sub(r'\1 http', preprocessed_tweet_text)
-        # Handle whitespaces.
-        preprocessed_tweet_text = PTN_whitespace.sub(r' ', preprocessed_tweet_text)
-        # Remove URL's.
-        preprocessed_tweet_text = PTN_url.sub(r"slo_url", preprocessed_tweet_text)
-        # Remove Tweet user mentions.
-        preprocessed_tweet_text = PTN_mention.sub(r'slo_mention', preprocessed_tweet_text)
-        # Remove Tweet stock symbols.
-        preprocessed_tweet_text = PTN_stock_symbol.sub(r'slo_stock', preprocessed_tweet_text)
-        # Remove Tweet hashtags.
-        preprocessed_tweet_text = PTN_hash.sub(r'slo_hash', preprocessed_tweet_text)
-        # Remove Tweet cashtags.
-        preprocessed_tweet_text = PTN_cash.sub(r'slo_cash', preprocessed_tweet_text)
-        # Remove Tweet year.
-        preprocessed_tweet_text = PTN_year.sub(r'slo_year', preprocessed_tweet_text)
-        # Remove Tweet time.
-        preprocessed_tweet_text = PTN_time.sub(r'slo_time', preprocessed_tweet_text)
-        # Remove character elongations.
-        preprocessed_tweet_text = PTN_elongation.sub(r'\1\1\1', preprocessed_tweet_text)
+        preprocessed_tweet_text = process_tweet_text(input_string)
 
-        print(f"Meta Assertion Test Result: {preprocessed_tweet_text}")
+        # print(f"Meta Assertion Test Result: {preprocessed_tweet_text}")
         assert preprocessed_tweet_text == expected_string
+
+
+    def run_assertion_tests(pattern, replacement, test_cases):
+        """This utility function runs the given list of pattern-replacement
+        test cases.
+        """
+        for case in test_cases:
+            assert pattern.sub(replacement, case["input"]) == case["expected"]
 
 
     ###########################################################
 
-    whitespace_assertion_test(
-        "RT @ozmining: News:  Adani applies for rail from Galilee to Abbot point http://t.co/CidyC4CkaM #mining",
-        "RT @ozmining: News: Adani applies for rail from Galilee to Abbot point http://t.co/CidyC4CkaM #mining"
-    )
+    whitespace_assertion_test_cases = [
+        {
+            "input": "",
+            "expected": ""
+        },
+        {
+            "input": "  ",
+            "expected": " "
+        },
+        {
+            "input": " \t\n",
+            "expected": " "
+        },
+        {
+            "input": "RT @ozmining: News:  Adani applies for rail from Galilee to Abbot point http://t.co/CidyC4CkaM #mining",
+            "expected": "RT @ozmining: News: Adani applies for rail from Galilee to Abbot point http://t.co/CidyC4CkaM #mining"
+        }
+    ]
+    run_assertion_tests(PTN_whitespace, r' ', whitespace_assertion_test_cases)
+
 
     rt_assertion_test(
         "rt @ozmining: News:  Adani applies for rail from Galilee to Abbot point http://t.co/CidyC4CkaM #mining",
@@ -327,10 +360,23 @@ if __name__ == '__main__':
         "AAAH  (I'm still filthy about Adani but this helps somewhat) https://t.co/sN84tXZqLX"
     )
 
-    meta_assertion_test(
-        "WATCH all you need to know about today's #ASX drop. @ANZ_AU  $ANZ falls the least out of the #big4banks @netwealthInvest $NWL rises. @WoodsideEnergy  $WPL down 1.5% &amp; @Speedcast_Intl  trades lower amid profit taking as $SDA trades at all time highs #Ausbiz https://t.co/TGWfUkhZi8",
-        "WATCH all you need to know about today's slo_hash drop. slo_mention slo_stock falls the least out of the slo_hash slo_mention slo_stock rises. slo_mention slo_stock down 1.5% &amp; slo_mention trades lower amid profit taking as slo_stock trades at all time highs slo_hash slo_url"
-    )
+    full_tweet_assertion_test_cases = [
+        {
+            "input": "",
+            "expected": ""
+        },
+        {
+            "input": "hello, tweet text!",
+            "expected": "hello, tweet text!"
+        },
+        {
+            "input": "WATCH all you need to know about today's #ASX drop. @ANZ_AU  $ANZ falls the least out of the #big4banks @netwealthInvest $NWL rises. @WoodsideEnergy  $WPL down 1.5% &amp; @Speedcast_Intl  trades lower amid profit taking as $SDA trades at all time highs #Ausbiz https://t.co/TGWfUkhZi8",
+            "expected": "WATCH all you need to know about today's slo_hash drop. slo_mention slo_stock falls the least out of the slo_hash slo_mention slo_stock rises. slo_mention slo_stock down 1.5% &amp; slo_mention trades lower amid profit taking as slo_stock trades at all time highs slo_hash slo_url"
+        }
+    ]
+    for case in full_tweet_assertion_test_cases:
+        assert process_tweet_text(case["input"]) == case["expected"]
+
 
     ###########################################################
 
@@ -339,7 +385,7 @@ if __name__ == '__main__':
     time_elapsed_minutes = (end_time - start_time) / 60.0
     time_elapsed_hours = (end_time - start_time) / 60.0 / 60.0
     time.sleep(3)
-    log.info(f"The time taken to perform all unit tests is {time_elapsed_seconds} seconds, "
+    log.info(f"tests passed...\n\ttime: {time_elapsed_seconds} seconds, "
              f"{time_elapsed_minutes} minutes, {time_elapsed_hours} hours")
 
     ################################################################################################################
