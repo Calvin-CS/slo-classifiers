@@ -118,18 +118,11 @@ def preprocess_tweet_text(tweet_text):
     # Convert html chars. to unicode chars.
     tweet_text = html.unescape(tweet_text)
 
+    # Call utility function to handle each element of pre-processing.
     preprocessed_tweet_text = settings.process_tweet_text(tweet_text)
 
     # Convert series to string.
     tweet_string = str(preprocessed_tweet_text)
-
-    # Split Tweet into individual words using Python (tokenize)
-    # individual_words = tweet_string.split()
-
-    # Tokenize using nltk.
-    # nltk_tweet_tokenizer = TweetTokenizer()
-    # individual_words = nltk_tweet_tokenizer.tokenize(tweet_string)
-    # individual_words = word_tokenize(tweet_string)
 
     # Tokenize using spacy.
     individual_words = nlp(tweet_string)
