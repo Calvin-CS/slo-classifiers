@@ -92,6 +92,7 @@ irrelevant_words = ["word_n", "auspol", "ausbiz", "tinto", "adelaide", "csg", "n
 
 
 def process_tweet_text(tweet_text):
+    # TODO - re-arrange to be the exact same order as in tweet_preprocessor.py!
     """This function runs through the text regularization expressions to produce
     a processed tweet text."""
 
@@ -135,8 +136,13 @@ if __name__ == '__main__':
         """This utility function runs the given list of pattern-replacement
         test cases.
         """
+        counter = 0
         for _case in test_cases:
+            print(f"Pattern: {str(pattern)} - Replacement: \"{str(replacement)}\" - "
+                  f"\nTest Case: {str(_case)} - "
+                  f"\nResult: {pattern.sub(replacement, _case['input'])}\n")
             assert pattern.sub(replacement, _case["input"]) == _case["expected"]
+            counter += 1
 
 
     ###########################################################
@@ -169,19 +175,39 @@ if __name__ == '__main__':
             "expected": ""
         },
         {
-            "input": "  ",
-            "expected": "  "
+            "input": " ",
+            "expected": " "
         },
         {
-            "input": " \t\n",
-            "expected": " \t\n"
+            "input": "rt",
+            "expected": "rt"
+        },
+        {
+            "input": "RT",
+            "expected": "RT"
+        },
+        {
+            "input": "rt @:",
+            "expected": "rt @:"
+        },
+        {
+            "input": "rt @: ",
+            "expected": "rt @: "
+        },
+        {
+            "input": "rt @w: ",
+            "expected": ""
+        },
+        {
+            "input": "doesn't start with rt @w: ",
+            "expected": "doesn't start with rt @w: "
         },
         {
             "input": "rt @ozmining: News:  Adani applies for rail from Galilee to Abbot point http://t.co/CidyC4CkaM #mining",
             "expected": "News:  Adani applies for rail from Galilee to Abbot point http://t.co/CidyC4CkaM #mining"
         }
     ]
-    run_assertion_tests(PTN_rt, r'', retweet_assertion_test_cases)
+    run_assertion_tests(PTN_rt, "", retweet_assertion_test_cases)
 
     ###########################################################
 
@@ -191,12 +217,44 @@ if __name__ == '__main__':
             "expected": ""
         },
         {
-            "input": "  ",
-            "expected": "  "
+            "input": " ",
+            "expected": " "
         },
         {
-            "input": " \t\n",
-            "expected": " \t\n"
+            "input": "http:",
+            "expected": "http:"
+        },
+        {
+            "input": "https:",
+            "expected": "https:"
+        },
+        {
+            "input": "http://",
+            "expected": "http://"
+        },
+        {
+            "input": "https://",
+            "expected": "https://"
+        },
+        {
+            "input": "http://h",
+            "expected": "slo_url"
+        },
+        {
+            "input": "https://h",
+            "expected": "slo_url"
+        },
+        {
+            "input": "http://hello_world",
+            "expected": "slo_url"
+        },
+        {
+            "input": "https://hello_world",
+            "expected": "slo_url"
+        },
+        {
+            "input": "https://hello_world.com",
+            "expected": "slo_url"
         },
         {
             "input": "RT @peaceofwild: Absolutely flabbergasted. Adani proposing ANOTHER railline through CQ grazing country http://t.co/TpxYZZwM7J @Johnsmccarthy #qldpol #coal",
@@ -207,19 +265,30 @@ if __name__ == '__main__':
 
     ###########################################################
 
-    # FIXME - figure out exactly what this one does.
     concat_url_assertion_test_cases = [
         {
             "input": "",
             "expected": ""
         },
         {
-            "input": "  ",
-            "expected": "  "
+            "input": " ",
+            "expected": " "
         },
         {
-            "input": " \t\n",
-            "expected": " \t\n"
+            "input": "ahttp",
+            "expected": "a http"
+        },
+        {
+            "input": "aaaahttp",
+            "expected": "aaaa http"
+        },
+        {
+            "input": "aaaahttps",
+            "expected": "aaaa https"
+        },
+        {
+            "input": "aaaahttp://hello_world.com",
+            "expected": "aaaa http://hello_world.com"
         },
         {
             "input": "RT @peaceofwild: Absolutely flabbergasted. Adani proposing ANOTHER railline through CQ grazing country http://t.co/TpxYZZwM7J @Johnsmccarthy #qldpol #coal",
@@ -236,12 +305,36 @@ if __name__ == '__main__':
             "expected": ""
         },
         {
-            "input": "  ",
-            "expected": "  "
+            "input": " ",
+            "expected": " "
         },
         {
-            "input": " \t\n",
-            "expected": " \t\n"
+            "input": "@",
+            "expected": "@"
+        },
+        {
+            "input": "@m",
+            "expected": "slo_mention"
+        },
+        {
+            "input": "@_m",
+            "expected": "slo_mention"
+        },
+        {
+            "input": "@0_m",
+            "expected": "slo_mention"
+        },
+        {
+            "input": "@mention",
+            "expected": "slo_mention"
+        },
+        {
+            "input": "mention@mention",
+            "expected": "mentionslo_mention"
+        },
+        {
+            "input": "mention @mention",
+            "expected": "mention slo_mention"
         },
         {
             "input": "RT @peaceofwild: Absolutely flabbergasted. Adani proposing ANOTHER railline through CQ grazing country http://t.co/TpxYZZwM7J @Johnsmccarthy #qldpol #coal",
@@ -258,12 +351,36 @@ if __name__ == '__main__':
             "expected": ""
         },
         {
-            "input": "  ",
-            "expected": "  "
+            "input": " ",
+            "expected": " "
         },
         {
-            "input": " \t\n",
-            "expected": " \t\n"
+            "input": "$",
+            "expected": "$"
+        },
+        {
+            "input": "$s",
+            "expected": "slo_stock"
+        },
+        {
+            "input": "@_m",
+            "expected": "@_m"
+        },
+        {
+            "input": "@0_m",
+            "expected": "@0_m"
+        },
+        {
+            "input": "$stock",
+            "expected": "slo_stock"
+        },
+        {
+            "input": "stock$stock",
+            "expected": "stockslo_stock"
+        },
+        {
+            "input": "stock $stock",
+            "expected": "stock slo_stock"
         },
         {
             "input": "WATCH all you need to know about today's #ASX drop. @ANZ_AU  $ANZ falls the least out of the #big4banks @netwealthInvest $NWL rises. @WoodsideEnergy  $WPL down 1.5% &amp; @Speedcast_Intl  trades lower amid profit taking as $SDA trades at all time highs #Ausbiz https://t.co/TGWfUkhZi8",
@@ -280,12 +397,36 @@ if __name__ == '__main__':
             "expected": ""
         },
         {
-            "input": "  ",
-            "expected": "  "
+            "input": " ",
+            "expected": " "
         },
         {
-            "input": " \t\n",
-            "expected": " \t\n"
+            "input": "#",
+            "expected": "#"
+        },
+        {
+            "input": "#h",
+            "expected": "slo_hash"
+        },
+        {
+            "input": "#_h",
+            "expected": "slo_hash"
+        },
+        {
+            "input": "#0_h",
+            "expected": "slo_hash"
+        },
+        {
+            "input": "#hash",
+            "expected": "slo_hash"
+        },
+        {
+            "input": "hash#hash",
+            "expected": "hashslo_hash"
+        },
+        {
+            "input": "hash #hash",
+            "expected": "hash slo_hash"
         },
         {
             "input": "WATCH all you need to know about today's #ASX drop. @ANZ_AU  $ANZ falls the least out of the #big4banks @netwealthInvest $NWL rises. @WoodsideEnergy  $WPL down 1.5% &amp; @Speedcast_Intl  trades lower amid profit taking as $SDA trades at all time highs #Ausbiz https://t.co/TGWfUkhZi8",
@@ -296,18 +437,79 @@ if __name__ == '__main__':
 
     ###########################################################
 
+    # This one does interesting things depending on # of digits.
     cashtags_assertion_test_cases = [
         {
             "input": "",
             "expected": ""
         },
         {
-            "input": "  ",
-            "expected": "  "
+            "input": " ",
+            "expected": " "
         },
         {
-            "input": " \t\n",
-            "expected": " \t\n"
+            "input": "$",
+            "expected": "$"
+        },
+        {
+            "input": "$a",
+            "expected": "$a"
+        },
+        {
+            "input": "$0bmk",
+            "expected": "slo_cashmk"
+        },
+        {
+            "input": "$0thousand",
+            "expected": "slo_cashthousand"
+        },
+        {
+            "input": "$0million",
+            "expected": "slo_cashillion"
+        },
+        {
+            "input": "$0billion",
+            "expected": "slo_cashillion"
+        },
+        {
+            "input": "$1",
+            "expected": "slo_cash"
+        },
+        {
+            "input": "$1.",
+            "expected": "slo_cash."
+        },
+        {
+            "input": "$1.1",
+            "expected": "slo_cash"
+        },
+        {
+            "input": "$11.11",
+            "expected": "slo_cash"
+        },
+        {
+            "input": "$1111.11",
+            "expected": "slo_cash1.11"
+        },
+        {
+            "input": "$11.1111",
+            "expected": "slo_cash11"
+        },
+        {
+            "input": "$1234",
+            "expected": "slo_cash4"
+        },
+        {
+            "input": "$123456",
+            "expected": "slo_cash"
+        },
+        {
+            "input": "$12345678",
+            "expected": "slo_cash78"
+        },
+        {
+            "input": "$1234567890",
+            "expected": "slo_cash7890"
         },
         {
             "input": "RT @Johnsmccarthy: Adani signs $1b MOU with Bank of India for $16.5b Carmichael project as tipped in today's @couriermail",
@@ -324,12 +526,40 @@ if __name__ == '__main__':
             "expected": ""
         },
         {
-            "input": "  ",
-            "expected": "  "
+            "input": " ",
+            "expected": " "
         },
         {
-            "input": " \t\n",
-            "expected": " \t\n"
+            "input": "0986",
+            "expected": "0986"
+        },
+        {
+            "input": "1986",
+            "expected": "slo_year"
+        },
+        {
+            "input": "2986",
+            "expected": "slo_year"
+        },
+        {
+            "input": "3986",
+            "expected": "3986"
+        },
+        {
+            "input": "01986",
+            "expected": "0slo_year"
+        },
+        {
+            "input": "19863",
+            "expected": "slo_year3"
+        },
+        {
+            "input": "1986a",
+            "expected": "slo_yeara"
+        },
+        {
+            "input": "a1986a",
+            "expected": "aslo_yeara"
         },
         {
             "input": "Adani Ports net profit up by 68pct in Q2 2014 - http://t.co/nyErocJxGd #GoogleAlerts",
@@ -346,12 +576,44 @@ if __name__ == '__main__':
             "expected": ""
         },
         {
-            "input": "  ",
-            "expected": "  "
+            "input": " ",
+            "expected": " "
         },
         {
-            "input": " \t\n",
-            "expected": " \t\n"
+            "input": "00:00",
+            "expected": "slo_time"
+        },
+        {
+            "input": "10:00",
+            "expected": "slo_time"
+        },
+        {
+            "input": "20:00",
+            "expected": "slo_time"
+        },
+        {
+            "input": "30:00",
+            "expected": "3slo_time"
+        },
+        {
+            "input": "a00:00",
+            "expected": "aslo_time"
+        },
+        {
+            "input": "a0:00",
+            "expected": "aslo_time"
+        },
+        {
+            "input": "0:00",
+            "expected": "slo_time"
+        },
+        {
+            "input": "a00:00a",
+            "expected": "aslo_timea"
+        },
+        {
+            "input": "a0:0a",
+            "expected": "a0:0a"
         },
         {
             "input": "August 22, 2015 12:00AM  Greens delay Adani until 2017  Indian energy giant Adaniâ€™s $16 billion Carmichael mine... http://t.co/n429QU4w0D",
@@ -368,12 +630,48 @@ if __name__ == '__main__':
             "expected": ""
         },
         {
-            "input": "  ",
-            "expected": "  "
+            "input": " ",
+            "expected": " "
         },
         {
-            "input": " \t\n",
-            "expected": " \t\n"
+            "input": "a",
+            "expected": "a"
+        },
+        {
+            "input": "aa",
+            "expected": "aa"
+        },
+        {
+            "input": "aaa",
+            "expected": "aaa"
+        },
+        {
+            "input": "aaaa",
+            "expected": "aaa"
+        },
+        {
+            "input": "aaaaa",
+            "expected": "aaa"
+        },
+        {
+            "input": "abcd",
+            "expected": "abcd"
+        },
+        {
+            "input": "baaa",
+            "expected": "baaa"
+        },
+        {
+            "input": "baaaa",
+            "expected": "baaa"
+        },
+        {
+            "input": "baaab",
+            "expected": "baaab"
+        },
+        {
+            "input": "baaaab",
+            "expected": "baaab"
         },
         {
             "input": "AAAAAAAAAH  (I'm still filthy about Adani but this helps somewhat) https://t.co/sN84tXZqLX",
@@ -390,8 +688,8 @@ if __name__ == '__main__':
             "expected": ""
         },
         {
-            "input": "hello, tweet text!",
-            "expected": "hello, tweet text!"
+            "input": " ",
+            "expected": " "
         },
         {
             "input": "WATCH all you need to know about today's #ASX drop. @ANZ_AU  $ANZ falls the least out of the #big4banks @netwealthInvest $NWL rises. @WoodsideEnergy  $WPL down 1.5% &amp; @Speedcast_Intl  trades lower amid profit taking as $SDA trades at all time highs #Ausbiz https://t.co/TGWfUkhZi8",
