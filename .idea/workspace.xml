@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="15a3f3a2-c024-4bc3-b6a4-9ef365c4db84" name="Default Changelist" comment="" />
+    <list default="true" id="15a3f3a2-c024-4bc3-b6a4-9ef365c4db84" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/slo-classifiers-repo.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/slo-classifiers-repo.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -183,6 +187,8 @@
       <workItem from="1565041141503" duration="820000" />
       <workItem from="1565052261684" duration="272000" />
       <workItem from="1565107543359" duration="250000" />
+      <workItem from="1565184689645" duration="1238000" />
+      <workItem from="1565212563678" duration="5000" />
     </task>
     <servers />
   </component>
