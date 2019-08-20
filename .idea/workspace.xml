@@ -4,7 +4,22 @@
     <list default="true" id="15a3f3a2-c024-4bc3-b6a4-9ef365c4db84" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/slo-classifiers-repo.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/slo-classifiers-repo.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-tweet-api-intro.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/notebooks/slo-twitter-data-analysis-tweet-api-intro.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/data/slo-twitter-data-analysis-table-of-contents.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-author-topic-implementation.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-author-topic-implementation.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-author-topic-introduction.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-author-topic-introduction.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-biterm-implementation.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-biterm-implementation.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-biterm-introduction.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-biterm-introduction.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-hdp-implementation.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-hdp-implementation.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-hdp-introduction.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-hdp-introduction.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-hlda-implementation.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-hlda-implementation.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-hlda-introduction.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-hlda-introduction.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-lda-grid-search.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-lda-grid-search.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-lda-implementation.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-lda-implementation.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-lda-introduction.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-lda-introduction.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-nmf-implementation.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-nmf-implementation.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/notebooks/slo-nmf-introduction.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/notebooks/slo-nmf-introduction.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-table-of-contents.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/topic/models/topic-modeling-algorithms-table-of-contents.ipynb" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -189,6 +204,7 @@
       <workItem from="1565107543359" duration="250000" />
       <workItem from="1565184689645" duration="1238000" />
       <workItem from="1565212563678" duration="5000" />
+      <workItem from="1566280497927" duration="678000" />
     </task>
     <servers />
   </component>
